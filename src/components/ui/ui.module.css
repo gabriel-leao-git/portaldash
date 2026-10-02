@@ -1,0 +1,114 @@
+.state {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: var(--space-5);
+}
+
+.stateErro {
+  border-color: var(--red);
+  background: var(--red-bg);
+}
+
+.stateTitle {
+  font-size: 1.1rem;
+  margin-bottom: var(--space-2);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px var(--space-3);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: var(--surface-2);
+}
+
+.badgeAmber {
+  border-color: var(--amber);
+  color: var(--amber);
+  background: var(--amber-bg);
+}
+
+.badgeVerde {
+  border-color: var(--accent);
+  color: var(--accent-strong);
+  background: var(--accent-bg);
+}
+
+.tooltip summary {
+  cursor: pointer;
+  color: var(--accent-strong);
+  font-size: 0.875rem;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.tooltip summary::-webkit-details-marker {
+  display: none;
+}
+
+.tooltip summary::before {
+  content: "ⓘ";
+}
+
+.tooltip[open] summary {
+  margin-bottom: var(--space-2);
+}
+
+.tooltipBody {
+  border-left: 3px solid var(--accent);
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-2);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 0.9rem;
+}
+
+.question {
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--amber);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: var(--space-4) var(--space-5);
+}
+
+.questionText {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+}
+
+.questionBasis {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.notice {
+  border: 1px solid var(--amber);
+  background: var(--amber-bg);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.925rem;
+}
+
+.noticeOk {
+  border-color: var(--border);
+  background: var(--surface);
+}
+
+.avisos {
+  margin: 0;
+  padding-left: var(--space-5);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.avisos li {
+  margin-bottom: var(--space-1);
+}

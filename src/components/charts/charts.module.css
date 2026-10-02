@@ -1,0 +1,129 @@
+.figure {
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: var(--space-4);
+}
+
+.figure figcaption {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin-top: var(--space-3);
+}
+
+.barras {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.barraTopo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 var(--space-3);
+  font-size: 0.95rem;
+  margin-bottom: var(--space-1);
+}
+
+.barraValor {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.875rem;
+}
+
+.barraSvg {
+  display: block;
+  width: 100%;
+  height: 12px;
+}
+
+.colunas {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 var(--space-2);
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--space-2);
+  align-items: end;
+  border-bottom: 1px solid var(--border);
+}
+
+.coluna {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.colunaValor {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  min-height: 1.2em;
+}
+
+.colunaSvg {
+  display: block;
+  width: 70%;
+  height: 160px;
+}
+
+.colunaRotulo {
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.barra {
+  fill: var(--accent);
+}
+
+.barraCapital {
+  fill: #6fb6d9;
+}
+
+.trilho {
+  fill: var(--surface-2);
+}
+
+.legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: var(--space-2);
+}
+
+.swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  margin-right: var(--space-1);
+  vertical-align: -1px;
+}
+
+.swatchCorrente {
+  background: var(--accent);
+}
+
+.swatchCapital {
+  background: #6fb6d9;
+}
+
+.tabela {
+  margin-top: var(--space-3);
+}
+
+.tabela summary {
+  cursor: pointer;
+  color: var(--accent-strong);
+  font-size: 0.875rem;
+  margin-bottom: var(--space-2);
+}
