@@ -1,0 +1,86 @@
+{
+ "items": [
+  {
+   "exercicio": 2025,
+   "cod_ibge": 33,
+   "populacao": 16615526,
+   "instituicao": "Governo do Estado do Rio de Janeiro",
+   "entregavel": "Relatório Resumido de Execução Orçamentária",
+   "periodo": 1,
+   "periodicidade": "B",
+   "status_relatorio": "RE",
+   "data_status": "2025-06-18T22:31:27Z",
+   "forma_envio": "M",
+   "tipo_relatorio": "P"
+  },
+  {
+   "exercicio": 2025,
+   "cod_ibge": 33,
+   "populacao": 16615526,
+   "instituicao": "Governo do Estado do Rio de Janeiro",
+   "entregavel": "Relatório Resumido de Execução Orçamentária",
+   "periodo": 2,
+   "periodicidade": "B",
+   "status_relatorio": "HO",
+   "data_status": "2025-05-30T14:29:56Z",
+   "forma_envio": "P",
+   "tipo_relatorio": "P"
+  },
+  {
+   "exercicio": 2025,
+   "cod_ibge": 33,
+   "populacao": 16615526,
+   "instituicao": "Governo do Estado do Rio de Janeiro",
+   "entregavel": "Relatório Resumido de Execução Orçamentária",
+   "periodo": 3,
+   "periodicidade": "B",
+   "status_relatorio": "HO",
+   "data_status": "2025-07-30T17:54:44Z",
+   "forma_envio": "M",
+   "tipo_relatorio": "P"
+  },
+  {
+   "exercicio": 2025,
+   "cod_ibge": 33,
+   "populacao": 16615526,
+   "instituicao": "Governo do Estado do Rio de Janeiro",
+   "entregavel": "Relatório Resumido de Execução Orçamentária",
+   "periodo": 4,
+   "periodicidade": "B",
+   "status_relatorio": "HO",
+   "data_status": "2025-09-30T22:31:44Z",
+   "forma_envio": "M",
+   "tipo_relatorio": "P"
+  },
+  {
+   "exercicio": 2025,
+   "cod_ibge": 33,
+   "populacao": 16615526,
+   "instituicao": "Governo do Estado do Rio de Janeiro",
+   "entregavel": "Relatório Resumido de Execução Orçamentária",
+   "periodo": 5,
+   "periodicidade": "B",
+   "status_relatorio": "HO",
+   "data_status": "2025-11-27T11:22:08Z",
+   "forma_envio": "M",
+   "tipo_relatorio": "P"
+  },
+  {
+   "exercicio": 2025,
+   "cod_ibge": 33,
+   "populacao": 16615526,
+   "instituicao": "Governo do Estado do Rio de Janeiro",
+   "entregavel": "Relatório Resumido de Execução Orçamentária",
+   "periodo": 6,
+   "periodicidade": "B",
+   "status_relatorio": "RE",
+   "data_status": "2026-05-06T17:14:12Z",
+   "forma_envio": "M",
+   "tipo_relatorio": "P"
+  }
+ ],
+ "hasMore": false,
+ "limit": 5000,
+ "offset": 0,
+ "count": 6
+}

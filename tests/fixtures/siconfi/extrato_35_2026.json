@@ -1,0 +1,60 @@
+{
+ "items": [
+  {
+   "exercicio": 2026,
+   "cod_ibge": 35,
+   "populacao": 46024937,
+   "instituicao": "Governo do Estado de São Paulo",
+   "entregavel": "Relatório Resumido de Execução Orçamentária",
+   "periodo": 1,
+   "periodicidade": "B",
+   "status_relatorio": "RE",
+   "data_status": "2026-06-02T16:09:31Z",
+   "forma_envio": "P",
+   "tipo_relatorio": "P"
+  },
+  {
+   "exercicio": 2026,
+   "cod_ibge": 35,
+   "populacao": 46024937,
+   "instituicao": "Governo do Estado de São Paulo",
+   "entregavel": "Relatório Resumido de Execução Orçamentária",
+   "periodo": 2,
+   "periodicidade": "B",
+   "status_relatorio": "HO",
+   "data_status": "2026-05-29T14:14:24Z",
+   "forma_envio": "P",
+   "tipo_relatorio": "P"
+  },
+  {
+   "exercicio": 2026,
+   "cod_ibge": 35,
+   "populacao": 46024937,
+   "instituicao": "Governo do Estado de São Paulo",
+   "entregavel": "Relatório Resumido de Execução Orçamentária",
+   "periodo": 3,
+   "periodicidade": "B",
+   "status_relatorio": "HO",
+   "data_status": "2026-07-30T13:05:10Z",
+   "forma_envio": "M",
+   "tipo_relatorio": "P"
+  },
+  {
+   "exercicio": 2026,
+   "cod_ibge": 35,
+   "populacao": 46024937,
+   "instituicao": "Governo do Estado de São Paulo",
+   "entregavel": "Relatório Resumido de Execução Orçamentária",
+   "periodo": 4,
+   "periodicidade": "B",
+   "status_relatorio": "HO",
+   "data_status": "2026-09-30T11:45:11Z",
+   "forma_envio": "M",
+   "tipo_relatorio": "P"
+  }
+ ],
+ "hasMore": false,
+ "limit": 5000,
+ "offset": 0,
+ "count": 4
+}

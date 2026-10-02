@@ -1,0 +1,60 @@
+{
+ "items": [
+  {
+   "exercicio": 2026,
+   "cod_ibge": 1,
+   "populacao": 8569324,
+   "instituicao": "Governo Federal",
+   "entregavel": "Relatório Resumido de Execução Orçamentária",
+   "periodo": 1,
+   "periodicidade": "B",
+   "status_relatorio": "HO",
+   "data_status": "2026-03-31T10:56:42Z",
+   "forma_envio": "P",
+   "tipo_relatorio": "P"
+  },
+  {
+   "exercicio": 2026,
+   "cod_ibge": 1,
+   "populacao": 8569324,
+   "instituicao": "Governo Federal",
+   "entregavel": "Relatório Resumido de Execução Orçamentária",
+   "periodo": 2,
+   "periodicidade": "B",
+   "status_relatorio": "HO",
+   "data_status": "2026-05-29T14:59:49Z",
+   "forma_envio": "P",
+   "tipo_relatorio": "P"
+  },
+  {
+   "exercicio": 2026,
+   "cod_ibge": 1,
+   "populacao": 8569324,
+   "instituicao": "Governo Federal",
+   "entregavel": "Relatório Resumido de Execução Orçamentária",
+   "periodo": 3,
+   "periodicidade": "B",
+   "status_relatorio": "HO",
+   "data_status": "2026-07-29T17:45:03Z",
+   "forma_envio": "M",
+   "tipo_relatorio": "P"
+  },
+  {
+   "exercicio": 2026,
+   "cod_ibge": 1,
+   "populacao": 8569324,
+   "instituicao": "Governo Federal",
+   "entregavel": "Relatório Resumido de Execução Orçamentária",
+   "periodo": 4,
+   "periodicidade": "B",
+   "status_relatorio": "HO",
+   "data_status": "2026-09-30T14:28:06Z",
+   "forma_envio": "M",
+   "tipo_relatorio": "P"
+  }
+ ],
+ "hasMore": false,
+ "limit": 5000,
+ "offset": 0,
+ "count": 4
+}
