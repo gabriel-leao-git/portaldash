@@ -1,0 +1,35 @@
+coletado_em_utc	metodo	url	status	tempo_s	bytes	arquivo
+2026-10-02T01:18:45Z	GET	https://www.tesourotransparente.gov.br/consultas/consultas-siconfi/siconfi-api-de-dados-abertos	200	0.36	26673	entrada.html
+2026-10-02T01:18:59Z	GET	http://apidatalake.tesouro.gov.br/docs/siconfi/	307 -> https	0.05	0	docs_index_http.headers
+2026-10-02T01:19:06Z	GET	https://apidatalake.tesouro.gov.br/docs/siconfi/	200	0.21	2139	docs_index.html
+2026-10-02T01:19:11Z	GET	https://apidatalake.tesouro.gov.br/docs/siconfi.yaml	200	0.22	44465	siconfi.yaml
+2026-10-02T01:19:36Z	GET	https://apidatalake.tesouro.gov.br/	200	0.46	3024	apidatalake_root.html
+2026-10-02T01:19:43Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/entes	200 (X-Cache TCP_REMOTE_HIT)	0.36	866510	raw/entes_p0.json
+2026-10-02T01:20:14Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/entes?limit=3&offset=10	200	0.56	1142	raw/entes_limit3_offset10.json
+2026-10-02T01:20:24Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/anexos-relatorios	200 (TCP_MISS)	69.26	10809	raw/anexos_relatorios.json
+2026-10-02T01:21:52Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2025&nr_periodo=6&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2001&id_ente=3304557	200	1.09	247524	raw/rreo_2025_p6_anexo01_3304557.json
+2026-10-02T01:22:23Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=abc&nr_periodo=6&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2001&id_ente=3304557	400 application/problem+json	0.32	372	raw/erro_an_exercicio_abc.body
+2026-10-02T01:22:30Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2025&nr_periodo=7&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2001&id_ente=3304557	200 items=[]	0.37	621	raw/rreo_periodo7.json
+2026-10-02T01:22:45Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/extrato_entregas?id_ente=3304557&an_referencia=2025	200	0.60	16445	raw/extrato_3304557_2025.json
+2026-10-02T01:22:58Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/extrato_entregas?id_ente=2516151&an_referencia=2025	200	0.70	11440	raw/extrato_2516151_2025.json
+2026-10-02T01:23:09Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2025&nr_periodo=6&co_tipo_demonstrativo=RREO%20Simplificado&no_anexo=RREO-Anexo%2001&limit=5	200 items=[] (sem id_ente)	0.33	620	raw/rreo_simpl_sem_id_ente_limit5.json
+2026-10-02T01:23:19Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2025&nr_periodo=6&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2001&co_esfera=E&limit=3	200 items=[] (sem id_ente)	0.34	618	raw/rreo_esferaE_sem_id_ente_limit3.json
+2026-10-02T01:23:38Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/extrato_entregas?id_ente=4205704&an_referencia=2025	200	0.45	10657	raw/extrato_4205704_2025.json
+2026-10-02T01:23:46Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/entes?limit=10000&offset=5590	200	0.57	1795	raw/entes_limit10000_offset5590.json
+2026-10-02T01:24:01Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2025&nr_periodo=6&co_tipo_demonstrativo=RREO&id_ente=33&limit=3&offset=4998	200 count=0	0.35	772	raw/rreo_33_sem_anexo_offset4998_limit3.json
+2026-10-02T01:24:12Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2025&nr_periodo=6&co_tipo_demonstrativo=RREO&id_ente=33&limit=2&offset=1500	200 hasMore=true	0.35	1760	raw/rreo_33_sem_anexo_offset1500_limit2.json
+2026-10-02T01:24:28Z	GET (If-None-Match)	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2025&nr_periodo=6&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2001&id_ente=3304557	304 (TCP_REMOTE_HIT)	0.19	0	raw/rreo_rio_ifnonematch.headers
+2026-10-02T01:24:39Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/anexos-relatorios	200 (TCP_REMOTE_HIT)	0.22	10809	raw/anexos_relatorios_2.json
+2026-10-02T01:24:49Z	GET	https://siconfi.tesouro.gov.br/siconfi/pages/public/conteudo/conteudo.jsf?id=581	200	0.89	302656	siconfi_conteudo_581.html
+2026-10-02T01:24:59Z	GET	http://www.tesouro.fazenda.gov.br/mdf	curl (6) DNS nao resolve	0.06	0	-
+2026-10-02T01:25:14Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rgf?an_exercicio=2025&in_periodicidade=Q&nr_periodo=3&co_tipo_demonstrativo=RGF&no_anexo=RGF-Anexo%2001&co_poder=E&id_ente=3304557&limit=3	200	0.64	1971	raw/rgf_rio_2025_q3_anexo01_E_limit3.json
+2026-10-02T01:25:24Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/dca?an_exercicio=2024&no_anexo=DCA-Anexo%20I-E&id_ente=3304557&limit=3	200	0.53	1676	raw/dca_rio_2024_anexoIE_limit3.json
+2026-10-02T01:25:35Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/msc_orcamentaria?id_ente=3304557&an_referencia=2025&me_referencia=12&co_tipo_matriz=MSCC&classe_conta=6&id_tv=period_change&limit=2	200	0.61	1849	raw/msc_orc_rio_2025_12_c6_pc_limit2.json
+2026-10-02T01:25:46Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/extrato_entregas?id_ente=3304557&an_referencia=2026	200	0.73	10365	raw/extrato_3304557_2026.json
+2026-10-02T01:25:56Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2026&nr_periodo=4&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2001&id_ente=3304557&limit=2	200	0.37	1633	raw/rreo_rio_2026_p4_anexo01_limit2.json
+2026-10-02T01:26:05Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/extrato_entregas?id_ente=5300108&an_referencia=2025	200 count=0	0.45	521	raw/extrato_5300108_2025.json
+2026-10-02T01:26:16Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/extrato_entregas?id_ente=53&an_referencia=2025	200 (TCP_REMOTE_HIT)	0.19	19918	raw/extrato_53_2025.json
+2026-10-02T01:26:28Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo_inexistente	404 application/problem+json	0.33	171	raw/erro_404.body
+2026-10-02T01:26:35Z	GET	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/metadata-catalog/tt/item	404 application/problem+json	0.55	171	raw/metadata_catalog_item.body
+2026-10-02T01:27:29Z	GET (Accept-Encoding: gzip)	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/anexos-relatorios	timeout curl(28), 0 bytes	120.01	0	raw/anexos_gzip.headers (vazio)
+2026-10-02T01:29:43Z	GET (Accept-Encoding: gzip)	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/extrato_entregas?id_ente=3304557&an_referencia=2025	200 identity (sem gzip), TCP_REMOTE_HIT	0.28	16445	raw/extrato_gzip.bin

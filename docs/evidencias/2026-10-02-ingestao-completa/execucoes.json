@@ -1,0 +1,161 @@
+[
+  {
+    "id": "1",
+    "origem": "cli",
+    "situacao": "concluida",
+    "iniciada_em": "2026-10-02T02:18:39.966Z",
+    "finalizada_em": "2026-10-02T02:18:50.921Z",
+    "requisicoes": 10,
+    "snapshots_criados": 8,
+    "snapshots_ativados": 8,
+    "snapshots_rejeitados": 0,
+    "snapshots_sem_mudanca": 0,
+    "escopo": {
+      "forcar": false,
+      "codIbges": [
+        1,
+        33
+      ],
+      "exercicios": [
+        2026
+      ],
+      "reverificarAposDias": 7
+    },
+    "erros": []
+  },
+  {
+    "id": "2",
+    "origem": "cli",
+    "situacao": "concluida",
+    "iniciada_em": "2026-10-02T02:19:06.562Z",
+    "finalizada_em": "2026-10-02T02:19:07.700Z",
+    "requisicoes": 2,
+    "snapshots_criados": 0,
+    "snapshots_ativados": 0,
+    "snapshots_rejeitados": 0,
+    "snapshots_sem_mudanca": 0,
+    "escopo": {
+      "forcar": false,
+      "codIbges": [
+        1,
+        33
+      ],
+      "exercicios": [
+        2026
+      ],
+      "reverificarAposDias": 7
+    },
+    "erros": []
+  },
+  {
+    "id": "3",
+    "origem": "cli",
+    "situacao": "concluida_com_falhas",
+    "iniciada_em": "2026-10-02T02:19:16.410Z",
+    "finalizada_em": "2026-10-02T02:28:46.983Z",
+    "requisicoes": 407,
+    "snapshots_criados": 270,
+    "snapshots_ativados": 270,
+    "snapshots_rejeitados": 0,
+    "snapshots_sem_mudanca": 0,
+    "escopo": {
+      "forcar": false,
+      "codIbges": [
+        1,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        31,
+        32,
+        33,
+        35,
+        41,
+        42,
+        43,
+        50,
+        51,
+        52,
+        53
+      ],
+      "exercicios": [
+        2025,
+        2026
+      ],
+      "reverificarAposDias": 7
+    },
+    "erros": [
+      {
+        "contexto": "ente 25, exercício 2025, bimestre 4",
+        "mensagem": "SiconfiHttpError: HTTP 429"
+      },
+      {
+        "contexto": "ente 15, exercício 2026, bimestre 3",
+        "mensagem": "SiconfiHttpError: HTTP 429"
+      }
+    ]
+  },
+  {
+    "id": "4",
+    "origem": "cli",
+    "situacao": "concluida",
+    "iniciada_em": "2026-10-02T02:30:22.002Z",
+    "finalizada_em": "2026-10-02T02:34:58.345Z",
+    "requisicoes": 60,
+    "snapshots_criados": 2,
+    "snapshots_ativados": 2,
+    "snapshots_rejeitados": 0,
+    "snapshots_sem_mudanca": 0,
+    "escopo": {
+      "forcar": false,
+      "codIbges": [
+        1,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        31,
+        32,
+        33,
+        35,
+        41,
+        42,
+        43,
+        50,
+        51,
+        52,
+        53
+      ],
+      "exercicios": [
+        2025,
+        2026
+      ],
+      "reverificarAposDias": 7
+    },
+    "erros": []
+  }
+]

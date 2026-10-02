@@ -1,0 +1,170 @@
+{
+ "inconsistencias": [
+  "Erro 5xx omitido. O relatório de docs diz 'Nenhum 429 ou 5xx observado', mas o log da União (uniao/requests.log) registra HTTP 502 em /anexos-relatorios às 2026-10-02T01:19:22Z (página HTML 'Service unavailable'). O log do RJ registra status 000 (sem resposta) no mesmo endpoint às 01:19:21Z. O agente de docs recebeu 200 nesse mesmo minuto, mas só depois de 69,26 s (TCP_MISS). Os três atingiram a mesma rota lenta quase ao mesmo tempo.",
+  "Etiqueta violada no agregado. Cada agente foi sequencial, mas os agentes rodaram em paralelo contra o mesmo host. Somando os logs: 98 requisições ao apidatalake entre 01:18 e 01:41Z, 25 delas no minuto 01:21, e 8 segundos com 2 requisições simultâneas (por exemplo 01:21:32Z, 01:21:47Z, 01:22:05Z, 01:23:46Z). O limite documentado é de 1 req/s. As conclusões sobre rate limit ('sem 429 com ~31 requisições') ignoram esse agregado.",
+  "Código de esfera do DF varia por endpoint. Em /entes, o cod_ibge 53 vem com esfera='D' (docs e cobertura recomendam 'id_ente=53 (esfera D)'). No /rreo (minha chamada às 2026-10-02T01:48:57Z, Anexo 01 de 2026 b4) vieram esfera='E', uf='DF' e instituicao='Governo do Distrito Federal'. O campo esfera não pode ser chave de junção entre endpoints.",
+  "O campo uf também varia por endpoint. Em /entes os estados têm uf='BR' e a União tem uf=null; no /rreo vieram uf='RJ', 'SP', 'MG' e 'DF', e a União tem uf='BR'. A tabela de cobertura atribui siglas (RO, AC...) a 25 estados como se tivessem sido observadas, mas a própria nota admite que só a de SP foi vista.",
+  "Generalização errada sobre refinanciamento. A cobertura diz que só a União tem o bloco AmortizacaoRefinanciamentoDaDivida e que em SP TotalDespesas = SubtotalDasDespesas 'porque não há a linha de refinanciamento'. Mas o estado do RJ tem essa linha na coluna de pagas: '1555292452.73' em 2025 b6 e '1175684863.78' em 2026 b4. No RJ, então, TotalDespesas ≠ Subtotal. MG e DF (2026 b4) não têm a linha. A comparação foi feita só com SP.",
+  "Defasagem calculada errada. A cobertura diz que o b4 2026 da União e de SP estava no /rreo 'cerca de 11 a 14 horas após a homologação'. Pelos carimbos: a União foi homologada em 2026-09-30T14:28:06Z e coletada em 2026-10-02T01:23:10Z (cerca de 34h55m); SP foi homologado em 2026-09-30T11:45:11Z e coletado às 01:23:22Z (cerca de 37h38m). Além disso, isso é só um limite superior: ninguém mediu quando o dado apareceu pela primeira vez.",
+  "Contagem errada na cobertura. O relatório diz que '26 dos 28' b4 foram homologados entre 2026-09-24 e 2026-09-30. Os arquivos extrato_2026 mostram 27 de 28: só o RN (2026-09-18T14:47:08Z) fica fora.",
+  "Semântica de cod_conta 'TotalDespesas' muda com o ano. Docs e cobertura tratam TotalDespesas como 'total das despesas'. Em 2015, 2018 e 2019 no RJ, e em 2019 na União, o mesmo cod_conta é 'TOTAL (XIV) = (XII + XIII)' (União: 'TOTAL (XV) = (XIII + XIV)') e inclui o SUPERÁVIT. Exemplo no RJ 2018 b6, coluna de pagas: TotalDespesas '69352345037.11' = SubtotalDespesasComRefinanciamento '58665749815.77' + Superavit '10686595221.34'. A partir de 2020 (RJ 2020 b6), TotalDespesas passa a 'TOTAL DAS DESPESAS (XII) = (X + XI)', e o total com superávit vai para TotalDespesasComSuperavit. Uma série de TotalDespesas mistura despesa com superávit antes de 2020.",
+  "Linhas que não são pagamento aparecem na coluna 'DESPESAS PAGAS ATÉ O BIMESTRE (j)'. São elas Superavit ('SUPERÁVIT (XIII)') e TotalDespesasComSuperavit. Exemplos: MG 2026 b4 tem Superavit '16805443364.65' e TotalDespesasComSuperavit '101999476074.35', diferente de TotalDespesas '85194032709.7'; RJ 2025 b6 tem TotalDespesasComSuperavit '117852863573.26'. Docs citou a linha Superavit, mas nenhum relatório citou TotalDespesasComSuperavit.",
+  "Natureza temporal: União mensal × Siconfi bimestral. O RREO oficial da União (PDF 'RREOAgo2026', tesourotransparente) é mensal, com colunas 'No Mês' e 'Até o Mês'. O Siconfi é bimestral. Para a União, 2026 b4, 'DESPESAS EMPENHADAS NO BIMESTRE' vale '615832878707.67', enquanto o PDF traz 'No Mês' (agosto) = 260.773.213 mil. Só os acumulados batem, e só nos meses pares.",
+  "Versão publicada × versão no Siconfi (União 2025 b6). O PDF oficial usado na reconciliação é uma republicação ('12_ RREODez2025 (REPUBL_).pdf', Last-Modified 2026-07-17), mas o extrato mostra o b6 2025 da União HO em 2026-01-30T22:36:41Z, sem RE. As pagas batem dentro do arredondamento em R$ mil. Já 12 células de empenhado e saldo do Anexo 01 divergem 7 a 8 unidades de R$ mil (por exemplo DespesasExcetoIntra empenhadas: PDF 3.901.652.475 contra Siconfi 3901652467673.24). Isso não é arredondamento, e o extrato não reflete republicações.",
+  "Cobertura de linhas: Siconfi × PDF. O PDF da União 2025 b6 traz 'Reserva de Contingência' (pagas 0) e 'Demais Despesas Correntes' intra (pagas 1.227.470 mil), e o Siconfi não tem essas células. Ausência no Siconfi não equivale a zero nem a 'não existe na publicação'.",
+  "Mesmo rótulo com escopo diferente entre demonstrativos. 'Despesas Exceto Intraorçamentárias' na DCA-Anexo I-E inclui o refinanciamento; DespesasExcetoIntraOrcamentarias no RREO-Anexo 01 não inclui. No RJ 2025, DCA '104155211663.4' = RREO '102599919210.67' + Refin '1555292452.73', exato. Na União 2025, DCA − RREO = '1417638361603.07' = Refin (XII). O intra da União também difere em R$ 0,02 (DCA '30097098735.24' contra RREO '30097098735.26').",
+  "A chave de seleção proposta pelo docs, (anexo, rotulo, coluna, cod_conta), não é única fora do Anexo 01. No Anexo 02, cod_conta só tem 2 valores ('RREO2TotalDespesas' e 'RREO2TotalDespesasIntra'), e a função vem só no texto de conta ('Legislativa', 'Ação Legislativa'): há dezenas de chaves duplicadas, até 174 vezes. Na DCA I-E houve 5 duplicatas. Acrescentando conta, ficou único em todas as amostras.",
+  "O conjunto de colunas varia por ano no mesmo b6. 'INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS (k)' existe no RJ b6 de 2015, 2018, 2023 e 2025, mas não existe no RJ b6 de 2019, 2020 e 2021 nem no b6 2019 da União. A precisão também varia: no RJ 2019, 577 de 696 valores são inteiros sem centavos; na União 2019, o total pago '2198252453508' é inteiro.",
+  "O spec se contradiz. A descrição de /rreo diz 'Apenas o parâmetro no_anexo é opcional', mas co_esfera está declarado required:false. O relatório de docs replica as duas coisas. Observado: o /rreo funciona sem co_esfera (agentes da União e do RJ).",
+  "Base path não documentado. O RJ obteve bytes idênticos (cmp) do extrato 2026 pelo caminho legado https://apidatalake.tesouro.gov.br/ords/siconfi/tt/extrato_entregas, sem 'cdwhprd'. Existem dois caminhos ativos, e só um está no spec.",
+  "Ambiguidade 'Rio'. No relatório de docs, o 'RREO 2025 b6 do Rio RE 2026-05-08T15:00:35Z' é o município 3304557; na cobertura, 'RJ b6 RE 2026-05-06T17:14:12Z' é o estado 33. Os dois estão certos, mas o texto chama ambos de 'Rio'.",
+  "População 'por exercício' não é consistente. O docs diz que populacao depende do exercício (município do Rio: 6625849 em 2025 contra 6730729 em /entes 2026). Para o estado do RJ, porém, RREO 2025, RREO 2026, DCA 2025 e /entes 2026 trazem o mesmo 16615526. Na União, 8569324 aparece em /entes, no extrato, no RREO de 2019, 2025 e 2026 e na DCA."
+ ],
+ "lacunas": [
+  "Anexo 01 conferido em poucos entes: a célula do indicador foi observada só na União (2019 b6, 2025 b5/b6, 2026 b4), em SP (2025 b6, 2026 b4), no RJ (2015, 2018, 2019, 2020, 2021, 2023, 2025 b5/b6, 2026 b4), em MG (2026 b4) e no DF (2026 b4). Nos outros 23 estados, a presença do cod_conta e da coluna é apenas inferida pelo extrato.",
+  "Reconciliação externa insuficiente. União: 2025 b6 (30 linhas de pagas) e 2026 b4 (13 linhas, conferidas por mim contra '08_RREOAgo2026 - Com Portaria Publicada.pdf'), sempre com precisão de R$ mil. Estados: só o RJ 2023 b6, e só as 10 linhas de total, ao centavo, num PDF obtido via Wayback. Nenhum estado foi reconciliado para 2025 ou 2026: a SEFAZ-RJ bloqueou por IP e as edições do DOERJ consultadas não traziam o RREO.",
+  "Versionamento invisível. O /rreo não informa versão (HO/RE) nem data. O extrato só mostra o último status, sem histórico e sem a data original de entrega. O TTL do cache do CDN é desconhecido. Não dá para saber se um valor coletado é anterior ou posterior a uma retificação, nem recuperar versões antigas.",
+  "Republicação da União sem RE no Siconfi: não se sabe como republicações do RREO oficial se propagam ao Siconfi, nem o que explica as divergências de empenhado.",
+  "O fuso real de data_status (sufixo 'Z', com concentração perto das 22:30Z no dia do prazo) não foi verificado.",
+  "A defasagem real entre homologação e disponibilidade no /rreo é desconhecida; só há limites superiores (de cerca de 35 a 38 h).",
+  "Extrato 2025 (b6) não consultado para 24 dos 28 entes.",
+  "Definição normativa de 'pagas' não lida. Não se consultou o MDF (Manual de Demonstrativos Fiscais) da STN para confirmar que a coluna (j) exclui o pagamento de restos a pagar de anos anteriores. Isso é inferido da existência do Anexo 07 com colunas 'Pagos (c)/(i)' próprias.",
+  "Não há regra de consolidação entre esferas na fonte. Transferências intergovernamentais aparecem como despesa paga de quem transfere: União 'TransferenciasAEstadosDistritoFederalEMunicipios' '531673082300.42' até 2026 b4; SP 'TransferenciasAMunicipios'. A receita correspondente dos entes recebedores não foi levantada.",
+  "Mudança estrutural histórica observada só no RJ (TotalDespesas inclui superávit até 2019 e muda a partir de 2020) e na União 2019. Não se sabe se a quebra é a mesma para todos os entes, nem como foram os anos anteriores a 2015.",
+  "A origem, a safra e a metodologia do campo populacao não estão documentadas, e o valor da União é anômalo. Nenhum per capita é sustentável com essa fonte.",
+  "DF/FCDF: a interação entre despesas da União pelo Fundo Constitucional do DF e as despesas do DF não foi investigada. O PDF da União tem um demonstrativo do FCDF.",
+  "Comportamento de bloqueio por excesso de requisições é desconhecido (duração, código HTTP), e houve um 502 sob concorrência.",
+  "MSC (mensal): não se sabe quais contas correspondem a 'despesa paga' nem se a soma bate com o RREO.",
+  "Os relatórios da União, do RJ e da reconciliação chegaram truncados nesta revisão. Conferi pelos artefatos salvos (logs, JSONs, scripts e saídas); afirmações que só existiam no texto truncado não puderam ser checadas."
+ ],
+ "afirmacoes_fracas": [
+  "Docs: 'Indicadores de educação e saúde via RREO não estão disponíveis nesta API'. Baseia-se só na ausência dos anexos 08 e 12 no enum e em /anexos-relatorios; nenhuma consulta foi tentada.",
+  "Cobertura: 'Não existe consulta que traga vários entes de uma vez'. Saiu de 2 testes negativos mais o spec. É plausível, mas não foi esgotado.",
+  "Cobertura (tabela ufs): siglas de 25 UFs aparecem como dado observado, mas foram inferidas do código IBGE.",
+  "Docs e cobertura: data_status apresentado como 'data de publicação/entrega'. Na verdade é a data do status atual (HO/RE) no Siconfi. Não é a data da entrega original nem a da publicação legal (DOE).",
+  "Docs e cobertura: 'defasagem observada' de dado já disponível no /rreo. É só um limite superior; o momento da primeira disponibilidade não foi medido. No caso da cobertura, o valor (11 a 14 h) também está errado.",
+  "Reconciliação da União: 'OK' nas pagas significa diferença menor que 0,5 unidade de R$ mil (cerca de R$ 500). Não é igualdade ao centavo. E o PDF de comparação é uma republicação que diverge do Siconfi no empenhado.",
+  "Reconciliação do RJ: a coincidência do 2023 b6 (só linhas de total) não se generaliza para 2025 e 2026. Também não prova que a retificação de 2024-07-03 deixou o Anexo 01 intacto: o PDF tem origem /2024/01/ e foi capturado pelo Wayback em 2025-01-18.",
+  "Cobertura: 'Linhas candidatas mais homogêneas: DespesasExcetoIntraOrcamentarias'. Foi concluído comparando só União e SP. Meus testes em RJ, MG e DF apoiam a conclusão, mas ainda não cobrem os 27 entes.",
+  "Cobertura: 'os números do b6 podem mudar meses depois do prazo' (retificações de SP, RJ e DF). Está rotulado como inferência e nenhum valor antes ou depois da retificação foi observado. O único fato é que, no RJ, o b6 RE de 2025 bate exatamente com a DCA RE de 2025.",
+  "Docs: 'No RREO, a periodicidade da resposta é sempre B, mesmo no Simplificado'. Vem do spec; nenhum Simplificado foi observado.",
+  "Docs: 'a variante gzip parece ter outra chave de cache no CDN e cair na origem lenta'. É especulação a partir de um único timeout de 120 s.",
+  "Docs: 'Linhas totais ... selecione por (anexo, rotulo, coluna, cod_conta)', apresentado como regra geral. Só vale no Anexo 01; no Anexo 02 e na DCA é falso.",
+  "Docs: 'Para o conceito despesas pagas, a fonte direta é o RREO-Anexo 01 coluna (j)'. O fato é correto, mas o relatório omite que a mesma coluna contém Superavit e TotalDespesasComSuperavit, e que TotalDespesas mudou de significado."
+ ],
+ "indicador_proposto": {
+  "nome": "Despesas pagas no exercício, acumuladas até o bimestre (exceto intraorçamentárias)",
+  "definicao": "É o valor da célula do RREO-Anexo 01 (Balanço Orçamentário) em que coluna é exatamente 'DESPESAS PAGAS ATÉ O BIMESTRE (j)' e cod_conta é exatamente 'DespesasExcetoIntraOrcamentarias', para um ente (cod_ibge) e um par (exercicio, periodo). Mede o total pago de 1º de janeiro até o fim do bimestre informado, excluídas as despesas intraorçamentárias e a linha de amortização da dívida/refinanciamento. A linha inclui Despesas Correntes (pessoal, juros, outras) e Despesas de Capital (investimentos, inversões e amortização não refinanciada). Identidade observada com Decimal: ExcetoIntra = DespesasCorrentes + DespesasDeCapital (União 2025 b6 e 2026 b4, SP e RJ). O cod_conta e o texto da coluna estavam presentes e estáveis em todos os casos observados: União 2019, 2025 e 2026; RJ 2015 a 2026; SP, MG e DF em 2025/2026. Para a União, os valores batem com o RREO oficial publicado pelo Tesouro com precisão de R$ mil (2025 b6 e 2026 b4). O texto de 'conta' varia, por exemplo '(VIII)' nos estados e '(IX)' na União, e não deve ser usado para selecionar. Se Gabriel decidir por ele, há uma alternativa sustentada pelos dados: SubtotalDasDespesas (inclui intraorçamentárias), também estável entre 2015 e 2026 no RJ. Não usar TotalDespesas.",
+  "fonte_exata": "GET https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio={AAAA}&nr_periodo={1..6}&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2001&id_ente={1 para a União | código IBGE de 2 dígitos da UF; DF=53}. Filtrar os itens por anexo='RREO-Anexo 01', coluna='DESPESAS PAGAS ATÉ O BIMESTRE (j)' e cod_conta='DespesasExcetoIntraOrcamentarias'. Gravar valor como texto bruto e como NUMERIC (parse com Decimal). Metadados de status: GET .../extrato_entregas?id_ente={id}&an_referencia={AAAA}, linha entregavel='Relatório Resumido de Execução Orçamentária', periodo={n}, com status_relatorio (HO/RE), data_status e tipo_relatorio (P observado em 112/112 linhas de 2026). Contrato: https://apidatalake.tesouro.gov.br/docs/siconfi.yaml (Swagger 2.0, 1.1.0 beta, ETag \"80534262\"). Coletas de referência: União 2026 b4 em 2026-10-02T01:23:10Z (cobertura) e 01:24:23Z (União); MG e DF 2026 b4 em 2026-10-02T01:49:16Z e 01:48:57Z (esta revisão), todas HTTP 200.",
+  "natureza_temporal": "Acumulado no exercício (year-to-date) até o fim do bimestre nr_periodo; zera a cada exercício. Não existe 'pagas no bimestre' na fonte. Bimestres não se somam, e um valor isolado só sairia por diferença entre versões possivelmente diferentes. O b6 equivale ao ano fechado. São três datas distintas: (1) referência, ou seja, exercício + bimestre (fim do bimestre); (2) status no Siconfi, isto é, data_status do extrato, que é a data do último HO/RE e não a entrega original nem a publicação no DOE, com fuso não verificado; (3) coleta, pelo relógio próprio em UTC. Para a União, o RREO oficial é mensal; só os acumulados dos meses pares coincidem com o Siconfi. Os valores são nominais, em R$ correntes, sem correção.",
+  "cobertura": "Entes: União (1), 26 estados e DF (53). Municípios ficam fora. O extrato mostra RREO 2026 de b1 a b4 entregue pelos 28 entes (homologações do b4 entre 2026-09-18 e 2026-09-30T22:36:35Z). O b5 de 2026 ainda não existe, o que é esperado. A célula do indicador foi confirmada no /rreo para União, SP, RJ, MG e DF; nos outros 23 estados ainda não foi verificada. Histórico: célula presente no RJ desde 2015 e na União em 2019; outros anos e entes não foram verificados. Versão: é a que o /rreo serve no momento da coleta. Retificados em 2026: RJ b1 e b2, SP b1. Retificados no b6 2025: SP, RJ e DF; 24 entes não verificados.",
+  "nao_inclui": [
+   "Despesas intraorçamentárias (DespesasIntraOrcamentariasTotal). Ficam de fora para não contar em dobro dentro do mesmo ente.",
+   "A linha 'AMORTIZAÇÃO DA DÍVIDA / REFINANCIAMENTO' (cod_conta AmortizacaoRefinanciamentoDaDivida): União '1141059765822.79' até 2026 b4; RJ '1175684863.78'.",
+   "Superávit e o 'TOTAL COM SUPERÁVIT', que aparecem na mesma coluna mas não são pagamento.",
+   "Restos a pagar de exercícios anteriores pagos no ano, que ficam no Anexo 07. Inferência pela estrutura dos anexos; falta confirmar no MDF.",
+   "Valores empenhados ou liquidados ainda não pagos.",
+   "Qualquer consolidação entre esferas: transferências da União a estados e municípios e dos estados a municípios contam como despesa de quem paga.",
+   "Municípios e consórcios.",
+   "Colunas de percentual, que também ocupam o campo valor.",
+   "Correção monetária e cálculo per capita."
+  ],
+  "avisos_obrigatorios": [
+   "Valor acumulado de janeiro até o fim do bimestre indicado. Não é o gasto do bimestre, e bimestres não devem ser somados.",
+   "Fonte: Siconfi/Tesouro Nacional, RREO Anexo 01, coluna 'Despesas pagas até o bimestre (j)', linha 'Despesas (exceto intraorçamentárias)'. Os dados são declarados por cada ente e podem ser retificados depois. Mostrar status (homologado ou retificado), data do status no Siconfi e data da coleta.",
+   "Não inclui refinanciamento da dívida, despesas intraorçamentárias nem restos a pagar de anos anteriores.",
+   "Não some União com estados: transferências da União aos estados aparecem como despesa da União e podem reaparecer como despesa do estado (dupla contagem).",
+   "Valores nominais em R$ correntes, sem correção pela inflação.",
+   "Ausência de dado (ente que não entregou ou consulta vazia) é exibida como 'sem dado', nunca como zero.",
+   "Para a União, o relatório oficial do Tesouro é mensal; aqui só aparecem os fechamentos de bimestre.",
+   "Em exercícios antigos alguns entes informaram valores sem centavos; exibir arredondado (por exemplo R$ bi com 1 casa)."
+  ]
+ },
+ "chave_unicidade_proposta": "Camada bruta (/rreo, todas as células): (cod_ibge, exercicio, periodo, demonstrativo, anexo, rotulo, coluna, cod_conta, conta). Os campos vêm do item; demonstrativo é 'RREO' ou 'RREO Simplificado'. O texto de conta é obrigatório porque no Anexo 02 o cod_conta é genérico ('RREO2TotalDespesas' ou 'RREO2TotalDespesasIntra') e a função só existe no texto: sem conta houve até 174 duplicatas, com conta nenhuma (4 amostras). Na DCA vale o equivalente (cod_ibge, exercicio, anexo, rotulo, coluna, cod_conta, conta), pois houve 5 duplicatas sem conta e 0 com conta. Camada do indicador (só Anexo 01): (cod_ibge, exercicio, periodo, demonstrativo='RREO', anexo='RREO-Anexo 01', coluna='DESPESAS PAGAS ATÉ O BIMESTRE (j)', cod_conta='DespesasExcetoIntraOrcamentarias'). Aqui não se usa conta, porque o texto muda entre anos (por exemplo 'AMORTIZAÇÃO DA DÍVIDA/REFINANCIAMENTO (XI)' em 2019 contra 'AMORTIZAÇÃO DA DÍVIDA / REFINANCIAMENTO (XI)' em 2020) e entre entes ('(VIII)' contra '(IX)'). No Anexo 01, (rotulo, coluna, cod_conta) não teve duplicatas na União 2025 b6 nem no RJ 2025 b6. Idempotência e versão: a chave natural identifica a observação, e cada coleta grava uma versão com (chave natural, coleta_utc, valor_texto exato, sha256 do corpo, ETag, X-Cache, status_relatorio e data_status do extrato naquele momento). Upsert sem efeito se valor_texto for igual; nova versão se mudar. Não usar instituicao, esfera, uf nem populacao na chave: esfera do DF é 'D' em /entes e 'E' no /rreo, uf diverge entre endpoints e populacao não é atributo da célula. A ingestão deve falhar de forma explícita se a chave se repetir numa resposta, já que a unicidade foi testada só em amostras.",
+ "recortes_validados": [
+  "Total da União, acumulado até o bimestre (DespesasExcetoIntraOrcamentarias, coluna (j)). Reconciliado com o RREO oficial do Tesouro com precisão de R$ mil: 2025 b6 com 30 linhas de pagas e 2026 b4 com 13 linhas, todas iguais após arredondamento. Exemplo: 2026 b4 '2821965337713.47' contra PDF 2.821.965.338 mil.",
+  "Por estado e DF, mesma métrica e mesmo (exercicio, bimestre), lado a lado, sem somar. Ressalvas: a célula foi confirmada em SP, RJ, MG e DF; o extrato mostra 2026 b1 a b4 entregue pelos 27. Antes de publicar cada UF, a ingestão precisa confirmar a presença do cod_conta e a identidade ExcetoIntra = Correntes + Capital. A reconciliação externa de estado existe só para o RJ 2023 b6.",
+  "Série intra-anual do mesmo ente e exercício (b1 a b6) como curva cumulativa, isto é, valores acumulados exibidos em sequência, sem diferenças entre bimestres.",
+  "Comparação ano contra ano no mesmo bimestre e no mesmo ente (por exemplo b4 2026 contra b4 2025), em valores nominais e com aviso de possível retificação. cod_conta e coluna estáveis em 2025 e 2026 na União, em SP e no RJ.",
+  "Abertura por grupos comuns do Anexo 01 dentro de um ente: DespesasCorrentes, PessoalEEncargosSociais, JurosEEncargosDaDivida, OutrasDespesasCorrentes, DespesasDeCapital, Investimentos, InversoesFinanceiras e AmortizacaoDaDivida. Esses grupos estão presentes em todos os entes observados e reconciliados na União. As subcontas exclusivas de um ente (TransferenciasAEstados..., BeneficiosPrevidenciarios, TransferenciasAMunicipios, DemaisDespesasCorrentes) ficam de fora da comparação entre entes."
+ ],
+ "recortes_nao_validados": [
+  {
+   "recorte": "Despesas pagas 'no bimestre' (valor isolado)",
+   "motivo": "Não existe na fonte: só há 'até o bimestre'. Calcular pela diferença b(n) − b(n−1) mistura versões possivelmente distintas, porque retificações não são rastreáveis no /rreo."
+  },
+  {
+   "recorte": "Soma bruta dos 27 estados",
+   "motivo": "O Anexo 01 só foi baixado para 4 entes estaduais. Não há regra para UF faltante ou retificada. Os estados têm estruturas diferentes (o RJ tem linha de refinanciamento, SP, MG e DF não). Transferências a municípios entram como despesa. Só faria sentido como 'soma simples' depois de ingestão completa e verificação de completude, e isso depende de decisão de produto."
+  },
+  {
+   "recorte": "Total nacional consolidado (União + estados + municípios)",
+   "motivo": "A fonte não oferece consolidação. Há dupla contagem: a União paga '531673082300.42' em 'Transferências a Estados, DF e Municípios' até 2026 b4, e SP tem TransferenciasAMunicipios. Municípios não foram cobertos (5.570 entes a 1 req/s). A relação FCDF/DF não foi investigada."
+  },
+  {
+   "recorte": "Por função/subfunção (pagas), bimestral",
+   "motivo": "O RREO-Anexo 02 não tem coluna de pagas: só empenhadas, liquidadas e inscritas em RP não processados (f). O cod_conta é genérico, e a função só aparece como texto, sem código."
+  },
+  {
+   "recorte": "Por função/subfunção (pagas), anual via DCA-Anexo I-E",
+   "motivo": "Os dados existem: há 'Despesas Pagas' com código no texto, por exemplo '10 - Saúde' = '10203968994.83' no RJ 2025. Mas são anuais, saem cerca de 4 meses depois do fim do exercício, e o 'Despesas Exceto Intraorçamentárias' da DCA inclui o refinanciamento, ao contrário do RREO (diferença exata igual à linha de refinanciamento no RJ e na União em 2025). Exige decisão e definição própria."
+  },
+  {
+   "recorte": "TotalDespesas como manchete (ou 'total das despesas')",
+   "motivo": "Inclui refinanciamento da dívida, que é enorme na União ('1141059765822.79' até 2026 b4). Até 2019 o mesmo cod_conta incluía o superávit (RJ 2018 e 2019, União 2019 na estrutura antiga). Seu significado não é estável no tempo."
+  },
+  {
+   "recorte": "Série histórica anual multi-exercício (b6 de vários anos)",
+   "motivo": "Só verificada no RJ (2015, 2018–2021, 2023, 2025) e na União (2019, 2025). Houve quebra estrutural entre 2019 e 2020, precisão sem centavos em 2019 e colunas variando por ano. O b6 é frequentemente retificado meses depois (SP, RJ e DF em 2025). Não há reconciliação externa para anos antigos, exceto RJ 2023."
+  },
+  {
+   "recorte": "Per capita",
+   "motivo": "O campo populacao do Siconfi não tem fonte nem safra documentadas. A da União é anômala (8569324). No RJ, 2025 e 2026 trazem o mesmo valor. Exigiria fonte externa (IBGE) e decisão."
+  },
+  {
+   "recorte": "Comparação entre categorias exclusivas de um ente (por exemplo benefícios previdenciários da União contra estados)",
+   "motivo": "As subcontas não são comuns: a União tem BeneficiosPrevidenciarios e TransferenciasAEstados...; SP tem TransferenciasAMunicipios; DF e o município do Rio não têm DemaisDespesasCorrentes."
+  },
+  {
+   "recorte": "Valores reais (corrigidos pela inflação)",
+   "motivo": "O índice e a data-base são decisão de produto, e a fonte do índice (IBGE/IPCA) não foi validada."
+  },
+  {
+   "recorte": "Educação/Saúde (mínimos constitucionais)",
+   "motivo": "RREO-Anexo 08 e 12 não constam no enum nem em /anexos-relatorios. Nenhuma consulta foi tentada."
+  },
+  {
+   "recorte": "Restos a pagar pagos (Anexo 07) somados às pagas do exercício",
+   "motivo": "É outro conceito, com colunas próprias ('Pagos (c)', 'Pagos (i)'), e não foi reconciliado. Somar exige decisão conceitual."
+  },
+  {
+   "recorte": "Mensal via MSC",
+   "motivo": "O mapeamento das contas da MSC para 'despesa paga' é desconhecido e não houve reconciliação com o RREO."
+  }
+ ],
+ "decisoes_para_gabriel": [
+  "Linha-manchete: DespesasExcetoIntraOrcamentarias (recomendada) ou SubtotalDasDespesas (inclui intraorçamentárias, que contam em dobro dentro do ente). TotalDespesas foi descartado por incluir refinanciamento e ter mudado de significado. Decidir também se juros e amortização da dívida ficam dentro da manchete ou aparecem destacados.",
+  "Apresentação temporal: mostrar só o acumulado no ano até o bimestre (recomendado) ou também derivar 'no bimestre' por diferença, com aviso.",
+  "Agregações: permitir ou não a 'soma dos estados' e o 'Brasil'. Se permitir, com qual rótulo e aviso de dupla contagem, e qual regra quando uma UF não entregou ou está desatualizada.",
+  "Escopo de entes no lançamento: só União, 26 estados e DF, ou planejar municípios (RREO Simplificado, 5.570 entes, ingestão de cerca de 1,5 h por período a 1 req/s).",
+  "Política de versões: exibir só o último valor, com selo de 'retificado em', ou também o histórico de versões coletadas. O que mostrar quando o b6 for retificado meses depois.",
+  "Profundidade histórica: a partir de qual exercício (há quebra estrutural entre 2019 e 2020 e precisão sem centavos em 2019).",
+  "Valores nominais ou reais (índice, data-base, fonte) e se haverá per capita (exige fonte de população externa ao Siconfi).",
+  "Incluir ou não a visão anual por função (DCA, com conceito diferente do RREO e defasagem de cerca de 4 meses).",
+  "Tratamento do DF (esfera 'D' em /entes e 'E' no RREO; possível interação com o FCDF pago pela União).",
+  "Frequência de atualização e o que o portal mostra entre a homologação e a disponibilidade no /rreo.",
+  "Precisão de exibição (por exemplo R$ bilhões com 1 casa), já que a precisão da fonte varia por ano e ente."
+ ],
+ "proximos_passos": [
+  "Ingestão-piloto controlada: Anexo 01, 2026 b1 a b4 e 2025 b1 a b6 para os 28 entes (cerca de 280 requisições sequenciais a ≥1,1 s, cerca de 6 min), com um único limitador global de taxa compartilhado por todos os processos, para não repetir a concorrência que coincidiu com o 502. Em cada resposta, verificar automaticamente: presença da célula do indicador; ExcetoIntra = Correntes + Capital; Subtotal = ExcetoIntra + IntraTotal; unicidade da chave; hasMore=false (ou paginar).",
+  "Rodar /extrato_entregas 2025 para os 24 entes restantes e guardar o snapshot do extrato a cada coleta, para criar histórico próprio de status e data_status.",
+  "Reconciliar ao centavo pelo menos 3 estados em 2026 b4 ou 2025 b6 contra a publicação oficial de cada SEFAZ ou DOE, escolhendo estados com e sem linha de refinanciamento, por exemplo RJ, MG e um do Nordeste.",
+  "Monitorar retificações: recoletar periodicamente com If-None-Match/ETag os períodos com RE, comparar valor_texto e medir a defasagem real entre data_status e disponibilidade no /rreo.",
+  "Ler o MDF vigente da STN para confirmar a definição da coluna (j) (inclusão ou exclusão de restos a pagar) e a quebra estrutural de 2020, e registrar a referência no glossário do portal.",
+  "Mapear a estrutura do Anexo 01 de todos os anos desejados para a série (uma chamada por ano em um ou dois entes) antes de decidir a profundidade histórica.",
+  "Modelo de dados: tabela de respostas brutas (url, parâmetros, status, coleta_utc, ETag, X-Cache, sha256, corpo); tabela de observações com a chave natural e valor_texto + NUMERIC; tabela de versões; tabela de snapshots do extrato. 'Sem dado' é um estado explícito, nunca zero.",
+  "Fixar o base path documentado (/ords/cdwhprd/siconfi/tt/), ignorar os links ORDS internos e montar o offset localmente, monitorando o ETag do siconfi.yaml.",
+  "Abrir consulta à STN (E-Serviços) sobre: versão servida após RE, fuso de data_status, propagação de republicações (caso da União 2025 b6), origem do campo populacao e política de bloqueio.",
+  "Amostras e log desta revisão (10 chamadas, todas HTTP 200, de 2026-10-02T01:48:57Z a 01:51:31Z): <scratchpad>\\siconfi\\revisao\\ (requests.log, rreo_53_2026_b4_a01.json, rreo_31_2026_b4_a01.json, rreo_33_{2015,2018,2019,2020,2021}_b6_a01.json, rreo_1_2019_b6_a01.json, dca_33_2025_IE.json, dca_1_2025_IE.json, com os respectivos .headers)."
+ ]
+}

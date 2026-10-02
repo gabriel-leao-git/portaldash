@@ -1,0 +1,541 @@
+{
+ "ente": {
+  "id_ente": "1",
+  "nome": "União",
+  "esfera": "U",
+  "fonte_identificacao": "GET https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/entes (HTTP 200, 2026-10-02T01:19:07Z, 5598 itens; 1 com esfera U). Registro bruto: {\"cod_ibge\":1,\"ente\":\"União\",\"capital\":\"0  \",\"regiao\":\"BR\",\"uf\":null,\"esfera\":\"U\",\"exercicio\":2026,\"populacao\":8569324,\"cnpj\":\"00394411000109\"}. Nas respostas do /rreo o ente aparece como instituicao=\"Governo Federal\", cod_ibge=1, uf=\"BR\", esfera=\"U\". Observação: populacao=8569324 não corresponde à população do país. Inferência: é um valor de cadastro sem significado demográfico para a União. Não usar."
+ },
+ "requests": [
+  {
+   "url": "https://apidatalake.tesouro.gov.br/docs/siconfi/",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:18:50Z",
+   "arquivo_amostra": "siconfi/uniao/docs_index.html",
+   "nota": "Swagger UI da API; carrega /docs/siconfi.yaml"
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/docs/siconfi.yaml",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:18:56Z",
+   "arquivo_amostra": "siconfi/uniao/siconfi.yaml",
+   "nota": "Spec Swagger 2.0 v1.1.0. host: apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/. /rreo exige an_exercicio, nr_periodo (1-6), co_tipo_demonstrativo (RREO | RREO Simplificado) e id_ente. no_anexo e co_esfera são opcionais. A spec avisa: limite de 1 requisição por segundo e 5.000 itens por página."
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/entes",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:19:07Z",
+   "registros": "5598 (hasMore=false, limit=6000)",
+   "arquivo_amostra": "siconfi/uniao/entes.json ; siconfi/uniao/entes_uniao_registro.json",
+   "nota": "União: cod_ibge=1, esfera=U. Os nomes dos campos diferem da spec: cnpj (spec: co_cnpj) e exercicio (spec: an_exercicio)."
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/anexos-relatorios",
+   "http_status": "502",
+   "coletado_em": "2026-10-02T01:19:22Z",
+   "arquivo_amostra": "siconfi/uniao/anexos_relatorios_502.html",
+   "nota": "Página HTML 'Service unavailable' (errorref 20261002T011924Z-...). Tentei de novo mais tarde (linha abaixo)."
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/extrato_entregas?id_ente=1&an_referencia=2025",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:21:36Z",
+   "registros": "1157 (hasMore=false)",
+   "arquivo_amostra": "siconfi/uniao/extrato_2025.json",
+   "nota": "6 entregas de RREO do 'Governo Federal' (períodos 1 a 6, todas status_relatorio=HO). O 6º bimestre tem data_status 2026-01-30T22:36:41Z e forma_envio P. Há 8 registros RE no ano, todos de RGF."
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/extrato_entregas?id_ente=1&an_referencia=2026",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:21:47Z",
+   "registros": "722 (hasMore=false)",
+   "arquivo_amostra": "siconfi/uniao/extrato_2026.json",
+   "nota": "RREO Governo Federal: períodos 1 a 4, todos HO. O mais recente é o período 4, com data_status 2026-09-30T14:28:06Z e forma_envio M."
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2025&nr_periodo=6&co_tipo_demonstrativo=RREO&id_ente=1",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:21:57Z",
+   "registros": "5000 (hasMore=true, offset=0)",
+   "arquivo_amostra": "siconfi/uniao/rreo_2025_p6_all_p0.json",
+   "nota": "Página 1 de 2. O link rel=next aponta para um host interno (host-5hrds-scan.prosubnet.vcndados.oraclevcn.com). Por isso montei a página 2 no host público com &offset=5000."
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2025&nr_periodo=6&co_tipo_demonstrativo=RREO&id_ente=1&offset=5000",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:22:11Z",
+   "registros": "1893 (hasMore=false). Total do 6º bimestre de 2025: 6893 linhas",
+   "arquivo_amostra": "siconfi/uniao/rreo_2025_p6_all_p1.json ; recorte do Anexo 01: siconfi/uniao/rreo_2025_p6_anexo01.json"
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2025&nr_periodo=5&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2001&id_ente=1",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:24:13Z",
+   "registros": "846 (hasMore=false)",
+   "arquivo_amostra": "siconfi/uniao/rreo_2025_p5_anexo01.json",
+   "nota": "Usado para provar que as colunas 'ATÉ O BIMESTRE' são acumuladas (comparação entre o 5º e o 6º bimestre). Confirma que o filtro no_anexo funciona com o valor 'RREO-Anexo 01'."
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2026&nr_periodo=4&co_tipo_demonstrativo=RREO&id_ente=1",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:24:23Z",
+   "registros": "4626 (hasMore=false)",
+   "arquivo_amostra": "siconfi/uniao/rreo_2026_p4_all_p0.json ; recorte do Anexo 01: siconfi/uniao/rreo_2026_p4_anexo01.json",
+   "nota": "Período mais recente disponível (2026, 4º bimestre)."
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/anexos-relatorios",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:25:00Z",
+   "registros": "168",
+   "arquivo_amostra": "siconfi/uniao/anexos_relatorios.json",
+   "nota": "Para esfera U, os anexos do RREO aparecem com demonstrativo='QDCC' (e não 'RREO'). Isso parece erro de cadastro. A lista inclui RREO-Anexo 05 e 13, que não vieram nos dados da União."
+  },
+  {
+   "url": "https://www.tesourotransparente.gov.br/publicacoes/relatorio-resumido-da-execucao-orcamentaria-rreo/2025/12",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:25:23Z",
+   "arquivo_amostra": "siconfi/uniao/tt_rreo_2025_12.html",
+   "nota": "Página oficial do RREO de dezembro de 2025. O título diz '2026 - Dezembro' (erro de rótulo na página). 'Publicado em 30/05/2026'. Link de download: https://thot-arquivos.tesouro.gov.br/publicacao/53743 (PDF de 4,6 MB)."
+  },
+  {
+   "url": "https://thot-arquivos.tesouro.gov.br/publicacao/53743",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:25:55Z",
+   "arquivo_amostra": "siconfi/uniao/tmp_pdf/thot_53743_wrapper.html",
+   "nota": "Devolve um HTML com iframe que aponta para o PDF '12_ RREODez2025 (REPUBL_).pdf' (republicação). No requests.log consta o nome antigo do arquivo, tmp_pdf/rreo_pub_53743.pdf."
+  },
+  {
+   "url": "https://cdn.tesouro.gov.br/sistemas-internos/apex/producao/sistemas/thot/arquivos/publicacoes/53743_1693038/12_%20RREODez2025%20(REPUBL_).pdf",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:26:08Z",
+   "arquivo_amostra": "PDF de 4.858.314 bytes apagado após a extração, por exceder 2 MB. Mantidos: siconfi/uniao/tmp_pdf/RREODez2025_REPUBL_pymupdf.txt e siconfi/uniao/tmp_pdf/page9.png (Anexo 1, despesas, p. 14 do relatório)",
+   "nota": "Last-Modified: Fri, 17 Jul 2026 19:40:58 GMT. Valores em R$ milhares. As tabelas do Anexo 1 têm fonte com codificação quebrada: os valores foram lidos na imagem renderizada da página."
+  },
+  {
+   "url": "https://www.tesourotransparente.gov.br/publicacoes/relatorio-resumido-da-execucao-orcamentaria-rreo/2026/8",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:27:30Z",
+   "arquivo_amostra": "siconfi/uniao/tt_rreo_2026_08.html",
+   "nota": "'RREO - 2026 - Agosto', publicado em 30/09/2026. Download: https://thot-arquivos.tesouro.gov.br/publicacao/55944"
+  },
+  {
+   "url": "https://thot-arquivos.tesouro.gov.br/publicacao/55944",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:27:35Z",
+   "arquivo_amostra": "siconfi/uniao/tmp_pdf/thot_55944_wrapper.html"
+  },
+  {
+   "url": "https://cdn.tesouro.gov.br/sistemas-internos/apex/producao/sistemas/thot/arquivos/publicacoes/55944_1800407/08_RREOAgo2026%20-%20Com%20Portaria%20Publicada.pdf",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:27:45Z",
+   "registros": "52 páginas",
+   "arquivo_amostra": "siconfi/uniao/tmp_pdf/RREOAgo2026.pdf ; siconfi/uniao/tmp_pdf/RREOAgo2026_p10.txt ; siconfi/uniao/tmp_pdf/ago2026_page10.png",
+   "nota": "Last-Modified: Wed, 30 Sep 2026 17:17:48 GMT. O Anexo 1 (despesas) está na p. 15 do relatório. Valores em R$ milhares."
+  }
+ ],
+ "campos_resposta": [
+  {
+   "campo": "items / hasMore / limit / offset / count / links",
+   "significado_observado": "Envelope ORDS. limit=5000. Quando hasMore=true, a próxima página se obtém com &offset=N. O link rel=next vem com host interno da Oracle e não é utilizável: é preciso reconstruir a URL no host público.",
+   "exemplo": "{'hasMore': True, 'limit': 5000, 'offset': 0, 'count': 5000}"
+  },
+  {
+   "campo": "exercicio",
+   "significado_observado": "Ano de referência dos dados (o mesmo valor de an_exercicio).",
+   "exemplo": "2025"
+  },
+  {
+   "campo": "demonstrativo",
+   "significado_observado": "Tipo de relatório.",
+   "exemplo": "RREO"
+  },
+  {
+   "campo": "periodo",
+   "significado_observado": "Bimestre de referência (igual a nr_periodo).",
+   "exemplo": "6"
+  },
+  {
+   "campo": "periodicidade",
+   "significado_observado": "Sempre 'B' (bimestral).",
+   "exemplo": "B"
+  },
+  {
+   "campo": "instituicao",
+   "significado_observado": "Órgão que enviou o relatório. Para a União, no RREO, é sempre 'Governo Federal'.",
+   "exemplo": "Governo Federal"
+  },
+  {
+   "campo": "cod_ibge",
+   "significado_observado": "Código do ente (o mesmo de id_ente).",
+   "exemplo": "1"
+  },
+  {
+   "campo": "uf",
+   "significado_observado": "Para a União vem 'BR' no /rreo, mas null no /entes.",
+   "exemplo": "BR"
+  },
+  {
+   "campo": "populacao",
+   "significado_observado": "Valor fixo de cadastro, sem significado demográfico para a União.",
+   "exemplo": "8569324"
+  },
+  {
+   "campo": "anexo",
+   "significado_observado": "Identificador do demonstrativo. Os nomes reais diferem do enum da spec (ex.: 'RREO-Anexo 04.4 - RGPS', 'RREO-Anexo 10.1 - RPPS', 'RREO-Anexo 10.2 - RGPS').",
+   "exemplo": "RREO-Anexo 01"
+  },
+  {
+   "campo": "esfera",
+   "significado_observado": "Esfera do ente. Este campo vem na resposta, mas não está na spec.",
+   "exemplo": "U"
+  },
+  {
+   "campo": "rotulo",
+   "significado_observado": "Sub-tabela dentro do anexo. Quase sempre 'Padrão'. No Anexo 02 separa 'Total das Despesas Exceto Intra-Orçamentárias' de 'Total das Despesas Intra-Orçamentárias'.",
+   "exemplo": "Padrão"
+  },
+  {
+   "campo": "coluna",
+   "significado_observado": "Cabeçalho literal da coluna do quadro, com a letra de referência do manual. Pode trazer ano no texto e às vezes erra o ano (ver riscos).",
+   "exemplo": "DESPESAS PAGAS ATÉ O BIMESTRE (j)"
+  },
+  {
+   "campo": "cod_conta",
+   "significado_observado": "Código textual da linha. Só é único dentro do mesmo anexo e rótulo, e nem sempre: no Anexo 02 o código é genérico (RREO2TotalDespesas) para todas as linhas de função e subfunção, e no Anexo 07 ele representa a medida (coluna), não a linha.",
+   "exemplo": "TotalDespesas"
+  },
+  {
+   "campo": "conta",
+   "significado_observado": "Rótulo da linha como aparece no quadro publicado. Traz numerais romanos e fórmulas nos totais.",
+   "exemplo": "TOTAL DAS DESPESAS (XIII) = (XI + XII)"
+  },
+  {
+   "campo": "valor",
+   "significado_observado": "Número JSON (não string), em reais (R$ 1,00) e com até 2 casas decimais. Zeros finais vêm omitidos (ex.: 196232085973.5). Também carrega percentuais (colunas '%') e resultados negativos. É preciso ler com Decimal ou parse_float=str. Uma célula sem valor não vem no JSON: a linha simplesmente não existe.",
+   "exemplo": "5054245956518.39"
+  },
+  {
+   "campo": "(extrato) entregavel / periodo / periodicidade / status_relatorio / data_status / forma_envio / tipo_relatorio",
+   "significado_observado": "Uma linha por instituição, entregável e período. status_relatorio é HO (homologado) ou RE (retificado). data_status é a data de homologação ou retificação. forma_envio: P = planilha, M = gerado a partir da matriz.",
+   "exemplo": "{'entregavel': 'Relatório Resumido de Execução Orçamentária', 'periodo': 6, 'status_relatorio': 'HO', 'data_status': '2026-01-30T22:36:41Z', 'forma_envio': 'P'}"
+  }
+ ],
+ "periodos_observados": "Pelo extrato_entregas, o RREO do 'Governo Federal' (periodicidade B) tem estas entregas.\n\nExercício 2025: períodos 1 a 6, todos HO.\n- P1: 2025-05-09T22:31:07Z\n- P2: 2025-05-30T08:41:54Z\n- P3: 2025-07-31T22:32:21Z\n- P4: 2025-09-30T10:18:41Z\n- P5: 2025-11-25T16:54:55Z\n- P6: 2026-01-30T22:36:41Z\n\nExercício 2026: períodos 1 a 4, todos HO.\n- P1: 2026-03-31T10:56:42Z\n- P2: 2026-05-29T14:59:49Z\n- P3: 2026-07-29T17:45:03Z\n- P4: 2026-09-30T14:28:06Z\n\nO mais recente disponível é 2026, período 4 (jul-ago; colunas acumuladas jan-ago). O período 5 de 2026 ainda não aparece no extrato. Por inferência, ainda não venceu o prazo (30 dias após o fim de outubro). Não consultei o /rreo para 2026 P5.\n\nDados consultados no /rreo:\n- 2025 P6: 6893 linhas em 2 páginas.\n- 2025 P5, só Anexo 01: 846 linhas.\n- 2026 P4: 4626 linhas.\n\nO conjunto de anexos muda com o período. Os anexos 09, 10.1 RPPS, 10.2 RGPS e 11 só vieram no 6º bimestre de 2025 e não aparecem em 2026 P4. A coluna 'INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS (k)' do Anexo 01 só existe no 6º bimestre.\n\nTrês datas distintas para não confundir:\n- Referência: exercicio/periodo.\n- Homologação no Siconfi: data_status do extrato.\n- Publicação STN: 'Publicado em' na página do Tesouro Transparente (30/05/2026 para dez/2025 republicado; 30/09/2026 para ago/2026).\n- Coleta: horários desta sessão, 2026-10-02T01:18Z a 01:28Z.",
+ "anexos_observados": [
+  {
+   "anexo": "RREO-Anexo 01",
+   "conteudo": "Balanço Orçamentário da União (receitas e despesas). Rótulo 'Padrão'.",
+   "classificacao": "Categoria econômica e grupo de natureza da despesa:\n- DESPESAS CORRENTES: PESSOAL E ENCARGOS SOCIAIS; JUROS E ENCARGOS DA DÍVIDA; OUTRAS DESPESAS CORRENTES (com Transferências a Estados, DF e Municípios, Benefícios Previdenciários e Demais Despesas Correntes).\n- DESPESAS DE CAPITAL: INVESTIMENTOS; INVERSÕES FINANCEIRAS; AMORTIZAÇÃO DA DÍVIDA.\n- RESERVA DE CONTINGÊNCIA.\nO quadro separa exceto-intra (IX) de intra (X) e traz à parte o refinanciamento (XII).",
+   "colunas": [
+    "DOTAÇÃO INICIAL (d)",
+    "DOTAÇÃO ATUALIZADA (e)",
+    "DESPESAS EMPENHADAS NO BIMESTRE",
+    "DESPESAS EMPENHADAS ATÉ O BIMESTRE (f)",
+    "SALDO (g) = (e-f)",
+    "DESPESAS LIQUIDADAS NO BIMESTRE",
+    "DESPESAS LIQUIDADAS ATÉ O BIMESTRE (h)",
+    "SALDO (i) = (e-h)",
+    "DESPESAS PAGAS ATÉ O BIMESTRE (j)",
+    "INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS (k) [só no 6º bimestre]",
+    "(receitas) PREVISÃO INICIAL, PREVISÃO ATUALIZADA (a), No Bimestre (b), % (b/a), Até o Bimestre (c), % (c/a), SALDO (a-c)"
+   ],
+   "tem_despesa_paga": "SIM: 'DESPESAS PAGAS ATÉ O BIMESTRE (j)'. Só existe a versão acumulada; não há 'pagas no bimestre'."
+  },
+  {
+   "anexo": "RREO-Anexo 02",
+   "conteudo": "Execução das despesas por função e subfunção. Dois rótulos: 'Total das Despesas Exceto Intra-Orçamentárias' e 'Total das Despesas Intra-Orçamentárias'.",
+   "classificacao": "Função e subfunção (ex.: 'Legislativa', 'Ação Legislativa', 'FU01 - Administração Geral', 'Encargos Especiais', 'Serviço da Dívida Interna').",
+   "colunas": [
+    "DOTAÇÃO INICIAL",
+    "DOTAÇÃO ATUALIZADA (a)",
+    "DESPESAS EMPENHADAS NO BIMESTRE",
+    "DESPESAS EMPENHADAS ATÉ O BIMESTRE (b)",
+    "% (b/total b) | % (b/III b)",
+    "SALDO (c) = (a-b)",
+    "DESPESAS LIQUIDADAS NO BIMESTRE",
+    "DESPESAS LIQUIDADAS ATÉ O BIMESTRE (d)",
+    "% (d/total d) | % (d/III d)",
+    "SALDO (e) = (a-d)",
+    "INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS (f) [só no 6º bimestre]"
+   ],
+   "tem_despesa_paga": "NÃO. Não há coluna de pagas, nem em 2025 P6 nem em 2026 P4. O total 'TOTAL (III) = (I + II)' exclui o refinanciamento: o liquidado de 3737105638130.46 bate com o XI do Anexo 01, com diferença de 1 centavo."
+  },
+  {
+   "anexo": "RREO-Anexo 03",
+   "conteudo": "Receita Corrente Líquida, mês a mês.",
+   "classificacao": "Receitas",
+   "colunas": [
+    "<MR-11> … <MR>",
+    "TOTAL (ÚLTIMOS 12 MESES)",
+    "PREVISÃO ATUALIZADA 2025"
+   ],
+   "tem_despesa_paga": "NÃO"
+  },
+  {
+   "anexo": "RREO-Anexo 04.2",
+   "conteudo": "Receitas e despesas previdenciárias do RPPS civil e do FCDF.",
+   "classificacao": "Tipo de benefício (Aposentadorias, Pensões por Morte, Outras/Demais Despesas Previdenciárias)",
+   "colunas": [
+    "PREVISÃO ATUALIZADA",
+    "RECEITAS REALIZADAS ATÉ O BIMESTRE / 2025",
+    "DOTAÇÃO ATUALIZADA",
+    "DESPESAS EMPENHADAS ATÉ O BIMESTRE / 2025",
+    "DESPESAS LIQUIDADAS ATÉ O BIMESTRE / 2025",
+    "DESPESAS PAGAS ATÉ O BIMESTRE / 2025",
+    "INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS EM 2025"
+   ],
+   "tem_despesa_paga": "SIM, acumulado. Atenção: as linhas de Resultado ocupam a coluna de pagas com valores negativos."
+  },
+  {
+   "anexo": "RREO-Anexo 04.3",
+   "conteudo": "Pensões militares e militares inativos.",
+   "classificacao": "Tipo de benefício",
+   "colunas": [
+    "mesmas do 04.2"
+   ],
+   "tem_despesa_paga": "SIM ('DESPESAS PAGAS ATÉ O BIMESTRE / 2025')"
+  },
+  {
+   "anexo": "RREO-Anexo 04.4 - RGPS",
+   "conteudo": "Receitas e despesas previdenciárias do RGPS.",
+   "classificacao": "Tipo de benefício",
+   "colunas": [
+    "PREVISÃO ATUALIZADA",
+    "RECEITAS REALIZADAS ATÉ O BIMESTRE / 2025",
+    "DOTAÇÃO ATUALIZADA",
+    "DESPESAS EMPENHADAS ATÉ O BIMESTRE /2023 [sic]",
+    "DESPESAS LIQUIDADAS ATÉ O BIMESTRE / 2025",
+    "DESPESAS PAGAS ATÉ O BIMESTRE / 2025",
+    "INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS EM 2025"
+   ],
+   "tem_despesa_paga": "SIM. O total pago de 968207854969.64 é igual a 'Benefícios Previdenciários' no Anexo 01."
+  },
+  {
+   "anexo": "RREO-Anexo 06",
+   "conteudo": "Resultados primário e nominal.",
+   "classificacao": "Despesas primárias por grupo: Pessoal e Encargos Sociais; Outras Despesas Correntes, dividida em Transferências Constitucionais e Legais e Demais; Investimentos; Inversões Financeiras. Exclui juros e amortização.",
+   "colunas": [
+    "PREVISÃO ATUALIZADA",
+    "RECEITAS REALIZADAS (a)",
+    "DOTAÇÃO ATUALIZADA",
+    "DESPESAS EMPENHADAS",
+    "DESPESAS LIQUIDADAS",
+    "DESPESAS PAGAS (a)",
+    "RESTOS A PAGAR PROCESSADOS PAGOS (b)",
+    "LIQUIDADOS",
+    "PAGOS (c)",
+    "VALOR",
+    "VALOR INCORRIDO",
+    "Em 31/12/2024 (a)",
+    "Até o Bimestre 2025 (b)"
+   ],
+   "tem_despesa_paga": "SIM: pagas do exercício (a), mais restos a pagar processados pagos (b) e restos a pagar não processados pagos (c), só para a despesa primária."
+  },
+  {
+   "anexo": "RREO-Anexo 07",
+   "conteudo": "Restos a pagar por poder e órgão.",
+   "classificacao": "Poder e órgão. Separa exceto-intra (I), intra (II) e TOTAL (III).",
+   "colunas": [
+    "Em Exercícios Anteriores (a)",
+    "Em 31 de dezembro de 2024 (b)",
+    "Pagos (c)",
+    "Cancelados (d)",
+    "Saldo e = (a + b) - (c + d)",
+    "Em Exercícios Anteriores (f)",
+    "Em 31 de dezembro de 2024 (g)",
+    "Liquidados (h)",
+    "Pagos (i)",
+    "Cancelados (j)",
+    "Saldo k = (f + g) - (i + j)",
+    "Saldo Total L = (e + k)"
+   ],
+   "tem_despesa_paga": "SIM, mas só restos a pagar: 'Pagos (c)' para processados e 'Pagos (i)' para não processados."
+  },
+  {
+   "anexo": "RREO-Anexo 09",
+   "conteudo": "Regra de ouro (operações de crédito e despesas de capital). Só no 6º bimestre.",
+   "classificacao": "Grupos de despesa de capital",
+   "colunas": [
+    "RECEITAS REALIZADAS",
+    "DESPESAS EMPENHADAS",
+    "VALOR"
+   ],
+   "tem_despesa_paga": "NÃO"
+  },
+  {
+   "anexo": "RREO-Anexo 10.1 - RPPS / RREO-Anexo 10.2 - RGPS",
+   "conteudo": "Projeção atuarial. Só no 6º bimestre.",
+   "classificacao": "Ano de projeção",
+   "colunas": [
+    "Valor (a)",
+    "% em relação ao PIB",
+    "Valor (b)",
+    "Valor (a - b)",
+    "parâmetros % (somente no RGPS)"
+   ],
+   "tem_despesa_paga": "NÃO"
+  },
+  {
+   "anexo": "RREO-Anexo 11",
+   "conteudo": "Receita de alienação de ativos e aplicação dos recursos. Só no 6º bimestre.",
+   "classificacao": "Despesas de capital financiadas com alienação (Investimentos, Inversões Financeiras)",
+   "colunas": [
+    "PREVISÃO ATUALIZADA (a)",
+    "RECEITAS REALIZADAS (b)",
+    "SALDO (c) = (a - b)",
+    "DOTAÇÃO ATUALIZADA (d)",
+    "DESPESAS EMPENHADAS (e)",
+    "DESPESAS LIQUIDADAS",
+    "DESPESAS PAGAS (f)",
+    "DESPESAS INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS",
+    "PAGAMENTO DE RESTOS A PAGAR (g)",
+    "SALDO (h) = (d-e)",
+    "2024 (i)",
+    "2025 (j) = (Ib - (IIf + IIg))",
+    "SALDO ATUAL (k) = (IIIi + IIIj)"
+   ],
+   "tem_despesa_paga": "SIM, mas só para o recorte da alienação de ativos."
+  },
+  {
+   "anexo": "RREO-Anexo 14",
+   "conteudo": "Demonstrativo simplificado do RREO.",
+   "classificacao": "Resumo; uma linha por agregado.",
+   "colunas": [
+    "Até o Bimestre",
+    "Inscrição",
+    "Cancelamento Até o Bimestre",
+    "Pagamento Até o Bimestre",
+    "Saldo a Pagar",
+    "Valor Apurado Até o Bimestre",
+    "% Mínimo a Aplicar no Exercício",
+    "% Aplicado Até o Bimestre",
+    "Valor Apurado no Exercício",
+    "Exercício",
+    "10º Exercício",
+    "20º Exercício",
+    "35º Exercício",
+    "Saldo a Realizar"
+   ],
+   "tem_despesa_paga": "SIM. A linha 'Despesas Pagas' (DespesasPagasDemonstrativoSimplificadoBalancoOrcamentario) traz 5054245956518.39, igual ao TotalDespesas do Anexo 01. A linha TotalRestosAPagarDemonstrativoSimplificado traz o pagamento de restos a pagar."
+  }
+ ],
+ "classificacoes_com_pagas": [
+  {
+   "anexo": "RREO-Anexo 01",
+   "classificacao": "Categoria econômica e grupo de natureza da despesa, com intra separado e refinanciamento da dívida à parte",
+   "tem_coluna_paga": "sim",
+   "observacao": "É o único anexo com pagas do exercício para o total geral. Coluna 'DESPESAS PAGAS ATÉ O BIMESTRE (j)', só acumulada."
+  },
+  {
+   "anexo": "RREO-Anexo 02",
+   "classificacao": "Função e subfunção",
+   "tem_coluna_paga": "não",
+   "observacao": "Só traz empenhado e liquidado (mais o inscrito em restos a pagar não processados no 6º bimestre). Não serve para 'pagas por função' no RREO da União."
+  },
+  {
+   "anexo": "RREO-Anexo 06",
+   "classificacao": "Despesa primária por grupo de natureza",
+   "tem_coluna_paga": "sim",
+   "observacao": "Pagas do exercício (a) mais restos a pagar processados pagos (b) e não processados pagos (c). Exclui juros e amortização. Os valores de Pessoal batem com o exceto-intra do Anexo 01, o que sugere (inferência) que o Anexo 06 também exclui intra."
+  },
+  {
+   "anexo": "RREO-Anexo 07",
+   "classificacao": "Poder e órgão",
+   "tem_coluna_paga": "sim (só restos a pagar)",
+   "observacao": "Pagos (c) para processados e Pagos (i) para não processados, com exceto-intra, intra e total."
+  },
+  {
+   "anexo": "RREO-Anexo 04.2 / 04.3 / 04.4 - RGPS",
+   "classificacao": "Regime previdenciário e tipo de benefício",
+   "tem_coluna_paga": "sim",
+   "observacao": "Subconjunto da despesa total. Não se soma ao Anexo 01."
+  },
+  {
+   "anexo": "RREO-Anexo 11",
+   "classificacao": "Despesas de capital financiadas por alienação de ativos",
+   "tem_coluna_paga": "sim",
+   "observacao": "Só no 6º bimestre."
+  },
+  {
+   "anexo": "RREO-Anexo 14",
+   "classificacao": "Resumo",
+   "tem_coluna_paga": "sim (como linha)",
+   "observacao": "Repete o total pago do Anexo 01 e o pagamento de restos a pagar do Anexo 07. Tem inconsistências na linha 'Despesas Liquidadas' (ver riscos)."
+  }
+ ],
+ "despesa_paga": {
+  "anexo": "RREO-Anexo 01 (rotulo 'Padrão')",
+  "cod_conta": "TotalDespesas",
+  "conta": "TOTAL DAS DESPESAS (XIII) = (XI + XII)",
+  "coluna": "DESPESAS PAGAS ATÉ O BIMESTRE (j)",
+  "exercicio": "2025 (e 2026)",
+  "periodo": "6 (2025); 4 (2026)",
+  "valor_observado": "2025 P6: 5054245956518.39 | 2026 P4: 3999925192391.91 (valores JSON brutos, em R$)",
+  "natureza_temporal": "Acumulado no exercício até o fim do bimestre (jan até o bimestre), e não o valor do bimestre. Evidências:\n(1) O rótulo diz 'ATÉ O BIMESTRE' e não existe coluna 'PAGAS NO BIMESTRE' no Anexo 01, em nenhum período observado.\n(2) Nas colunas irmãs, ATÉ(P6) − ATÉ(P5) = NO BIMESTRE(P6). Para TotalDespesas liquidadas: 5154743999733.52 − 4529774522116.31 = 624969477617.21, exatamente igual a 'DESPESAS LIQUIDADAS NO BIMESTRE'. Para empenhadas: 5379398670922.43 − 4952505222559.41 = 426893448363.02, contra 426893448363.03 informado (1 centavo de arredondamento).\n(3) Pagas no P5 = 4429066733156.81 e no P6 = 5054245956518.39, crescente.\n(4) O PDF da STN de dez/2025 ('JANEIRO A DEZEMBRO DE 2025') mostra 'Despesas Pagas Até o Mês (j)' = 5.054.245.957 (R$ milhares). O PDF de ago/2026 ('JANEIRO A AGOSTO DE 2026') mostra 3.999.925.192.\nPor inferência, o pago só do bimestre exigiria subtrair bimestres consecutivos, o que fica sujeito a retificações.",
+  "intraorcamentarias": "INCLUI. XIII = XI + XII e XI = IX + X. Há linhas separadas:\n- cod_conta DespesasExcetoIntraOrcamentarias, 'DESPESAS (EXCETO INTRA-ORÇAMENTÁRIAS) (IX)', pagas 3606510496180.06.\n- cod_conta DespesasIntraOrcamentariasTotal, 'DESPESAS (INTRA-ORÇAMENTÁRIAS) (X)', pagas 30097098735.26.\n- SubtotalDasDespesas, 'SUBTOTAL DAS DESPESAS (XI) = (IX + X)', 3636607594915.32.\nConferido com Decimal: IX + X = XI exatamente. A mesma linha X aparece de novo como cod_conta DespesasIntraOrcamentarias (seção de detalhamento intra), com o mesmo valor.",
+  "restos_a_pagar": "NÃO estão na coluna (j). Por inferência, apoiada em:\n(a) a nota do PDF da STN: 'Durante o exercício, somente as despesas liquidadas são consideradas executadas. No encerramento do exercício, as despesas não liquidadas inscritas em restos a pagar não processados são também consideradas'.\n(b) j ≤ h em todas as linhas (Total: j = 5054245956518.39 < h = 5154743999733.52).\n(c) os restos a pagar pagos aparecem em outros anexos.\nOnde ficam os restos a pagar pagos:\n- Anexo 07, linha 'TOTAL (III) = (I + II)': cod_conta RestosAPagarProcessadosENaoProcessadosLiquidadosPagos, coluna 'Pagos (c)' = 94643805352.64 (processados); cod_conta RestosAPagarNaoProcessadosPagos, coluna 'Pagos (i)' = 136567347228.29 (não processados).\n- Anexo 14: TotalRestosAPagarDemonstrativoSimplificado, 'Pagamento Até o Bimestre' = 231211152580.93 (soma dos dois anteriores).\n- Anexo 06, só despesa primária: 'RESTOS A PAGAR PROCESSADOS PAGOS (b)' = 93474287730.52 e 'PAGOS (c)' = 108659647107.43.\nNo 6º bimestre, a coluna (k) 'INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS' (Total 224654671188.91 = f − h) é inscrição, não pagamento.",
+  "despesas_financeiras_divida": "INCLUI juros, amortização e refinanciamento:\n- 'JUROS E ENCARGOS DA DÍVIDA' (JurosEEncargosDaDivida), pagas 363469278379.43, dentro de Despesas Correntes e de IX.\n- 'AMORTIZAÇÃO DA DÍVIDA' (AmortizacaoDaDivida), pagas 353978003798.13, dentro de Despesas de Capital e de IX.\n- 'AMORTIZAÇÃO DA DÍVIDA / REFINANCIAMENTO (XII)' (AmortizacaoRefinanciamentoDaDivida), pagas 1417638361603.07, fora de XI e dentro de XIII. Decompõe-se em Dívida Interna (1364098214255.63: Mobiliária 1356200755156.51 e Contratual 7897459099.12) e Externa (53540147347.44).\nO refinanciamento é cerca de 28% do total pago em 2025.",
+  "inclui": [
+   "despesas exceto intra-orçamentárias (IX)",
+   "despesas intra-orçamentárias (X)",
+   "juros e encargos da dívida",
+   "amortização da dívida (não refinanciada)",
+   "amortização/refinanciamento da dívida (XII)",
+   "transferências a Estados, DF e Municípios",
+   "benefícios previdenciários (RGPS)"
+  ],
+  "nao_inclui": [
+   "restos a pagar pagos de exercícios anteriores (estão no Anexo 07, no 14 e no 06)",
+   "reserva de contingência (sem execução; a linha não tem coluna de pagas)",
+   "valores do bimestre isolado (não existe coluna de pagas no bimestre)"
+  ],
+  "notas": "Alternativas observadas para um indicador de 'gasto', sem decisão minha:\n- XI SubtotalDasDespesas, sem refinanciamento: 3636607594915.32 (2025) e 2858865426569.12 (2026 P4).\n- IX DespesasExcetoIntraOrcamentarias, sem refinanciamento e sem dupla contagem intra: 3606510496180.06 (2025) e 2821965337713.47 (2026 P4).\n- Anexo 06 'DESPESA PRIMÁRIA TOTAL (VII)', 'DESPESAS PAGAS (a)': 2760222716956.23 (2025 P6), sem juros e amortização.\nPor inferência conceitual, as intra-orçamentárias são transações entre órgãos do próprio orçamento. Somá-las ao exceto-intra infla o gasto consolidado.\nO conceito 'despesas pagas' existe na fonte, mas é acumulado e só tem o corte por categoria econômica e grupo (Anexo 01). Não há pagas por função ou subfunção no RREO da União."
+ },
+ "hierarquia_contas": "A API não tem campo de pai, nível ou ordem. A hierarquia precisa ser montada com um mapa explícito por anexo e cod_conta. A chave mínima de unicidade é (anexo, rotulo, cod_conta, coluna), e mesmo ela falha nos Anexos 02 e 07.\n\nAnexo 01:\n- O cod_conta é único dentro do anexo. Os totais têm numeral romano e fórmula no rótulo: '(IX)', '(X)', '(XI) = (IX + X)', '(XII)', '(XIII) = (XI + XII)', '(XV) = (XIII + XIV)'.\n- Rótulos em MAIÚSCULAS são categoria ou grupo. Os em Title Case são subitens (ex.: 'Transferências a Estados, Distrito Federal e Municípios' dentro de 'OUTRAS DESPESAS CORRENTES'). Isso é convenção visual, não um campo.\n- Somas conferidas com Decimal no P6 de 2025:\n  - IX = DespesasCorrentes + DespesasDeCapital.\n  - DespesasCorrentes = Pessoal + Juros + OutrasDespesasCorrentes.\n  - OutrasDespesasCorrentes = Transferências + Benefícios + Demais.\n  - DespesasDeCapital = Investimentos + InversoesFinanceiras + AmortizacaoDaDivida.\n  - XI = IX + X; XII = Interna + Externa; XIII = XI + XII.\n- Armadilhas de dupla contagem:\n  - TotalDespesasComSuperavit (XV) repete o valor de TotalDespesas.\n  - DespesasIntraOrcamentariasTotal e DespesasIntraOrcamentarias têm o mesmo valor, em dois blocos.\n  - ReceitasIntraOrcamentariasTotal e ReceitasIntraOrcamentarias, idem.\n  - 'Dívida Mobiliária' aparece com o mesmo rótulo e cod_conta distintos (interna e externa).\n- Regra prática: para o total, use apenas a folha agregada desejada (TotalDespesas, SubtotalDasDespesas ou DespesasExcetoIntraOrcamentarias). Nunca some linhas do quadro.\n\nAnexo 02:\n- Todas as linhas têm o mesmo cod_conta (RREO2TotalDespesas, ou RREO2TotalDespesasIntra no rótulo intra). Função e subfunção só se distinguem pelo texto de 'conta'. Subfunções homônimas recebem o prefixo 'FUxx - ' (ex.: 'FU01 - Administração Geral').\n- Há 75 chaves (anexo, rotulo, cod_conta, coluna) duplicadas.\n- Os totais 'DESPESAS (EXCETO INTRA-ORÇAMENTÁRIAS) (I)', 'DESPESAS (INTRA-ORÇAMENTÁRIAS) (II)' e 'TOTAL (III) = (I + II)' ficam no rótulo exceto-intra. O (II) se repete no rótulo intra.\n- A linha 'Refinanciamento da Dívida Interna' existe, mas sem valores executados.\n\nAnexo 07:\n- O cod_conta representa a medida (ex.: RestosAPagarNaoProcessadosPagos) e 'conta' representa o poder ou órgão.\n- Os totais são as linhas 'RESTOS A PAGAR (EXCETO INTRA-ORÇAMENTÁRIOS) (I)', '(INTRA-ORÇAMENTÁRIOS) (II)' e 'TOTAL (III) = (I + II)'.\n- Os poderes (PODER EXECUTIVO etc.) somam órgãos.\n- Há linhas '...Intra' duplicadas.\n\nEntre anexos:\n- O mesmo cod_conta tem significados diferentes: TotalDespesas no Anexo 01 é o total geral; no Anexo 04.3 é 'TOTAL DESPESAS - MILITARES INATIVOS (V)'. Investimentos, InversoesFinanceiras e AmortizacaoDaDivida aparecem nos Anexos 01 e 09.\n- Nos Anexos 04.x, as linhas 'RESULTADO ...' ficam na coluna de pagas com valor negativo. 'Outras Despesas Previdenciárias' e 'Demais Despesas Previdenciárias' (04.2) têm valores idênticos.\n- Os anexos são visões sobrepostas do mesmo universo (o 04.4 e o 06 são subconjuntos do 01). Nunca somar anexos entre si.",
+ "candidatos_reconciliacao": [
+  {
+   "descricao": "Total das despesas pagas no exercício de 2025 (jan-dez), incluindo intra e refinanciamento. Conferido nesta sessão: o PDF publicado 'RREO – Dezembro de 2025' (republicação), Anexo 1 – Balanço Orçamentário, p. 14 do relatório (3/3), linha 'TOTAL DAS DESPESAS (XIII) = (XI + XII)', coluna 'DESPESAS PAGAS Até o Mês (j)', mostra 5.054.245.957 (R$ milhares). Bate com o valor da API arredondado ao milhar.",
+   "valor": "5054245956518.39",
+   "anexo": "RREO-Anexo 01",
+   "conta": "TotalDespesas | TOTAL DAS DESPESAS (XIII) = (XI + XII)",
+   "coluna": "DESPESAS PAGAS ATÉ O BIMESTRE (j)",
+   "exercicio": "2025",
+   "periodo": "6"
+  },
+  {
+   "descricao": "Despesas pagas exceto intra-orçamentárias (IX), sem refinanciamento, 2025 jan-dez. Mesmo PDF e página, linha 'DESPESAS (Exceto Intra-Orçamentárias) (IX)', coluna (j): 3.606.510.496 (R$ milhares), conferido. Na mesma página também conferem 'SUBTOTAL DAS DESPESAS (XI)' (3.636.607.595, API 3636607594915.32) e 'AMORTIZAÇÃO DA DÍVIDA - REFINANCIAMENTO (XII)' (1.417.638.362, API 1417638361603.07).",
+   "valor": "3606510496180.06",
+   "anexo": "RREO-Anexo 01",
+   "conta": "DespesasExcetoIntraOrcamentarias | DESPESAS (EXCETO INTRA-ORÇAMENTÁRIAS) (IX)",
+   "coluna": "DESPESAS PAGAS ATÉ O BIMESTRE (j)",
+   "exercicio": "2025",
+   "periodo": "6"
+  },
+  {
+   "descricao": "Total das despesas pagas em 2026 de jan a ago (período mais recente). Conferido: o PDF 'RREO – Agosto de 2026' (publicado em 30/09/2026), Anexo 1, p. 15 do relatório (3/3), linha 'TOTAL DAS DESPESAS (XIII) = (XI + XII)', coluna 'DESPESAS PAGAS Até o Mês (j)', mostra 3.999.925.192 (R$ milhares). Na mesma página também conferem IX = 2.821.965.338 (API 2821965337713.47) e XII = 1.141.059.766 (API 1141059765822.79).",
+   "valor": "3999925192391.91",
+   "anexo": "RREO-Anexo 01",
+   "conta": "TotalDespesas | TOTAL DAS DESPESAS (XIII) = (XI + XII)",
+   "coluna": "DESPESAS PAGAS ATÉ O BIMESTRE (j)",
+   "exercicio": "2026",
+   "periodo": "4"
+  }
+ ],
+ "retificacoes": "O endpoint /rreo não tem nenhum campo de data, versão ou status. Cada linha traz só o valor vigente. O /extrato_entregas tem uma linha por instituição, entregável e período, com status_relatorio (HO ou RE) e data_status. Não há histórico de versões.\n\nRREO do Governo Federal:\n- Todos os períodos de 2025 e 2026 estão como HO. O 2025 P6 foi homologado em 2026-01-30T22:36:41Z.\n- O RE aparece em 2025 só para RGF (ex.: Governo Federal, RGF P3, RE em 2026-03-10T22:30:13Z), o que mostra que o campo é usado.\n- O 2025 P1 do RREO tem data_status 2025-05-09, depois do prazo legal e perto da data do P2. Por inferência, pode ter havido re-homologação, mas o extrato não permite confirmar.\n\nIndício forte de divergência entre a API e a publicação oficial: a STN republicou o RREO de dez/2025.\n- O arquivo se chama '12_ RREODez2025 (REPUBL_).pdf'. A página diz 'Publicado em 30/05/2026' e o Last-Modified do arquivo é 2026-07-17.\n- O demonstrativo do FCDF e o Anexo 14 estão marcados '(REPUBLICAÇÃO)', com a nota '* Demonstrativo republicado por atualização de metodologia, incluindo ações de governo novas que substituíram outras da mesma natureza usadas anteriormente.'\n- No PDF republicado, 'TOTAL DAS DESPESAS PREVIDENCIÁRIAS DO FCDF (II)', despesas pagas = 10.050.645 (R$ milhares). Na API (Anexo 04.2, TotalDasDespesasRPPSPrevidenciarioFCDF, 'DESPESAS PAGAS ATÉ O BIMESTRE / 2025') o valor é 4940304484.05. A receita do FCDF bate (API 1144578736.45, PDF 1.144.579).\n- Por inferência, a API mantém a versão homologada em jan/2026 e não reflete a republicação. O extrato não mostra RE para esse RREO.\n- O total pago do Anexo 1 não mudou: bate ao milhar.\n\nNo mesmo PDF, o empenhado difere da API em 7 a 8 mil reais:\n- 'Demais Despesas Correntes': PDF 635.918.618, API 635918610538.26.\n- Total: PDF 5.379.398.678, API 5379398670922.43.\n- O próprio Anexo 14 do PDF traz 5.379.398.671, inconsistente com o Anexo 1 do mesmo PDF.\n\nPara o PortalDash, por inferência:\n- Gravar data de coleta e data_status do extrato a cada carga.\n- Recarregar períodos já carregados para detectar mudanças.\n- Tratar a publicação da STN como possivelmente mais nova que a API.",
+ "riscos": [
+  "O campo 'valor' é número JSON, não string. Ler com float perde a exatidão nos centavos de valores na casa dos trilhões. Use Decimal (parse_float=str). Zeros finais vêm omitidos ('196232085973.5'), então normalize na exibição.",
+  "A paginação devolve no máximo 5000 itens. O 2025 P6 completo tem 6893 linhas em 2 páginas. O link rel=next aponta para um host interno da Oracle e não funciona: é preciso montar ?offset=N no host público. Sem paginar, os anexos 10.1 (parte), 10.2, 11 e 14 se perdem.",
+  "Celula vazia não vem no JSON: a linha some. Ausência de linha não é zero. Ex.: ReservaDeContingencia não tem coluna de pagas; 'Refinanciamento da Dívida Interna' no Anexo 02 não tem valores executados.",
+  "Existe apenas pago acumulado ('ATÉ O BIMESTRE'). Para obter o valor de um bimestre seria preciso subtrair o período anterior, o que é frágil se algum período for retificado. Os PDFs mensais da STN têm colunas 'No Mês' (só o último mês), que não equivalem a 'NO BIMESTRE' da API. Em dez/2025, empenhado 'No Mês' = 204.777.703 mil contra 'NO BIMESTRE' = 426893448363.03.",
+  "'TOTAL DAS DESPESAS (XIII)' inclui refinanciamento da dívida (XII, cerca de 28% em 2025) e intra-orçamentárias (X). Rotular esse número como 'gasto público' sem explicar superestima o gasto. É preciso decidir entre XIII, XI e IX.",
+  "Não há despesa paga por função ou subfunção no RREO da União: o Anexo 02 só tem empenhado e liquidado. Indicadores de 'pago por área' exigirão outra fonte (fora do escopo desta validação).",
+  "A unicidade de cod_conta não é global. TotalDespesas significa coisas diferentes nos Anexos 01 e 04.3. No Anexo 02 o cod_conta é genérico para todas as linhas; no Anexo 07 o cod_conta é a medida. Há linhas e totais repetidos (XV = XIII; intra em dobro). Somar linhas leva a dupla contagem.",
+  "Há rótulos de coluna desatualizados ou errados na fonte: 'DESPESAS EMPENHADAS ATÉ O BIMESTRE /2023' no 04.4 RGPS em 2025 e 2026; 'Em 31/12/2024 (a)' no Anexo 06 de 2026; a página do Tesouro Transparente /2025/12 tem título '2026 - Dezembro'. Não extraia o ano de rótulos.",
+  "Inconsistências internas do Anexo 14 na API (2025 P6): 'Despesas Liquidadas' = 624969477617.21, que é o liquidado NO BIMESTRE do Anexo 01, quando o PDF mostra 'Despesas Executadas' 5.379.398.671. Os campos do FCDF repetem os valores do RPPS civil (42513105637.35 / 105091454619.93). '% Mínimo a Aplicar no Exercício' traz um valor em R$. Em 2026 P4 a linha de liquidadas está correta (4108105992748.45). Não use o Anexo 14 como fonte primária.",
+  "A API pode estar desatualizada em relação à publicação oficial: o RREO dez/2025 foi republicado com o FCDF alterado (pago 10.050.645 mil contra 4940304484.05 na API) e o extrato não registra RE.",
+  "Os PDFs da STN estão em R$ milhares. A reconciliação só é possível arredondando a API ao milhar (ROUND_HALF_UP funcionou). Há diferenças de centavos entre anexos (liquidado de IX: 3705420381699.75 no Anexo 01 contra 3705420381699.76 no Anexo 02).",
+  "Instabilidade do serviço: /anexos-relatorios retornou 502 na primeira tentativa. A tabela de apoio classifica os anexos de RREO da União como demonstrativo 'QDCC' e lista anexos (05, 13) que não existem nos dados. O enum de no_anexo na spec está desatualizado (faltam '04.4 - RGPS', '10.1 - RPPS', '10.2 - RGPS').",
+  "O conjunto de anexos e colunas varia por período: 09, 10.x e 11 e a coluna (k) só aparecem no 6º bimestre. O ETL não pode assumir um esquema fixo.",
+  "Os campos de /entes diferem da spec (cnpj, exercicio) e 'populacao' da União (8569324) não é a população do país."
+ ]
+}

@@ -1,0 +1,534 @@
+{
+ "ente": {
+  "id_ente": "33",
+  "nome": "Rio de Janeiro (ente) / instituicao no RREO: 'Governo do Estado do Rio de Janeiro'",
+  "esfera": "E",
+  "fonte_identificacao": "GET https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/entes (HTTP 200, 2026-10-02T01:19:09Z, count=5598). Registro observado: {'cod_ibge': 33, 'ente': 'Rio de Janeiro', 'capital': '0  ', 'regiao': 'SE', 'uf': 'BR', 'esfera': 'E', 'exercicio': 2026, 'populacao': 16615526, 'cnpj': '42498600000171'}. Cuidado: o município do Rio de Janeiro também se chama 'Rio de Janeiro' (cod_ibge 3304557, esfera 'M', uf 'RJ'); só o par esfera='E' + cod_ibge=33 distingue o Estado. Para o Estado, uf vem como 'BR' em /entes, mas como 'RJ' em /rreo."
+ },
+ "requests": [
+  {
+   "url": "https://apidatalake.tesouro.gov.br/docs/siconfi/",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:18:55Z",
+   "arquivo_amostra": "<scratchpad>\\siconfi\\rj\\docs_index.html",
+   "nota": "Página Swagger UI. Aponta para a especificação em /docs/siconfi.yaml"
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/docs/siconfi.yaml",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:18:59Z",
+   "arquivo_amostra": "<scratchpad>\\siconfi\\rj\\siconfi_openapi.yaml",
+   "nota": "Swagger 2.0, v1.1.0. host: 'apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/'. /rreo: obrigatórios an_exercicio, nr_periodo (1-6), co_tipo_demonstrativo ('RREO' ou 'RREO Simplificado'), id_ente (código IBGE); opcionais no_anexo e co_esfera. A especificação avisa: limite de 1 requisição/s, páginas de 5.000 itens"
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/entes",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:19:09Z",
+   "registros": "5598 (hasMore=false, limit=6000)",
+   "arquivo_amostra": "<scratchpad>\\siconfi\\rj\\entes.json",
+   "nota": "Esferas: M=5570, E=26, U=1, D=1. O Estado do RJ tem cod_ibge 33"
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/anexos-relatorios",
+   "http_status": "000 (timeout do curl após 120s, 0 bytes)",
+   "coletado_em": "2026-10-02T01:19:21Z",
+   "nota": "Primeira tentativa falhou por timeout"
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/extrato_entregas?id_ente=33&an_referencia=2025",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:21:32Z",
+   "registros": "103",
+   "arquivo_amostra": "<scratchpad>\\siconfi\\rj\\extrato_2025.json",
+   "nota": "RREO de 2025, períodos 1 a 6: P1 RE 2025-06-18T22:31:27Z; P2 HO 2025-05-30T14:29:56Z (forma_envio P); P3 HO 2025-07-30T17:54:44Z; P4 HO 2025-09-30T22:31:44Z; P5 HO 2025-11-27T11:22:08Z; P6 RE 2026-05-06T17:14:12Z"
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/extrato_entregas?id_ente=33&an_referencia=2025 (HEAD)",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:21:43Z",
+   "nota": "Só cabeçalhos: Content-Type 'application/json' (sem charset declarado; o corpo está em UTF-8), ETag presente, servido via Azure Front Door (x-azure-ref, X-Cache)"
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/extrato_entregas?id_ente=33&an_referencia=2026",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:21:51Z",
+   "registros": "63",
+   "arquivo_amostra": "<scratchpad>\\siconfi\\rj\\extrato_2026.json",
+   "nota": "RREO de 2026: P1 RE 2026-03-30T11:28:18Z; P2 RE 2026-05-29T12:32:07Z; P3 HO 2026-07-30T16:23:58Z; P4 HO 2026-09-30T22:36:35Z. Não há P5 nem P6"
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2025&nr_periodo=6&co_tipo_demonstrativo=RREO&id_ente=33",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:22:05Z",
+   "registros": "4682 (hasMore=false, numa única página)",
+   "arquivo_amostra": "<scratchpad>\\siconfi\\rj\\rreo_2025_p6_all_page1.json",
+   "nota": "Sem no_anexo, a API devolveu todos os anexos: 02=2043, 10-RPPS=750, 01=674, 03=412, 06=211, 07=205, 04=196, 14=138, 11=35, 09=18. Arquivo de 1,78 MB"
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2025&nr_periodo=5&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2001&id_ente=33",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:23:35Z",
+   "registros": "658",
+   "arquivo_amostra": "<scratchpad>\\siconfi\\rj\\rreo_2025_p5_anexo01.json",
+   "nota": "Usado para provar que as colunas 'ATÉ O BIMESTRE' são acumuladas (P6 - P5 = 'NO BIMESTRE' do P6)"
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2026&nr_periodo=4&co_tipo_demonstrativo=RREO&id_ente=33",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:23:46Z",
+   "registros": "3711",
+   "arquivo_amostra": "<scratchpad>\\siconfi\\rj\\rreo_2026_p4_all.json",
+   "nota": "Período mais recente disponível; homologado em 2026-09-30T22:36:35Z. Anexos: 02=1946, 01=657, 03=413, 06=212, 07=202, 04=185, 14=96. Os anexos 09, 10 e 11 não aparecem"
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/anexos-relatorios",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:24:58Z",
+   "registros": "168",
+   "arquivo_amostra": "<scratchpad>\\siconfi\\rj\\anexos_relatorios.json",
+   "nota": "Segunda tentativa, com --max-time 300. Para esfera E, os anexos de RREO vêm rotulados com demonstrativo='QDCC' (anomalia da tabela): 01, 02, 03, 04, '04 - RPPS', 04.1, 04.2, 05, 06, 07, 09, '10 - RPPS', 11, 13, 14"
+  },
+  {
+   "url": "https://portal.fazenda.rj.gov.br/contabilidade/relatorios-fiscais/",
+   "http_status": "200 (mas o corpo é uma página de bloqueio por IP)",
+   "coletado_em": "2026-10-02T01:25:31Z",
+   "arquivo_amostra": "<scratchpad>\\siconfi\\rj\\sefazrj_relatorios_fiscais.html",
+   "nota": "A SEFAZ-RJ bloqueia o IP (texto: 'nosso serviço de segurança da informação bloqueia acessos provenientes desses endereços IP'). Pelo WebFetch, a mesma página também veio bloqueada"
+  },
+  {
+   "url": "https://www.transparencia.rj.gov.br/",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:26:01Z",
+   "arquivo_amostra": "<scratchpad>\\siconfi\\rj\\transparencia_rj_home.html"
+  },
+  {
+   "url": "https://www.transparencia.rj.gov.br/transparencia/gestao-fiscal-e-governamental/",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:26:08Z",
+   "arquivo_amostra": "<scratchpad>\\siconfi\\rj\\transparencia_rj_gestao_fiscal.html",
+   "nota": "O link 'Relatório Resumido da Execução Orçamentária – RREO' aponta para https://portal.fazenda.rj.gov.br/contabilidade/relatorios-fiscais/, ou seja, a fonte oficial do Estado é a página da SEFAZ-RJ"
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2026&nr_periodo=5&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2001&id_ente=33",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:26:16Z",
+   "registros": "0",
+   "arquivo_amostra": "<scratchpad>\\siconfi\\rj\\rreo_2026_p5_anexo01_vazio.json",
+   "nota": "Período ainda não entregue: a resposta é HTTP 200 com items=[] e count=0, sem erro 404"
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/ords/siconfi/tt/extrato_entregas?id_ente=33&an_referencia=2026",
+   "http_status": "200",
+   "coletado_em": "2026-10-02T01:26:23Z",
+   "registros": "63",
+   "arquivo_amostra": "<scratchpad>\\siconfi\\rj\\extrato_2026_hostlegado.json",
+   "nota": "O caminho legado /ords/siconfi/tt/ ainda funciona e devolveu bytes idênticos aos de /ords/cdwhprd/siconfi/tt/"
+  }
+ ],
+ "campos_resposta": [
+  {
+   "campo": "items / hasMore / limit / offset / count / links",
+   "significado_observado": "Envelope ORDS. items é a lista de registros. hasMore=false em todas as consultas. limit=5000 no /rreo e 6000 no /entes. count é o número de itens da página. Os links (self/describedby/first) apontam para um host interno da Oracle (host-5hrds-scan.prosubnet.vcndados.oraclevcn.com) e não servem para paginar. A paginação por ?offset= não foi testada, porque nenhuma consulta passou de 5.000 itens.",
+   "exemplo": "{'hasMore': False, 'limit': 5000, 'offset': 0, 'count': 4682}"
+  },
+  {
+   "campo": "exercicio",
+   "significado_observado": "Ano de referência do RREO (inteiro no JSON).",
+   "exemplo": "2025"
+  },
+  {
+   "campo": "demonstrativo",
+   "significado_observado": "Tipo do relatório. Para o Estado do RJ, é sempre 'RREO'.",
+   "exemplo": "RREO"
+  },
+  {
+   "campo": "periodo",
+   "significado_observado": "Bimestre de referência (1 a 6), igual ao nr_periodo pedido. A API não informa os meses; dizer que 4 = jul–ago é convenção da LRF (inferência).",
+   "exemplo": "6"
+  },
+  {
+   "campo": "periodicidade",
+   "significado_observado": "Sempre 'B' (bimestral).",
+   "exemplo": "B"
+  },
+  {
+   "campo": "instituicao",
+   "significado_observado": "Órgão que entregou. No RREO, só aparece o Governo do Estado (consolidado). No extrato aparecem também ALERJ, TCE, TJ, MP e DPE, por causa do RGF.",
+   "exemplo": "Governo do Estado do Rio de Janeiro"
+  },
+  {
+   "campo": "cod_ibge",
+   "significado_observado": "Código do ente, igual ao id_ente da consulta.",
+   "exemplo": "33"
+  },
+  {
+   "campo": "uf",
+   "significado_observado": "No /rreo vem 'RJ'. Atenção: no /entes, o Estado aparece com uf='BR'.",
+   "exemplo": "RJ"
+  },
+  {
+   "campo": "populacao",
+   "significado_observado": "Estimativa populacional. O mesmo valor aparece nos dados de 2025 e de 2026, o que sugere que reflete o cadastro atual e não o ano de referência (inferência).",
+   "exemplo": "16615526"
+  },
+  {
+   "campo": "anexo",
+   "significado_observado": "Identificador do anexo do RREO. A API não traz o título do anexo.",
+   "exemplo": "RREO-Anexo 01"
+  },
+  {
+   "campo": "esfera",
+   "significado_observado": "Esfera do ente. Esse campo não consta no schema RREO da especificação, mas vem na resposta.",
+   "exemplo": "E"
+  },
+  {
+   "campo": "rotulo",
+   "significado_observado": "Sub-tabela do anexo. No Anexo 01, é sempre 'Padrão'. No Anexo 02, separa 'Total das Despesas Exceto Intra-Orçamentárias' de 'Total das Despesas Intra-Orçamentárias'.",
+   "exemplo": "Padrão"
+  },
+  {
+   "campo": "coluna",
+   "significado_observado": "Rótulo literal da coluna do quadro, com letra de referência e às vezes com o ano embutido (ex.: 'Em 31 de dezembro de 2025 (b)'). É o que diz se o valor é 'NO BIMESTRE' ou 'ATÉ O BIMESTRE'.",
+   "exemplo": "DESPESAS PAGAS ATÉ O BIMESTRE (j)"
+  },
+  {
+   "campo": "cod_conta",
+   "significado_observado": "Código textual da linha. No Anexo 01 é praticamente único por linha. NÃO é único no Anexo 02, onde todas as linhas usam 'RREO2TotalDespesas' ou 'RREO2TotalDespesasIntra', nem no Anexo 07, onde o código representa o conceito da coluna e a linha (poder/órgão) está em 'conta'.",
+   "exemplo": "TotalDespesas"
+  },
+  {
+   "campo": "conta",
+   "significado_observado": "Rótulo literal da linha, com numeração romana e fórmulas.",
+   "exemplo": "TOTAL DAS DESPESAS (XII) = (X + XI)"
+  },
+  {
+   "campo": "valor",
+   "significado_observado": "Número JSON, não string. Vem sem formatação e com zeros à direita suprimidos (ex.: 111309173975.1). Nenhum valor igual a zero foi observado: células zeradas ou vazias simplesmente não aparecem como registro. Há negativos (estornos e resultados). Deve ser lido com parser decimal (ex.: parse_float=Decimal).",
+   "exemplo": "112864466427.83"
+  },
+  {
+   "campo": "(extrato) status_relatorio / data_status / forma_envio / tipo_relatorio / entregavel",
+   "significado_observado": "status_relatorio: HO=homologado, RE=retificado. data_status: data da homologação ou da retificação mais recente; é a data de entrega no Siconfi, não a data de referência. forma_envio: M=gerado a partir da MSC, P=planilha. tipo_relatorio: P=padrão. Há uma única linha por entregável, período e instituição.",
+   "exemplo": "{'periodo': 6, 'status_relatorio': 'RE', 'data_status': '2026-05-06T17:14:12Z', 'forma_envio': 'M'}"
+  },
+  {
+   "campo": "(entes) cod_ibge, ente, capital, regiao, uf, esfera, exercicio, populacao, cnpj",
+   "significado_observado": "Há divergências em relação à especificação: o campo vem como 'cnpj' (a especificação diz 'co_cnpj') e como 'exercicio' (a especificação diz 'an_exercicio'). 'capital' vem como string com espaços ('0  '). Para estados, uf='BR' e regiao é a região real ('SE').",
+   "exemplo": "{'cod_ibge': 33, 'ente': 'Rio de Janeiro', 'uf': 'BR', 'esfera': 'E'}"
+  }
+ ],
+ "periodos_observados": "Exercício 2025: o extrato registra o RREO dos bimestres 1 a 6. Consultei o P6 com todos os anexos e o P5 só com o Anexo 01. Exercício 2026: o extrato registra os bimestres 1 a 4. O P4 é o mais recente disponível (homologado em 2026-09-30T22:36:35Z) e já estava no /rreo quando coletei, em 2026-10-02T01:23:46Z. O P5 de 2026 voltou vazio (count=0), porque ainda não foi entregue. O tipo de período é o bimestre (periodicidade 'B'). Três datas diferentes precisam ser distinguidas: (a) referência: exercício + bimestre, com valores acumulados desde janeiro (2025 P6 = jan–dez/2025; 2026 P4 = jan–ago/2026, por convenção da LRF); (b) entrega ou homologação no Siconfi: campo data_status do /extrato_entregas (2025 P6: RE em 2026-05-06T17:14:12Z; 2026 P4: HO em 2026-09-30T22:36:35Z); (c) coleta: os timestamps UTC registrados em requests.log. Os anexos 09, 10-RPPS e 11 aparecem só no P6 de 2025, não no P4 de 2026; isso é coerente com serem anexos de fim de exercício (inferência). A coluna 'INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS (k)' do Anexo 01 aparece só no P6; não existe nem no P5/2025 nem no P4/2026.",
+ "anexos_observados": [
+  {
+   "anexo": "RREO-Anexo 01",
+   "conteudo": "Balanço Orçamentário (título inferido pelo conteúdo). Receitas (PREVISÃO INICIAL/ATUALIZADA, No Bimestre, Até o Bimestre) e despesas por categoria econômica e grupo de natureza, com bloco intraorçamentário separado e linha de amortização/refinanciamento (XI).",
+   "classificacao": "Categoria econômica (DESPESAS CORRENTES / DESPESAS DE CAPITAL) > grupo de natureza (PESSOAL E ENCARGOS SOCIAIS, JUROS E ENCARGOS DA DÍVIDA, OUTRAS DESPESAS CORRENTES, INVESTIMENTOS, INVERSÕES FINANCEIRAS, AMORTIZAÇÃO DA DÍVIDA), mais RESERVA DE CONTINGÊNCIA; separa exceto-intra (VIII) e intra (IX)",
+   "colunas": [
+    "DOTAÇÃO INICIAL (d)",
+    "DOTAÇÃO ATUALIZADA (e)",
+    "DESPESAS EMPENHADAS NO BIMESTRE",
+    "DESPESAS EMPENHADAS ATÉ O BIMESTRE (f)",
+    "SALDO (g) = (e-f)",
+    "DESPESAS LIQUIDADAS NO BIMESTRE",
+    "DESPESAS LIQUIDADAS ATÉ O BIMESTRE (h)",
+    "SALDO (i) = (e-h)",
+    "DESPESAS PAGAS ATÉ O BIMESTRE (j)",
+    "INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS (k) [só no 6º bimestre]"
+   ],
+   "tem_despesa_paga": "sim — 'DESPESAS PAGAS ATÉ O BIMESTRE (j)' (só existe a versão acumulada; não há coluna de pagas 'no bimestre')"
+  },
+  {
+   "anexo": "RREO-Anexo 02",
+   "conteudo": "Despesa por função e subfunção (inferido pelo conteúdo: 'Legislativa', 'Ação Legislativa', 'Saúde', 'Atenção Básica' etc.), em dois rótulos: exceto intra e intra.",
+   "classificacao": "Função > subfunção. Rótulos 'FUxx - Administração Geral' e 'FUxx - Demais Subfunções'. Totais: 'DESPESAS (EXCETO INTRA-ORÇAMENTÁRIAS) (I)', 'DESPESAS (INTRA-ORÇAMENTÁRIAS) (II)' e 'TOTAL (III) = (I + II)'",
+   "colunas": [
+    "DOTAÇÃO INICIAL",
+    "DOTAÇÃO ATUALIZADA (a)",
+    "DESPESAS EMPENHADAS NO BIMESTRE",
+    "DESPESAS EMPENHADAS ATÉ O BIMESTRE (b)",
+    "% (b/total b)",
+    "SALDO (c) = (a-b)",
+    "DESPESAS LIQUIDADAS NO BIMESTRE",
+    "DESPESAS LIQUIDADAS ATÉ O BIMESTRE (d)",
+    "% (d/total d)",
+    "SALDO (e) = (a-d)",
+    "INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS (f) [só no P6]"
+   ],
+   "tem_despesa_paga": "não — o Anexo 02 não tem coluna de despesa paga, nem em 2025 P6 nem em 2026 P4"
+  },
+  {
+   "anexo": "RREO-Anexo 03",
+   "conteudo": "Receita Corrente Líquida (inferido): série mensal e total dos últimos 12 meses.",
+   "classificacao": "Receita (não é despesa)",
+   "colunas": [
+    "<MR-11> ... <MR-1>",
+    "<MR>",
+    "TOTAL (ÚLTIMOS 12 MESES)",
+    "PREVISÃO ATUALIZADA 2025"
+   ],
+   "tem_despesa_paga": "não"
+  },
+  {
+   "anexo": "RREO-Anexo 04",
+   "conteudo": "Receitas e despesas previdenciárias do RPPS (fundo em capitalização, fundo em repartição, administração do RPPS, benefícios mantidos pelo Tesouro) e dos militares inativos e pensionistas.",
+   "classificacao": "Por fundo/plano previdenciário e tipo de benefício (Aposentadorias, Pensões por Morte, Outras Despesas Previdenciárias), mais despesas correntes e de capital da administração do RPPS",
+   "colunas": [
+    "PREVISÃO ATUALIZADA (a)",
+    "RECEITAS REALIZADAS ATÉ O BIMESTRE (b)",
+    "DOTAÇÃO ATUALIZADA (c)",
+    "DESPESAS EMPENHADAS ATÉ O BIMESTRE (d)",
+    "DESPESAS LIQUIDADAS ATÉ O BIMESTRE (e)",
+    "DESPESAS PAGAS ATÉ O BIMESTRE (f)",
+    "INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS NO EXERCÍCIO (g)",
+    "PREVISÃO ORÇAMENTÁRIA",
+    "APORTES REALIZADOS",
+    "SALDO ATUAL"
+   ],
+   "tem_despesa_paga": "sim — 'DESPESAS PAGAS ATÉ O BIMESTRE (f)', mas restrita ao recorte previdenciário (ex.: 'TOTAL DAS DESPESAS DO FUNDO EM REPARTIÇÃO (X)' = 18086208334.26 em 2025 P6)"
+  },
+  {
+   "anexo": "RREO-Anexo 06",
+   "conteudo": "Resultado Primário e Nominal (inferido pelas linhas 'RESULTADO PRIMÁRIO ... Acima da Linha' e 'RESULTADO NOMINAL ...'), mais dívida consolidada.",
+   "classificacao": "Categoria econômica e grupo, separados em primário e não primário e em exceto e com fontes RPPS",
+   "colunas": [
+    "PREVISÃO ATUALIZADA",
+    "RECEITAS REALIZADAS (a)",
+    "DOTAÇÃO ATUALIZADA",
+    "DESPESAS EMPENHADAS",
+    "DESPESAS LIQUIDADAS",
+    "DESPESAS PAGAS (a)",
+    "RESTOS A PAGAR PROCESSADOS PAGOS (b)",
+    "LIQUIDADOS",
+    "PAGOS (c)",
+    "VALOR",
+    "VALOR CORRENTE",
+    "VALOR INCORRIDO",
+    "Em 31/12/2024 (a)",
+    "Até o Bimestre 2025 (b)",
+    "PREVISÃO ORÇAMENTÁRIA"
+   ],
+   "tem_despesa_paga": "sim — 'DESPESAS PAGAS (a)' (do exercício), com 'RESTOS A PAGAR PROCESSADOS PAGOS (b)' e 'PAGOS (c)' (RPNP) em colunas separadas"
+  },
+  {
+   "anexo": "RREO-Anexo 07",
+   "conteudo": "Restos a Pagar por Poder e Órgão (inferido): RP processados e não processados liquidados, e RP não processados.",
+   "classificacao": "Poder/órgão: 'RESTOS A PAGAR (EXCETO INTRA-ORÇAMENTÁRIOS) (I)' > PODER EXECUTIVO, PODER LEGISLATIVO (Assembléia Legislativa, Tribunal de Contas do Estado), PODER JUDICIÁRIO (Tribunal de Justiça), MINISTÉRIO PÚBLICO, DEFENSORIA PÚBLICA; mais '(INTRA-ORÇAMENTÁRIOS) (II)' e 'TOTAL (III) = (I + II)'",
+   "colunas": [
+    "Em Exercícios Anteriores (a)",
+    "Em 31 de dezembro de 2024 (b) [o ano muda conforme o exercício]",
+    "Pagos (c)",
+    "Cancelados (d)",
+    "Saldo e = (a + b) - (c + d)",
+    "Em Exercícios Anteriores (f)",
+    "Em 31 de dezembro de 2024 (g)",
+    "Liquidados (h)",
+    "Pagos (i)",
+    "Pagos ( i ) [grafia diferente nas linhas Intra]",
+    "Cancelados (j)",
+    "Saldo k = (f + g) - (i + j)",
+    "Saldo Total L = (e + k)"
+   ],
+   "tem_despesa_paga": "sim — pagamentos de restos a pagar de exercícios anteriores: 'Pagos (c)' (processados e não processados liquidados) e 'Pagos (i)' (não processados)"
+  },
+  {
+   "anexo": "RREO-Anexo 09",
+   "conteudo": "Operações de crédito e despesas de capital (inferido). Só no 6º bimestre.",
+   "classificacao": "Agregados (dotação e empenhado)",
+   "colunas": [
+    "DOTAÇÃO ATUALIZADA (d)",
+    "DESPESAS EMPENHADAS (e)",
+    "SALDO NÃO EXECUTADO (f) = (d - e)",
+    "(d - a)",
+    "(e - b)",
+    "(f - c)"
+   ],
+   "tem_despesa_paga": "não"
+  },
+  {
+   "anexo": "RREO-Anexo 10 - RPPS",
+   "conteudo": "Projeção atuarial do RPPS e dos militares (inferido). Só no 6º bimestre.",
+   "classificacao": "Série anual projetada",
+   "colunas": [
+    "RECEITAS PREVIDENCIÁRIAS (a)",
+    "DESPESAS PREVIDENCIÁRIAS (b)",
+    "RESULTADO PREVIDENCIÁRIO (c) = (a - b)",
+    "SALDO FINANCEIRO DO EXERCÍCIO (d) ...",
+    "RECEITAS DE CONTRIBUIÇÕES DOS MILITARES (a)",
+    "DESPESAS COM INATIVOS E PENSIONISTAS MILITARES (b)",
+    "RESULTADO ASSOCIADO ... (c) = (a - b)"
+   ],
+   "tem_despesa_paga": "não (são projeções)"
+  },
+  {
+   "anexo": "RREO-Anexo 11",
+   "conteudo": "Receita de alienação de ativos e aplicação dos recursos (inferido). Só no 6º bimestre.",
+   "classificacao": "Aplicação dos recursos da alienação: DESPESAS DE CAPITAL > Investimentos",
+   "colunas": [
+    "PREVISÃO ATUALIZADA (a)",
+    "RECEITAS REALIZADAS (b)",
+    "SALDO (c) = (a - b)",
+    "DOTAÇÃO ATUALIZADA (d)",
+    "DESPESAS EMPENHADAS (e)",
+    "DESPESAS LIQUIDADAS",
+    "DESPESAS PAGAS (f)",
+    "DESPESAS INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS",
+    "PAGAMENTO DE RESTOS A PAGAR (g)",
+    "SALDO (h) = (d-e)",
+    "2024 (i)",
+    "2025 (j) = ...",
+    "SALDO ATUAL (k) = ..."
+   ],
+   "tem_despesa_paga": "sim — 'DESPESAS PAGAS (f)', mas só para a aplicação de recursos de alienação (435300 em 2025 P6)"
+  },
+  {
+   "anexo": "RREO-Anexo 14",
+   "conteudo": "Demonstrativo Simplificado do RREO (os cod_conta terminam em 'DemonstrativoSimplificado...'): resume o balanço orçamentário, a RCL, o RPPS, os resultados, os RP por poder, MDE/FUNDEB/saúde e a alienação de ativos.",
+   "classificacao": "Agregados; RP por poder (Executivo, Legislativo, Judiciário, Ministério Público, Defensoria)",
+   "colunas": [
+    "Até o Bimestre",
+    "Meta Fixada no Anexo de Metas Fiscais da LDO (a)",
+    "Resultado Apurado até o Bimestre (b)",
+    "% em Relação à Meta (b/a)",
+    "Inscrição",
+    "Cancelamento Até o Bimestre",
+    "Pagamento Até o Bimestre",
+    "Saldo a Pagar",
+    "Valor Apurado Até o Bimestre",
+    "% Mínimo a Aplicar no Exercício",
+    "% Aplicado Até o Bimestre",
+    "Valor Apurado no Exercício",
+    "Saldo Não Realizado",
+    "Exercício",
+    "10º Exercício",
+    "20º Exercício",
+    "35º Exercício",
+    "Saldo a Realizar"
+   ],
+   "tem_despesa_paga": "sim — linha 'Despesas Pagas' (cod_conta DespesasPagasDemonstrativoSimplificadoBalancoOrcamentario), coluna 'Até o Bimestre', igual ao total XII do Anexo 01; e RP 'Pagamento Até o Bimestre'"
+  },
+  {
+   "anexo": "Lista de /anexos-relatorios (esfera E)",
+   "conteudo": "A tabela de apoio lista, para estados, os anexos RREO 01, 02, 03, 04, '04 - RPPS', 04.1, 04.2, 05, 06, 07, 09, '10 - RPPS', 11, 13 e 14, com demonstrativo='QDCC' (rótulo incoerente). O RJ não trouxe dados de 04.1, 04.2, 05 nem 13 em 2025 P6 nem em 2026 P4. Os anexos 08 (MDE) e 12 (Saúde) não existem na API.",
+   "tem_despesa_paga": "n/a"
+  }
+ ],
+ "classificacoes_com_pagas": [
+  {
+   "anexo": "RREO-Anexo 01",
+   "classificacao": "Categoria econômica / grupo de natureza da despesa (exceto-intra e intra separados; amortização/refinanciamento XI à parte)",
+   "tem_coluna_paga": "sim",
+   "observacao": "'DESPESAS PAGAS ATÉ O BIMESTRE (j)', acumulada. É a melhor fonte para o total de despesas pagas"
+  },
+  {
+   "anexo": "RREO-Anexo 02",
+   "classificacao": "Função / subfunção",
+   "tem_coluna_paga": "não",
+   "observacao": "Só traz empenhado, liquidado e RPNP. Pelo RREO não dá para obter despesa paga por função"
+  },
+  {
+   "anexo": "RREO-Anexo 06",
+   "classificacao": "Categoria econômica / grupo, primário x não primário, exceto x com fontes RPPS",
+   "tem_coluna_paga": "sim",
+   "observacao": "A soma das linhas correntes e de capital (exceto e com RPPS) em 'DESPESAS PAGAS (a)' bate exatamente com o XII do Anexo 01 (2025 P6: 112864466427.83; 2026 P4: 72307515796.08). RP pagos ficam em colunas próprias (b) e (c)"
+  },
+  {
+   "anexo": "RREO-Anexo 07",
+   "classificacao": "Poder / órgão (restos a pagar)",
+   "tem_coluna_paga": "sim",
+   "observacao": "Só pagamentos de RP de exercícios anteriores ('Pagos (c)', 'Pagos (i)')"
+  },
+  {
+   "anexo": "RREO-Anexo 04",
+   "classificacao": "Previdência: fundos, benefícios e militares",
+   "tem_coluna_paga": "sim",
+   "observacao": "Recorte previdenciário; não somar com o Anexo 01"
+  },
+  {
+   "anexo": "RREO-Anexo 11",
+   "classificacao": "Aplicação de recursos de alienação de ativos",
+   "tem_coluna_paga": "sim",
+   "observacao": "Recorte específico; só no 6º bimestre"
+  },
+  {
+   "anexo": "RREO-Anexo 14",
+   "classificacao": "Simplificado: agregados e RP por poder",
+   "tem_coluna_paga": "sim",
+   "observacao": "'Despesas Pagas' = Anexo 01 XII; RP 'Pagamento Até o Bimestre' = Anexo 07 (c) + (i)"
+  }
+ ],
+ "despesa_paga": {
+  "anexo": "RREO-Anexo 01 (rotulo 'Padrão')",
+  "conta": "TOTAL DAS DESPESAS (XII) = (X + XI)",
+  "cod_conta": "TotalDespesas",
+  "coluna": "DESPESAS PAGAS ATÉ O BIMESTRE (j)",
+  "exercicio": "2025",
+  "periodo": "6",
+  "valor_observado": "112864466427.83",
+  "natureza_temporal": "ACUMULADO NO EXERCÍCIO ATÉ O BIMESTRE (jan–dez/2025 no P6). Evidências: (1) o rótulo da coluna diz 'ATÉ O BIMESTRE' e o Anexo 01 não tem coluna de pagas 'NO BIMESTRE' (só empenhadas e liquidadas têm essa versão); (2) para empenhado e liquidado, P6 'ATÉ' − P5 'ATÉ' = P6 'NO BIMESTRE' exatamente. Ex.: TotalDespesas liquidadas: 114992739081.78 − 89034619683.15 = 25958119398.63 = 'DESPESAS LIQUIDADAS NO BIMESTRE' do P6; empenhadas: 116553974377.47 − 94459114432.37 = 22094859945.10. O mesmo vale para VIII e IX; (3) o pago também cresce de P5 (85488479292.41) para P6 (112864466427.83). O pago só do 6º bimestre (27375987135.42) é um valor DERIVADO pela diferença, não publicado.",
+  "inclui": [
+   "Despesas exceto intraorçamentárias: linha 'DESPESAS (EXCETO INTRA-ORÇAMENTÁRIAS) (VIII)', pago 102599919210.67",
+   "Despesas intraorçamentárias: linha 'DESPESAS (INTRA-ORÇAMENTÁRIAS) (IX)', pago 8709254764.43. Conferido: VIII + IX = 'SUBTOTAL DAS DESPESAS (X) = (VIII + IX)' = 111309173975.10",
+   "Amortização/refinanciamento: linha 'AMORTIZAÇÃO DA DÍVIDA / REFINANCIAMENTO (XI)' (subitens 'Amortização da Dívida Interna' > 'Dívida Contratual'), pago 1555292452.73. Conferido: X + XI = XII = 112864466427.83",
+   "Juros: linha 'JUROS E ENCARGOS DA DÍVIDA' (dentro de DESPESAS CORRENTES/VIII), pago 2957181316.06",
+   "Amortização ordinária: linha 'AMORTIZAÇÃO DA DÍVIDA' (dentro de DESPESAS DE CAPITAL/VIII), pago 230165335.57; mais 'AMORTIZAÇÃO DA DÍVIDA' intra (AmortizacaoDaDividaIntra), pago 163156.33"
+  ],
+  "nao_inclui": [
+   "Restos a pagar de exercícios anteriores pagos no ano. Eles aparecem no Anexo 07 ('Pagos (c)' TOTAL (III) = 2354653359.26; 'Pagos (i)' TOTAL (III) = 831650212.62) e no Anexo 14 (TOTAL 'Pagamento Até o Bimestre' = 3186303571.88). No Anexo 06 ficam em colunas separadas da 'DESPESAS PAGAS (a)', e a fórmula do resultado primário 'XXXIV = (XVIa - (XXXIIa + XXXIIb + XXXIIc))' os soma explicitamente, o que mostra que são conjuntos distintos",
+   "Despesas liquidadas e não pagas no exercício (liquidado − pago = 2128272653.95). Esse valor reaparece exatamente como RP processados inscritos 'Em 31 de dezembro de 2025 (b)' no Anexo 07 de 2026 P4",
+   "Empenhos não liquidados (RPNP inscritos, coluna (k) = 1561235295.69, que reaparece como 'Em 31 de dezembro de 2025 (g)' no Anexo 07 de 2026 P4)",
+   "Reserva de contingência e 'RESERVA DO RPPS' (só têm dotação; não há valor pago)",
+   "'SUPERÁVIT (XIII)' e 'TOTAL COM SUPERÁVIT (XIV)'. Não são despesa: XIV inclui o superávit e não deve ser usado"
+  ],
+  "intraorcamentarias": "XII INCLUI as intraorçamentárias (IX). Há linhas separadas: 'DESPESAS (EXCETO INTRA-ORÇAMENTÁRIAS) (VIII)' = 102599919210.67 e 'DESPESAS (INTRA-ORÇAMENTÁRIAS) (IX)' = 8709254764.43. O IX aparece em DOIS cod_conta ('DespesasIntraOrcamentariasTotal' e 'DespesasIntraOrcamentarias') com o mesmo rótulo e os mesmos valores, o que é risco de dupla contagem. Para um 'gasto consolidado sem transferências internas', o candidato é o VIII (inferência conceitual: intraorçamentárias são operações entre órgãos do próprio ente).",
+  "restos_a_pagar": "Não estão no pago (j). O Anexo 01 traz só a inscrição de RPNP no 6º bimestre (coluna k). Pagamentos de RP de anos anteriores: Anexo 07 (por poder/órgão, exceto-intra (I), intra (II), TOTAL (III)), Anexo 14 (RP por poder, 'Pagamento Até o Bimestre') e Anexo 06 (colunas (b) e (c), só na despesa primária). Valores de 2025 P6: RPP pagos 2354653359.26; RPNP pagos 831650212.62; total 3186303571.88. Valores de 2026 P4: 2040162386.07 + 1124338872.36 = 3164501258.43.",
+  "despesas_financeiras_divida": "XII INCLUI juros ('JUROS E ENCARGOS DA DÍVIDA' = 2957181316.06), amortização ordinária ('AMORTIZAÇÃO DA DÍVIDA' = 230165335.57, mais intra 163156.33) e refinanciamento ('AMORTIZAÇÃO DA DÍVIDA / REFINANCIAMENTO (XI)' = 1555292452.73). No Anexo 06, 'Amortização da Dívida (XXVII)' pago = 1785620944.63, que é exatamente a soma dessas três amortizações. 'Juros e Encargos da Dívida (XIX)' = 2957181316.06, igual ao Anexo 01. Atenção: no Anexo 02, a subfunção 'Refinanciamento da Dívida Interna' (empenhado 4500428969.26) NÃO equivale à linha XI do Anexo 01; são classificações diferentes.",
+  "notas": "Período mais recente (2026 P4, homologado em 2026-09-30T22:36:35Z): mesma linha e coluna = 72307515796.08 (VIII = 65960575113.15; IX = 5171255819.15; X = 71131830932.30; XI = 1175684863.78). As identidades VIII + IX = X, X + XI = XII, correntes + capital = VIII e grupos = categorias foram conferidas com Decimal nos dois períodos. O Anexo 14 'Despesas Pagas' traz o mesmo valor de XII nos dois períodos. O total do Anexo 02 'TOTAL (III) = (I + II)' (liquidado) também bate com o XII do Anexo 01, e o (I) do Anexo 02 é igual a VIII + XI (o refinanciamento entra no (I) do Anexo 02). O 2025 P6 é uma versão RETIFICADA (RE em 2026-05-06). O valor do total de despesas pagas aparece no JSON como número (112864466427.83), não como string."
+ },
+ "hierarquia_contas": "A API não traz campo de nível, de pai ou de 'é total'. A hierarquia tem de ser deduzida de cod_conta, do rótulo (numeração romana e fórmulas) e da ordem do quadro.\n\n(1) Anexo 01. Use cod_conta, que é estável. Os totais têm numeração romana e fórmula: VIII ('DespesasExcetoIntraOrcamentarias'), IX ('DespesasIntraOrcamentariasTotal'), X ('SubtotalDasDespesas' = VIII + IX), XI ('AmortizacaoRefinanciamentoDaDivida'), XII ('TotalDespesas' = X + XI), XIII ('Superavit') e XIV ('TotalDespesasComSuperavit'). As categorias vêm em CAIXA ALTA ('DESPESAS CORRENTES', 'DESPESAS DE CAPITAL'), assim como os grupos ('PESSOAL E ENCARGOS SOCIAIS' etc.). Os subitens vêm em caixa mista: 'Demais Despesas Correntes' é igual a 'OUTRAS DESPESAS CORRENTES'; 'Amortização da Dívida Interna' > 'Dívida Contratual' é igual a XI. No bloco intra, os cod_conta têm sufixo 'Intra' ('DespesasCorrentesIntra', 'PessoalEEncargosSociaisIntra'...), e o IX aparece duplicado ('DespesasIntraOrcamentarias' e 'DespesasIntraOrcamentariasTotal'). Regra prática: para o total, pegar UMA linha (XII, ou VIII se excluir intra e refinanciamento); para composição, usar só folhas de um mesmo nível (ex.: grupos de VIII) e nunca somar a mesma linha com seus subitens.\n\n(2) Anexo 02. O cod_conta NÃO identifica a linha: todas usam 'RREO2TotalDespesas' (rótulo exceto-intra) ou 'RREO2TotalDespesasIntra'. Função e subfunção se distinguem só por 'conta' e pela ordem: função ('Saúde') seguida de suas subfunções ('Atenção Básica', 'FU10 - Administração Geral', 'FU10 - Demais Subfunções'). Os totais estão em '(I)', '(II)' e 'TOTAL (III) = (I + II)'. O rótulo exceto-intra também contém a linha (II), de modo que somar os dois rótulos duplica o intra. A chave única observada é (anexo, rotulo, cod_conta, conta, coluna): zero duplicatas em 2025 P6 e em 2026 P4. Sem 'conta', há 56 chaves repetidas em 2025 P6 e 43 em 2026 P4 (Anexos 02, 07 e 10).\n\n(3) Anexo 07. O cod_conta indica o conceito da coluna (ex.: 'RestosAPagarNaoProcessadosPagos') e 'conta' indica poder ou órgão. Hierarquia: '(I)' > 'PODER EXECUTIVO' / 'PODER LEGISLATIVO' ('Assembléia Legislativa', 'Tribunal de Contas do Estado') / 'PODER JUDICIÁRIO' ('Tribunal de Justiça') / 'MINISTÉRIO PÚBLICO' / 'DEFENSORIA PÚBLICA'; depois '(II)' intra e 'TOTAL (III)'. O detalhamento intra se repete em cod_conta com sufixo 'Intra'.\n\n(4) Nenhum valor zero aparece. Uma célula ausente deve ficar como ausente (null), nunca como 0.",
+ "retificacoes": "O /rreo não traz nenhum campo de versão, data de entrega, status ou retificação: os registros só têm exercicio, periodo, anexo, rotulo, coluna, cod_conta, conta e valor. A API devolve uma única versão, presumivelmente a vigente (inferência). O /extrato_entregas traz status_relatorio (HO/RE) e data_status, com UMA linha por (entregavel, periodo, instituicao). Não há histórico de versões; só o status e a data mais recentes (inferência pela ausência de duplicatas). Retificações observadas no RREO do RJ: 2025 P1 (RE 2025-06-18T22:31:27Z, posterior à homologação do P2 em 2025-05-30), 2025 P6 (RE 2026-05-06T17:14:12Z, cerca de 3 meses depois do prazo), 2026 P1 (RE 2026-03-30T11:28:18Z) e 2026 P2 (RE 2026-05-29T12:32:07Z). Consequências: (a) o valor de 2025 P6 pode diferir do PDF publicado originalmente pelo Estado; (b) uma série histórica coletada antes da retificação muda silenciosamente; é preciso guardar data_status e recoletar quando ele mudar; (c) diferenças entre bimestres (pago 'no bimestre' derivado) podem misturar versões. Um resumo de mecanismo de busca (NÃO verificado; a página da SEFAZ-RJ está bloqueada por IP) diz que o RREO do 6º bimestre de 2025 foi publicado no D.O.E.R.J. em 30/01/2026 e republicado em 20/03/2026. Essa data não coincide com a retificação no Siconfi (06/05/2026).",
+ "candidatos_reconciliacao": [
+  {
+   "descricao": "Total das despesas pagas no exercício de 2025 (Balanço Orçamentário, 6º bimestre). Formato esperado no PDF: 112.864.466.427,83. O mesmo valor deve aparecer no Anexo 14 (Simplificado), linha 'Despesas Pagas'",
+   "valor": "112864466427.83",
+   "anexo": "RREO-Anexo 01 (conferência cruzada: RREO-Anexo 14, cod_conta DespesasPagasDemonstrativoSimplificadoBalancoOrcamentario)",
+   "conta": "TOTAL DAS DESPESAS (XII) = (X + XI) [cod_conta TotalDespesas]",
+   "coluna": "DESPESAS PAGAS ATÉ O BIMESTRE (j)",
+   "exercicio": "2025",
+   "periodo": "6 (acumulado jan–dez/2025; versão retificada em 2026-05-06T17:14:12Z)"
+  },
+  {
+   "descricao": "Total das despesas pagas até o 4º bimestre de 2026, o período mais recente, sem retificação até a coleta. Formato esperado no PDF: 72.307.515.796,08",
+   "valor": "72307515796.08",
+   "anexo": "RREO-Anexo 01 (conferência cruzada: RREO-Anexo 14 'Despesas Pagas' / 'Até o Bimestre')",
+   "conta": "TOTAL DAS DESPESAS (XII) = (X + XI) [cod_conta TotalDespesas]",
+   "coluna": "DESPESAS PAGAS ATÉ O BIMESTRE (j)",
+   "exercicio": "2026",
+   "periodo": "4 (acumulado jan–ago/2026; homologado em 2026-09-30T22:36:35Z)"
+  },
+  {
+   "descricao": "Total de restos a pagar pagos em 2025, fora do pago do exercício. Deve bater com o Anexo 7 (TOTAL (III): 'Pagos (c)' = 2354653359.26 + 'Pagos (i)' = 831650212.62). Formato esperado no PDF: 3.186.303.571,88",
+   "valor": "3186303571.88",
+   "anexo": "RREO-Anexo 14",
+   "conta": "TOTAL [cod_conta TotalRestosAPagarDemonstrativoSimplificado]",
+   "coluna": "Pagamento Até o Bimestre",
+   "exercicio": "2025",
+   "periodo": "6"
+  }
+ ],
+ "riscos": [
+  "A fonte oficial do Estado (https://portal.fazenda.rj.gov.br/contabilidade/relatorios-fiscais/, para onde aponta o link 'RREO' do Portal da Transparência RJ) bloqueou nosso IP e também o do WebFetch, respondendo HTTP 200 com uma página de bloqueio. O status HTTP não basta para validar a coleta. A reconciliação com o PDF do Estado ainda NÃO foi feita: precisa ser feita manualmente, de outra origem de rede.",
+  "O 2025 P6 está RETIFICADO no Siconfi (2026-05-06). O PDF oficial do Estado pode ser a versão original ou uma republicação, e os valores podem divergir. Usar o 2026 P4 (HO) como primeira reconciliação.",
+  "O /rreo não tem versão nem data. Retificações sobrescrevem os dados em silêncio. É preciso monitorar status_relatorio e data_status no /extrato_entregas e recoletar quando mudarem.",
+  "Não existe 'despesas pagas no bimestre' no RREO; só o acumulado. Valores bimestrais exigem diferença entre períodos consecutivos (derivado, sujeito a retificação de um dos períodos) e nunca devem ser somados ao acumulado.",
+  "Dupla contagem: o IX aparece em dois cod_conta ('DespesasIntraOrcamentarias' e 'DespesasIntraOrcamentariasTotal'); 'OutrasDespesasCorrentes' = 'DemaisDespesasCorrentes'; XI = 'Amortização da Dívida Interna' = 'Dívida Contratual'; no Anexo 02, o rótulo exceto-intra contém o (II) e o TOTAL (III); XIV 'TOTAL COM SUPERÁVIT' inclui o superávit, que não é despesa.",
+  "Definição do indicador: XII inclui intraorçamentárias (8,7 bi em 2025) e refinanciamento da dívida (1,56 bi). VIII exclui ambos. O Anexo 02 '(I)' inclui o refinanciamento, mas não o intra. A escolha muda o número publicado e precisa ser explicitada no portal.",
+  "Não há despesa paga por função/subfunção no RREO: o Anexo 02 só tem empenhado e liquidado. Um indicador 'pago por área' exigiria outra fonte (DCA ou MSC; não verificado aqui).",
+  "Ausência não é zero: a API omite células vazias ou zeradas (nenhum valor 0 foi observado), e colunas inteiras somem fora do 6º bimestre (ex.: coluna (k)). Não preencher com 0.",
+  "O campo valor vem como número JSON (ex.: 111309173975.1, sem o zero final). Parsers que convertem para float podem perder precisão: usar Decimal ou NUMERIC e guardar também a string bruta.",
+  "Os rótulos de coluna embutem anos ('Em 31 de dezembro de 2024 (b)', 'PREVISÃO ATUALIZADA 2025', 'Até o Bimestre 2025 (b)') e têm variações de grafia ('Pagos (i)' x 'Pagos ( i )'). Também há caracteres corrompidos na fonte ('(IV ¿ V)' no Anexo 04). Mapear por padrão, não por igualdade literal.",
+  "Divergências entre especificação e resposta: em /entes vêm 'cnpj' e 'exercicio' (a especificação diz 'co_cnpj' e 'an_exercicio'), 'capital' como string com espaços e uf='BR' para estados; o /rreo traz o campo 'esfera', que não está no schema; o /anexos-relatorios rotula os anexos de RREO e RGF dos estados como demonstrativo 'QDCC'. Não confiar cegamente no swagger.",
+  "Desempenho e disponibilidade: o /anexos-relatorios deu timeout (>120s) na primeira tentativa e respondeu na segunda. Os links de paginação apontam para um host interno da Oracle. Há dois caminhos válidos (/ords/cdwhprd/siconfi/tt/ e o legado /ords/siconfi/tt/), e um deles pode ser desativado.",
+  "Homônimos: o município 'Rio de Janeiro' (3304557) e o Estado (33) têm o mesmo nome em /entes. Filtrar sempre por cod_ibge e esfera.",
+  "Os nomes dos anexos (ex.: 'Anexo 06 = Resultado Primário e Nominal') foram inferidos pelo conteúdo; a API não traz títulos."
+ ]
+}

@@ -1,0 +1,17 @@
+2026-10-02T01:18:50Z	200	2139	docs_index.html	https://apidatalake.tesouro.gov.br/docs/siconfi/
+2026-10-02T01:18:56Z	200	44465	siconfi.yaml	https://apidatalake.tesouro.gov.br/docs/siconfi.yaml
+2026-10-02T01:19:07Z	200	866510	entes.json	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/entes
+2026-10-02T01:19:22Z	502	1602	anexos_relatorios.json	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/anexos-relatorios
+2026-10-02T01:21:36Z	200	313327	extrato_2025.json	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/extrato_entregas?id_ente=1&an_referencia=2025
+2026-10-02T01:21:47Z	200	195520	extrato_2026.json	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/extrato_entregas?id_ente=1&an_referencia=2026
+2026-10-02T01:21:57Z	200	1804908	rreo_2025_p6_all_p0.json	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2025&nr_periodo=6&co_tipo_demonstrativo=RREO&id_ente=1
+2026-10-02T01:22:11Z	200	628631	rreo_2025_p6_all_p1.json	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2025&nr_periodo=6&co_tipo_demonstrativo=RREO&id_ente=1&offset=5000
+2026-10-02T01:24:13Z	200	290514	rreo_2025_p5_anexo01.json	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2025&nr_periodo=5&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2001&id_ente=1
+2026-10-02T01:24:23Z	200	1668672	rreo_2026_p4_all_p0.json	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2026&nr_periodo=4&co_tipo_demonstrativo=RREO&id_ente=1
+2026-10-02T01:25:00Z	200	10809	anexos_relatorios.json	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/anexos-relatorios
+2026-10-02T01:25:23Z	200	41196	tt_rreo_2025_12.html	https://www.tesourotransparente.gov.br/publicacoes/relatorio-resumido-da-execucao-orcamentaria-rreo/2025/12
+2026-10-02T01:25:55Z	200	400	tmp_pdf/rreo_pub_53743.pdf	https://thot-arquivos.tesouro.gov.br/publicacao/53743 (final: https://thot-arquivos.tesouro.gov.br/publicacao/53743)
+2026-10-02T01:26:08Z	200	4858314	tmp_pdf/RREODez2025_REPUBL.pdf	https://cdn.tesouro.gov.br/sistemas-internos/apex/producao/sistemas/thot/arquivos/publicacoes/53743_1693038/12_%20RREODez2025%20(REPUBL_).pdf
+2026-10-02T01:27:30Z	200	40308	tt_rreo_2026_08.html	https://www.tesourotransparente.gov.br/publicacoes/relatorio-resumido-da-execucao-orcamentaria-rreo/2026/8
+2026-10-02T01:27:35Z	200	414	tmp_pdf/thot_55944_wrapper.html	https://thot-arquivos.tesouro.gov.br/publicacao/55944
+2026-10-02T01:27:45Z	200	1628746	tmp_pdf/RREOAgo2026.pdf	https://cdn.tesouro.gov.br/sistemas-internos/apex/producao/sistemas/thot/arquivos/publicacoes/55944_1800407/08_RREOAgo2026%20-%20Com%20Portaria%20Publicada.pdf

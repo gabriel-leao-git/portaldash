@@ -1,0 +1,498 @@
+{
+ "base_url": "https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/",
+ "host": "apidatalake.tesouro.gov.br. Atrás dele há um CDN Azure Front Door (cabeçalhos x-azure-ref, X-Cache: TCP_MISS/TCP_REMOTE_HIT, X-Cache-Info: L2_T2) e, na origem, um Oracle REST Data Services (ORDS): erros com type \"tag:oracle.com,2020:error/...\" e links internos para host-5hrds-scan.prosubnet.vcndados.oraclevcn.com. O DNS resolveu para o IPv6 2603:1061:14:125::1 em 2026-10-02T01:19:06Z. No spec (siconfi.yaml), o campo host vem como \"apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/\" e os campos schemes/basePath estão comentados.",
+ "protocolo": "REST somente GET, sem autenticação, sem chave e sem captcha (dito na página de entrada e confirmado: nenhuma chamada exigiu credencial). As respostas vêm em JSON, com Content-Type \"application/json\" sem charset; os bytes observados são UTF-8. O transporte é HTTP/1.1 (ALPN aceito http/1.1; o curl só ofereceu http/1.1, então o suporte a h2 não foi verificado) com Transfer-Encoding: chunked e sem Content-Length nas respostas JSON. Não há compressão: mesmo com \"Accept-Encoding: gzip\" a resposta veio identity (teste em 2026-10-02T01:29:43Z). Erros chegam como \"application/problem+json\". O contrato está descrito em Swagger 2.0 (\"version: 1.1.0\", \"versão beta\"), em https://apidatalake.tesouro.gov.br/docs/siconfi.yaml (Last-Modified: Wed, 24 Jun 2026 14:31:16 GMT, ETag \"80534262\"). O envelope de toda resposta 200 é o padrão ORDS: {\"items\":[...],\"hasMore\":bool,\"limit\":n,\"offset\":n,\"count\":n,\"links\":[...]}.",
+ "documentacao": [
+  {
+   "url": "https://www.tesourotransparente.gov.br/consultas/consultas-siconfi/siconfi-api-de-dados-abertos",
+   "titulo": "Siconfi - API de Dados Abertos — Tesouro Transparente",
+   "acessada_em": "2026-10-02T01:18:45Z (HTTP 200, 26673 bytes)",
+   "resumo": "Página de entrada. Diz que a API entrega dados brutos do Siconfi, sem identificação do usuário e sem remuneração, e que 'deve-se apenas obedecer às orientações de uso para evitar o bloqueio do serviço'. Diz também 'Os dados são entregues em formato JSON e, por padrão, as consultas retornam 5.000 itens por página' e que pela primeira vez é possível consultar a MSC. Aponta para a documentação em http://apidatalake.tesouro.gov.br/docs/siconfi/ e para http://dados.gov.br/pagina/dados-abertos (este último não foi acessado). É servida por Zope/Plone + Varnish e veio do cache (X-Varnish-Age: 19846). O cabeçalho Date estava defasado (Thu, 01 Oct 2026 19:48:01 GMT), por isso não serve como hora de coleta."
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/docs/siconfi/",
+   "titulo": "SICONFI API – Tesouro Nacional",
+   "acessada_em": "2026-10-02T01:19:06Z (HTTP 200, 2139 bytes; o acesso via http:// devolveu 307 para https:// às 01:18:59Z)",
+   "resumo": "Página do Swagger UI (swagger-ui-dist@5 via unpkg), com o cabeçalho 'APIs Data Lake – Secretaria do Tesouro Nacional' e abas Custos, SADIPEM, SICONFI e Teto de Gastos. Carrega o spec de url '/docs/siconfi.yaml'. Na configuração, supportedSubmitMethods vale ['get']."
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/docs/siconfi.yaml",
+   "titulo": "SICONFI API (Swagger 2.0, info.version 1.1.0)",
+   "acessada_em": "2026-10-02T01:19:11Z (HTTP 200, 44465 bytes, Content-Type application/octet-stream)",
+   "resumo": "Contrato oficial. Na descrição: 'versão beta', '5.000 itens por página', 'ATENÇÃO: Para fins de performance, o limite é de uma (01) requisição por segundo.', a STN não dá suporte técnico sobre a tecnologia da API e as dúvidas vão para o E-Serviços (https://e-servicos.tesouro.gov.br/#/Servico/1379821, não acessado). Define 9 paths: /rreo, /rgf, /dca, /msc_patrimonial, /msc_orcamentaria, /msc_controle, /entes, /extrato_entregas e /anexos-relatorios, com parâmetros, enums e definitions (Anexos, Entes, Extrato, RREO, RGF, DCA e MSC-*). Licença Apache 2.0. Cópia salva em scratchpad/siconfi/docs/siconfi.yaml."
+  },
+  {
+   "url": "https://apidatalake.tesouro.gov.br/",
+   "titulo": "APIs Data Lake – Tesouro Nacional",
+   "acessada_em": "2026-10-02T01:19:36Z (HTTP 200, 3024 bytes)",
+   "resumo": "Índice com o texto 'Documentação interativa das APIs de dados abertos do Tesouro Nacional' e links para /docs/custos, /docs/sadipem, /docs/siconfi e /docs/teto_gastos. Não traz orientação de uso adicional."
+  },
+  {
+   "url": "https://siconfi.tesouro.gov.br/siconfi/pages/public/conteudo/conteudo.jsf?id=581",
+   "titulo": "Documentação Anterior | Área pública | Siconfi",
+   "acessada_em": "2026-10-02T01:24:49Z (HTTP 200, 302656 bytes)",
+   "resumo": "É o link 'Veja mais' das tags Anexos, Entes e Extrato no spec. Na prática é uma notícia de 1/11/2017 sobre a documentação da Taxonomia XBRL (guia de implementação, tabelas de fatos, regras de validação). Não documenta a API."
+  },
+  {
+   "url": "http://www.tesouro.fazenda.gov.br/mdf",
+   "titulo": "(link 'Veja mais' das tags RREO e RGF no spec)",
+   "acessada_em": "2026-10-02T01:24:59Z (falhou: curl (6) Could not resolve host www.tesouro.fazenda.gov.br)",
+   "resumo": "Link morto: o domínio não resolve no DNS. Inferência: os outros externalDocs do spec no mesmo domínio (balanço do setor público e matriz de saldos contábeis) também devem estar mortos, mas não foram testados."
+  }
+ ],
+ "endpoints": [
+  {
+   "path": "/rreo",
+   "finalidade": "Dados dos quadros dos anexos do RREO (Relatório Resumido da Execução Orçamentária) para um ente e um bimestre. Cada item é uma célula (anexo × rotulo × coluna × cod_conta).",
+   "parametros": [
+    {
+     "nome": "an_exercicio",
+     "descricao": "Exercício do relatório",
+     "obrigatorio": "sim",
+     "valores_validos": "inteiro (int64). Um valor não numérico devolve HTTP 400."
+    },
+    {
+     "nome": "nr_periodo",
+     "descricao": "Bimestre de referência",
+     "obrigatorio": "sim",
+     "valores_validos": "1 a 6. Um valor fora do enum (7) devolve 200 com items=[], sem erro."
+    },
+    {
+     "nome": "co_tipo_demonstrativo",
+     "descricao": "Tipo do demonstrativo. Pela documentação, o RREO Simplificado vale só para municípios com menos de 50 mil habitantes que optaram pela publicação simplificada.",
+     "obrigatorio": "sim",
+     "valores_validos": "'RREO' | 'RREO Simplificado' (com espaço, a codificar na URL)"
+    },
+    {
+     "nome": "no_anexo",
+     "descricao": "Anexo do RREO",
+     "obrigatorio": "não (é o único opcional segundo o spec)",
+     "valores_validos": "Enum do spec: RREO-Anexo 01, RREO-Anexo 02, RREO-Anexo 03, RREO-Anexo 04, RREO-Anexo 04 - RGPS, RREO-Anexo 04 - RPPS, RREO-Anexo 04.0 - RGPS, RREO-Anexo 04.1, RREO-Anexo 04.2, RREO-Anexo 04.3 - RGPS, RREO-Anexo 05, RREO-Anexo 06, RREO-Anexo 07, RREO-Anexo 09, RREO-Anexo 10 - RGPS, RREO-Anexo 10 - RPPS, RREO-Anexo 11, RREO-Anexo 13, RREO-Anexo 14. O /anexos-relatorios lista ainda, para a União: RREO-Anexo 04.3, RREO-Anexo 04.4 - RGPS, RREO-Anexo 10.1 - RPPS e RREO-Anexo 10.2 - RGPS."
+    },
+    {
+     "nome": "co_esfera",
+     "descricao": "Filtro de esfera",
+     "obrigatorio": "não",
+     "valores_validos": "M = Municípios, E = Estados e DF, U = União, C = Consórcio. Sem id_ente (com co_esfera=E), devolveu 200 items=[]: não serve para listar em lote."
+    },
+    {
+     "nome": "id_ente",
+     "descricao": "Código IBGE do ente",
+     "obrigatorio": "sim (sem ele: 200 items=[], sem erro)",
+     "valores_validos": "inteiro: 1 (União), 2 dígitos (UF/DF) ou 7 dígitos (município)"
+    },
+    {
+     "nome": "limit / offset",
+     "descricao": "Paginação ORDS. Não constam no spec, mas são aceitos.",
+     "obrigatorio": "não",
+     "valores_validos": "inteiros. limit padrão observado = 5000."
+    }
+   ],
+   "testado": "sim. 2026-10-02T01:21:52Z: 200, 661 itens, 247524 bytes, 1.09 s (Rio de Janeiro 3304557, 2025, bimestre 6, RREO-Anexo 01). 01:22:23Z: 400 (an_exercicio=abc). 01:22:30Z: 200 items=[] (nr_periodo=7). 01:23:09Z: 200 items=[] (RREO Simplificado sem id_ente). 01:23:19Z: 200 items=[] (co_esfera=E sem id_ente). 01:24:01Z: 200 count=0 (id_ente=33 sem anexo, offset=4998). 01:24:12Z: 200 hasMore=true (id_ente=33 sem anexo, offset=1500, limit=2). 01:24:28Z: 304 com If-None-Match. 01:25:56Z: 200 (Rio 2026, bimestre 4, limit=2).",
+   "campos_resposta": [
+    "exercicio",
+    "demonstrativo",
+    "periodo",
+    "periodicidade",
+    "instituicao",
+    "cod_ibge",
+    "uf",
+    "populacao",
+    "anexo",
+    "esfera (fora do spec)",
+    "rotulo",
+    "coluna",
+    "cod_conta",
+    "conta",
+    "valor"
+   ],
+   "notas": "Colunas observadas no RREO-Anexo 01 (Rio, 2025, bimestre 6): 'PREVISÃO INICIAL', 'PREVISÃO ATUALIZADA (a)', 'No Bimestre (b)', '% (b/a)', 'Até o Bimestre (c)', '% (c/a)', 'SALDO (a-c)', 'DOTAÇÃO INICIAL (d)', 'DOTAÇÃO ATUALIZADA (e)', 'DESPESAS EMPENHADAS NO BIMESTRE', 'DESPESAS EMPENHADAS ATÉ O BIMESTRE (f)', 'SALDO (g) = (e-f)', 'DESPESAS LIQUIDADAS NO BIMESTRE', 'DESPESAS LIQUIDADAS ATÉ O BIMESTRE (h)', 'SALDO (i) = (e-h)', 'DESPESAS PAGAS ATÉ O BIMESTRE (j)', 'INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS (k)'. Não existe coluna 'pagas no bimestre': pago só aparece acumulado até o bimestre. Exemplo real na coluna (j): cod_conta 'DespesasExcetoIntraOrcamentarias' / conta 'DESPESAS (EXCETO INTRA-ORÇAMENTÁRIAS) (VIII)' / valor 35863674442.81; 'TotalDespesas' / 'TOTAL DAS DESPESAS (XII) = (X + XI)' / 43530422631.64. Há rótulos duplicados: 'DESPESAS (INTRA-ORÇAMENTÁRIAS) (IX)' aparece em DespesasIntraOrcamentariasTotal e em DespesasIntraOrcamentarias, ambos 7271684486.27, e 'Dívida Contratual' aparece em dois cod_conta. A linha 'Superavit' (SUPERÁVIT (XIII)) também aparece na coluna de pagas. O número de itens varia por coluna (de 16 a 66), ou seja, células ausentes não vêm como null. Para o estado (id_ente=33) vieram uf='RJ' e esfera='E', e no Anexo 02 o campo rotulo traz texto como 'Total das Despesas Exceto Intra-Orçamentárias'. Não existem RREO-Anexo 08 nem 12 (MDE e Saúde), nem no spec nem no /anexos-relatorios."
+  },
+  {
+   "path": "/rgf",
+   "finalidade": "Dados dos anexos do RGF (Relatório de Gestão Fiscal) para um ente, um poder e um quadrimestre ou semestre.",
+   "parametros": [
+    {
+     "nome": "an_exercicio",
+     "descricao": "Exercício",
+     "obrigatorio": "sim",
+     "valores_validos": "inteiro"
+    },
+    {
+     "nome": "in_periodicidade",
+     "descricao": "Periodicidade",
+     "obrigatorio": "sim",
+     "valores_validos": "Q (quadrimestral, o padrão) | S (semestral, só municípios com menos de 50 mil habitantes que optaram)"
+    },
+    {
+     "nome": "nr_periodo",
+     "descricao": "Quadrimestre ou semestre",
+     "obrigatorio": "sim",
+     "valores_validos": "1, 2, 3"
+    },
+    {
+     "nome": "co_tipo_demonstrativo",
+     "descricao": "Tipo",
+     "obrigatorio": "sim",
+     "valores_validos": "'RGF' | 'RGF Simplificado'"
+    },
+    {
+     "nome": "no_anexo",
+     "descricao": "Anexo",
+     "obrigatorio": "não",
+     "valores_validos": "RGF-Anexo 01 a RGF-Anexo 06"
+    },
+    {
+     "nome": "co_esfera",
+     "descricao": "Filtro de esfera",
+     "obrigatorio": "não",
+     "valores_validos": "M, E, U, C"
+    },
+    {
+     "nome": "co_poder",
+     "descricao": "Poder",
+     "obrigatorio": "sim",
+     "valores_validos": "E = Executivo, L = Legislativo, J = Judiciário, M = Ministério Público, D = Defensoria Pública"
+    },
+    {
+     "nome": "id_ente",
+     "descricao": "Código IBGE",
+     "obrigatorio": "sim",
+     "valores_validos": "inteiro"
+    }
+   ],
+   "testado": "sim. 2026-10-02T01:25:14Z: 200, 1971 bytes, 0.64 s, com limit=3 (Rio, 2025, Q, 3, RGF, RGF-Anexo 01, co_poder=E). hasMore=true.",
+   "campos_resposta": [
+    "exercicio",
+    "periodo",
+    "periodicidade",
+    "instituicao",
+    "cod_ibge",
+    "uf",
+    "co_poder",
+    "populacao",
+    "anexo",
+    "esfera (fora do spec)",
+    "rotulo",
+    "coluna",
+    "cod_conta",
+    "conta",
+    "valor"
+   ],
+   "notas": "Não há campo demonstrativo na resposta. As colunas usam códigos de mês, por exemplo '<MR-11>', '<MR-10>', '<MR-9>'. Exemplo: cod_conta 'DespesaComPessoalBruta' / conta 'DESPESA BRUTA COM PESSOAL (I)' / valor 1314522258.41."
+  },
+  {
+   "path": "/dca",
+   "finalidade": "Declaração de Contas Anuais (DCA) e o antigo QDCC de 2013, por ente e exercício.",
+   "parametros": [
+    {
+     "nome": "an_exercicio",
+     "descricao": "Exercício",
+     "obrigatorio": "sim",
+     "valores_validos": "inteiro"
+    },
+    {
+     "nome": "no_anexo",
+     "descricao": "Anexo. Em 2013 só os anexos com prefixo DCA- são DCA; os demais são QDCC.",
+     "obrigatorio": "não",
+     "valores_validos": "Anexo I-AB, Anexo I-C, Anexo I-D, Anexo I-E, Anexo I-F, Anexo I-G, Anexo I-HI, DCA-Anexo I-AB, DCA-Anexo I-C, DCA-Anexo I-D, DCA-Anexo I-E, DCA-Anexo I-F, DCA-Anexo I-G, DCA-Anexo I-HI"
+    },
+    {
+     "nome": "id_ente",
+     "descricao": "Código IBGE",
+     "obrigatorio": "sim",
+     "valores_validos": "inteiro"
+    }
+   ],
+   "testado": "sim. 2026-10-02T01:25:24Z: 200, 1676 bytes, 0.53 s, com limit=3 (Rio, 2024, DCA-Anexo I-E). hasMore=true.",
+   "campos_resposta": [
+    "exercicio",
+    "instituicao",
+    "cod_ibge",
+    "uf",
+    "anexo",
+    "rotulo",
+    "coluna",
+    "cod_conta",
+    "conta",
+    "valor",
+    "populacao"
+   ],
+   "notas": "Exemplo: rotulo 'Total Geral da Despesa por Função', coluna 'Despesas Empenhadas', cod_conta 'TotalDespesas', conta 'Despesas Exceto Intraorçamentárias', valor 39634080318.04. A mesma resposta traz linhas de função ('01 - Legislativa') e de subfunção ('01.031 - Ação Legislativa'), que são hierárquicas."
+  },
+  {
+   "path": "/msc_patrimonial",
+   "finalidade": "Matriz de Saldos Contábeis, contas patrimoniais (classes 1 a 4).",
+   "parametros": [
+    {
+     "nome": "id_ente",
+     "descricao": "Código IBGE",
+     "obrigatorio": "sim",
+     "valores_validos": "inteiro"
+    },
+    {
+     "nome": "an_referencia",
+     "descricao": "Exercício",
+     "obrigatorio": "sim",
+     "valores_validos": "inteiro"
+    },
+    {
+     "nome": "me_referencia",
+     "descricao": "Mês",
+     "obrigatorio": "sim",
+     "valores_validos": "inteiro (mês)"
+    },
+    {
+     "nome": "co_tipo_matriz",
+     "descricao": "Tipo de matriz",
+     "obrigatorio": "sim",
+     "valores_validos": "MSCC (mensal/agregada) | MSCE (encerramento)"
+    },
+    {
+     "nome": "classe_conta",
+     "descricao": "Classe",
+     "obrigatorio": "sim",
+     "valores_validos": "1, 2, 3, 4"
+    },
+    {
+     "nome": "id_tv",
+     "descricao": "Tipo de valor",
+     "obrigatorio": "sim",
+     "valores_validos": "beginning_balance | period_change | ending_balance"
+    }
+   ],
+   "testado": "não",
+   "campos_resposta": [
+    "(segundo o spec, não observado) tipo_matriz, cod_ibge, classe_conta, conta_contabil, poder_orgao, financeiro_permanente, ano_fonte_recursos, fonte_recursos, exercicio, mes_referencia, divida_consolidada, data_referencia, entrada_msc, valor, natureza_conta, tipo_valor"
+   ],
+   "notas": "O spec diz 'Todos os filtros são obrigatórios'."
+  },
+  {
+   "path": "/msc_orcamentaria",
+   "finalidade": "Matriz de Saldos Contábeis, contas orçamentárias (classe 5 = aprovação, classe 6 = execução).",
+   "parametros": [
+    {
+     "nome": "id_ente",
+     "descricao": "Código IBGE",
+     "obrigatorio": "sim",
+     "valores_validos": "inteiro"
+    },
+    {
+     "nome": "an_referencia",
+     "descricao": "Exercício",
+     "obrigatorio": "sim",
+     "valores_validos": "inteiro"
+    },
+    {
+     "nome": "me_referencia",
+     "descricao": "Mês",
+     "obrigatorio": "sim",
+     "valores_validos": "inteiro"
+    },
+    {
+     "nome": "co_tipo_matriz",
+     "descricao": "Tipo",
+     "obrigatorio": "sim",
+     "valores_validos": "MSCC | MSCE"
+    },
+    {
+     "nome": "classe_conta",
+     "descricao": "Classe",
+     "obrigatorio": "sim",
+     "valores_validos": "5, 6"
+    },
+    {
+     "nome": "id_tv",
+     "descricao": "Tipo de valor",
+     "obrigatorio": "sim",
+     "valores_validos": "beginning_balance | period_change | ending_balance"
+    }
+   ],
+   "testado": "sim. 2026-10-02T01:25:35Z: 200, 1849 bytes, 0.61 s, com limit=2 (Rio, 2025, mês 12, MSCC, classe 6, period_change). hasMore=true.",
+   "campos_resposta": [
+    "tipo_matriz",
+    "cod_ibge",
+    "classe_conta",
+    "conta_contabil",
+    "poder_orgao",
+    "ano_fonte_recursos",
+    "fonte_recursos",
+    "funcao",
+    "subfuncao",
+    "exercicio",
+    "mes_referencia",
+    "educacao_saude",
+    "data_referencia",
+    "entrada_msc",
+    "natureza_despesa",
+    "ano_inscricao",
+    "natureza_receita",
+    "valor",
+    "natureza_conta",
+    "tipo_valor",
+    "complemento_fonte (fora do spec)"
+   ],
+   "notas": "Campos sem valor vêm como null explícito. Houve valor '0' explícito (conta_contabil 622920101, poder_orgao 20232, natureza_conta 'D'). data_referencia veio como '2025-12-31T00:00:00Z'."
+  },
+  {
+   "path": "/msc_controle",
+   "finalidade": "Matriz de Saldos Contábeis, contas de controle (classes 7 e 8).",
+   "parametros": [
+    {
+     "nome": "id_ente",
+     "descricao": "Código IBGE",
+     "obrigatorio": "sim",
+     "valores_validos": "inteiro"
+    },
+    {
+     "nome": "an_referencia",
+     "descricao": "Exercício",
+     "obrigatorio": "sim",
+     "valores_validos": "inteiro"
+    },
+    {
+     "nome": "me_referencia",
+     "descricao": "Mês",
+     "obrigatorio": "sim",
+     "valores_validos": "inteiro"
+    },
+    {
+     "nome": "co_tipo_matriz",
+     "descricao": "Tipo",
+     "obrigatorio": "sim",
+     "valores_validos": "MSCC | MSCE"
+    },
+    {
+     "nome": "classe_conta",
+     "descricao": "Classe",
+     "obrigatorio": "sim",
+     "valores_validos": "7, 8"
+    },
+    {
+     "nome": "id_tv",
+     "descricao": "Tipo de valor",
+     "obrigatorio": "sim",
+     "valores_validos": "beginning_balance | period_change | ending_balance"
+    }
+   ],
+   "testado": "não",
+   "campos_resposta": [
+    "(segundo o spec, não observado) tipo_matriz, cod_ibge, classe_conta, conta_contabil, poder_orgao, ano_fonte_recursos, fonte_recursos, funcao, subfuncao, exercicio, mes_referencia, educacao_saude, data_referencia, entrada_msc, natureza_despesa, ano_inscricao, valor, natureza_conta, tipo_valor"
+   ],
+   "notas": ""
+  },
+  {
+   "path": "/entes",
+   "finalidade": "Cadastro básico dos entes da federação.",
+   "parametros": [
+    {
+     "nome": "(nenhum documentado)",
+     "descricao": "O spec não define parâmetros. limit e offset do ORDS funcionam.",
+     "obrigatorio": "não",
+     "valores_validos": "limit e offset inteiros (limit=3 e limit=10000 foram aceitos)"
+    }
+   ],
+   "testado": "sim. 2026-10-02T01:19:43Z: 200, 866510 bytes, 0.36 s, 5598 itens, X-Cache TCP_REMOTE_HIT. 01:20:14Z: limit=3&offset=10 (200, hasMore=true). 01:23:46Z: limit=10000&offset=5590 (200, 8 itens, limit ecoado = 10000).",
+   "campos_resposta": [
+    "cod_ibge",
+    "ente",
+    "capital",
+    "regiao",
+    "uf",
+    "esfera",
+    "exercicio",
+    "populacao",
+    "cnpj"
+   ],
+   "notas": "Diverge do spec: o spec usa an_exercicio e co_cnpj, a API devolve exercicio e cnpj (string de 14 dígitos). capital vem como string com espaços à direita ('0  ' ou '1  '), não como inteiro. Nos estados, regiao traz a região real e uf='BR'; na União, regiao='BR' e uf=null (o spec diz o contrário). O limit padrão desta rota é 6000, não 5000. exercicio=2026 em todos os itens. A população da União veio 8569324, uma anomalia: inferência, não usar."
+  },
+  {
+   "path": "/extrato_entregas",
+   "finalidade": "Extrato de relatórios homologados ou retificados e de matrizes entregues por ente e exercício. É a fonte das datas de publicação e entrega.",
+   "parametros": [
+    {
+     "nome": "id_ente",
+     "descricao": "Código IBGE",
+     "obrigatorio": "sim",
+     "valores_validos": "inteiro"
+    },
+    {
+     "nome": "an_referencia",
+     "descricao": "Exercício de referência",
+     "obrigatorio": "sim",
+     "valores_validos": "inteiro"
+    }
+   ],
+   "testado": "sim. 2026-10-02T01:22:45Z (3304557/2025, 55 itens), 01:22:58Z (2516151/2025, 39 itens), 01:23:38Z (4205704/2025, 36 itens), 01:25:46Z (3304557/2026, 34 itens), 01:26:05Z (5300108/2025, 0 itens), 01:26:16Z (53/2025, 71 itens). Todas com 200, entre 0.19 e 0.73 s.",
+   "campos_resposta": [
+    "exercicio",
+    "cod_ibge",
+    "populacao",
+    "instituicao",
+    "entregavel",
+    "periodo",
+    "periodicidade",
+    "status_relatorio",
+    "data_status",
+    "forma_envio",
+    "tipo_relatorio"
+   ],
+   "notas": "Valores observados de entregavel: 'Relatório Resumido de Execução Orçamentária', 'Relatório de Gestão Fiscal', 'Balanço Anual (DCA)', 'MSC Agregada', 'MSC Encerramento'. status_relatorio vale HO ou RE, e null para MSC; tipo_relatorio vale P, e null para MSC; forma_envio vale P, I, M, F ou CSV. Há uma linha por instituição (Prefeitura, Câmara, TCM etc.). Exemplo: o RREO de 2025, bimestre 6, do Rio tem status RE com data_status '2026-05-08T15:00:35Z', ou seja, foi retificado depois da entrega. O RREO 2026 bimestre 4 do Rio (HO em '2026-09-30T12:06:45Z') já estava no /rreo às 2026-10-02T01:25:56Z."
+  },
+  {
+   "path": "/anexos-relatorios",
+   "finalidade": "Tabela de apoio com os anexos de cada demonstrativo por esfera.",
+   "parametros": [
+    {
+     "nome": "(nenhum documentado)",
+     "descricao": "",
+     "obrigatorio": "não",
+     "valores_validos": ""
+    }
+   ],
+   "testado": "sim. 2026-10-02T01:20:24Z: 200, 10809 bytes, 168 itens, 69.26 s (TCP_MISS). 01:24:39Z: 200, 0.22 s (TCP_REMOTE_HIT), conteúdo idêntico. 01:27:29Z, com Accept-Encoding: gzip: timeout de 120 s sem receber bytes.",
+   "campos_resposta": [
+    "esfera",
+    "demonstrativo",
+    "anexo"
+   ],
+   "notas": "O campo demonstrativo é inútil para RREO e RGF: os 168 itens só trazem 'DCA' (35) ou 'QDCC' (133), e todos os anexos RREO-* e RGF-* vêm rotulados 'QDCC'. Para esfera M há anexos repetidos em 5 blocos, sem rótulo que diga qual é RREO, RREO Simplificado, RGF ou RGF Simplificado. Aparece a esfera 'C' (Consórcio), que não está no enum do spec."
+  }
+ ],
+ "paginacao": "Envelope ORDS, observado em todas as rotas: items, hasMore (boolean), limit, offset, count e links. count é o número de itens desta página, não o total; não existe campo de total. O limit padrão observado é 5000 em /rreo, /extrato_entregas e /anexos-relatorios, como dizem a página de entrada e o spec ('5.000 itens por página'), mas em /entes é 6000 (entes_p0.json: limit 6000, count 5598, hasMore false). Os parâmetros limit e offset funcionam embora não constem no spec. Exemplos: entes?limit=3&offset=10 devolveu hasMore=true, count=3 e links next=offset=13&limit=3 e prev=offset=7&limit=3. rreo do ente 33 (2025, bimestre 6, sem anexo) com limit=2&offset=1500 devolveu hasMore=true com next=offset=1502&limit=2; com offset=4998 veio count=0. Logo, o RREO completo do RJ estadual tem entre 1502 e 4998 linhas e cabe em uma página padrão. limit=10000 foi aceito (o envelope ecoou limit 10000), e o teto máximo não foi determinado. Os links (self, describedby, first, next, prev) apontam para o host interno https://host-5hrds-scan.prosubnet.vcndados.oraclevcn.com/ords/..., que não é utilizável; além disso, o self às vezes omite limit e offset. Por isso o cliente deve montar a próxima URL sozinho (offset += count enquanto hasMore=true). Não há parâmetro de ordenação nem garantia documentada de ordem estável entre páginas. Inferência: paginar com offset sem ORDER BY pode duplicar ou pular linhas se os dados mudarem entre requisições, então convém deduplicar pela chave natural.",
+ "limites_e_rate_limit": "Documentado no spec: 'ATENÇÃO: Para fins de performance, o limite é de uma (01) requisição por segundo.' A página de entrada pede 'obedecer às orientações de uso para evitar o bloqueio do serviço', mas não descreve o bloqueio (duração, código HTTP). Não foram observados cabeçalhos de rate limit (X-RateLimit-*, Retry-After) nem nenhum 429. Foram ~31 requisições sequenciais ao host apidatalake (4 de documentação e 27 à API), com intervalo de 1 s ou mais (na prática ~10 s), e não houve 429. Sem autenticação nem cota por chave. Tamanho de página padrão: 5000 itens (6000 em /entes). Limite prático observado: a origem pode demorar mais de 69 s em consulta sem cache. Cache: o Azure Front Door guarda respostas da API em cache (X-Cache TCP_REMOTE_HIT na primeira chamada de /entes e de extrato 53/2025, o que indica requisição anterior de outro cliente). Não há Cache-Control nas respostas JSON, então o TTL é desconhecido. Há ETag e If-None-Match funciona: 304 em 0.19 s às 2026-10-02T01:24:28Z.",
+ "avisos": [
+  "Ritmo: no máximo 1 requisição/s, como documentado; use folga (por exemplo 1,1 a 1,5 s), uma conexão e chamadas sequenciais. O serviço avisa que pode bloquear quem descumprir as orientações.",
+  "Volume (inferência por aritmética): id_ente é obrigatório na prática. Sem ele, ou só com co_esfera, a resposta é 200 com items=[]. Então a ingestão exige 1 requisição por ente × período (× anexo, se filtrar). Para 5598 entes a 1 req/s são cerca de 93 minutos por combinação período+anexo.",
+  "Timeouts: a origem demorou 69,26 s em /anexos-relatorios sem cache, e uma requisição com Accept-Encoding: gzip esgotou 120 s sem bytes. Use timeout de leitura de 180 s ou mais para rotas de metadados e cerca de 60 s para consultas por ente, e registre a duração de cada chamada.",
+  "Compressão: o servidor não comprime (identity mesmo com Accept-Encoding: gzip). Inferência: a variante gzip parece ter outra chave de cache no CDN e cair na origem lenta. Vale testar o cliente sem Accept-Encoding, ou com identity, já que clientes HTTP como fetch/undici mandam Accept-Encoding por padrão.",
+  "Retries limitados: no máximo 3, com backoff exponencial e jitter, só para timeout, erro de rede, 5xx ou 429 (o 429 não foi observado). Nunca repetir em 400 ou 404. Não fazer retry em paralelo.",
+  "Uma resposta vazia não é erro nem zero. Parâmetro fora do enum (nr_periodo=7), id_ente ausente e ente sem entrega devolvem todos 200 com items=[]. Valide os parâmetros localmente contra os enums do spec e cruze com /extrato_entregas antes de concluir 'sem dados'.",
+  "Erros reais: HTTP 400 ou 404 com Content-Type application/problem+json e campos code, title (no 400), message, type ('tag:oracle.com,2020:error/...') e instance (ecid). Registre o instance para suporte.",
+  "Números: valor vem como número JSON com ponto decimal, nunca vírgula. A quantidade de casas varia: inteiro sem casas ('39754264807'), uma casa por zero à direita suprimido ('31840769325.8') ou duas casas ('35863674442.81'). Há negativos ('-442945342.36'). Não houve notação exponencial na amostra. Faça o parse do token bruto como decimal (por exemplo Python json parse_float=Decimal/str, ou em JS um parser de BigNumber ou leitura do texto bruto) e grave como NUMERIC, nunca como float.",
+  "No campo valor, as colunas de percentual ('% (b/a)', '% (c/a)') também ocupam valor e não são monetárias. Filtre pelo texto exato de coluna.",
+  "Acumulados: no RREO-Anexo 01, despesas pagas só existem como 'DESPESAS PAGAS ATÉ O BIMESTRE (j)', acumulado no ano. Não existe 'pagas no bimestre', e os bimestres não podem ser somados. Um valor isolado do bimestre exigiria diferença entre bimestres, o que fica sujeito a retificações.",
+  "Hierarquia e totais: as linhas de total e subtotal ('TotalDespesas', 'SubtotalDasDespesas', 'DespesasExcetoIntraOrcamentarias', 'DespesasCorrentes'...) convivem com as subcategorias. Há rótulos duplicados ('DESPESAS (INTRA-ORÇAMENTÁRIAS) (IX)' em dois cod_conta, com o mesmo valor; 'Dívida Contratual' em dois cod_conta). Selecione por (anexo, rotulo, coluna, cod_conta) e nunca some todas as linhas.",
+  "Célula ausente não é zero: no RREO, colunas diferentes têm números diferentes de linhas (16 a 66), então células sem valor simplesmente não vêm. Na MSC, os campos vêm com null explícito e há zeros explícitos ('0').",
+  "Retificações: o extrato mostra status RE e data_status (o RREO 2025/6 do Rio foi retificado em 2026-05-08T15:00:35Z). Reingira quando data_status mudar e guarde a data de referência (exercicio+periodo), a data de publicação ou entrega (data_status do extrato) e a data de coleta (relógio próprio) separadamente. Inferência: o extrato parece trazer só o último status de cada entregável e instituição, sem histórico.",
+  "Defasagem observada (um caso): o RREO 2026, bimestre 4, do Rio foi homologado em 2026-09-30T12:06:45Z e já estava no /rreo às 2026-10-02T01:25:56Z.",
+  "Cache do CDN: as respostas podem vir do Azure Front Door (TCP_REMOTE_HIT) com TTL desconhecido, e não foi verificado quanto tempo um dado retificado leva para aparecer. Use ETag/If-None-Match (304 funciona) e registre os cabeçalhos X-Cache e ETag na coleta.",
+  "Encoding: UTF-8, embora o Content-Type não declare charset. Strings com acento (coluna, conta, instituicao, ente). Os valores de no_anexo e co_tipo_demonstrativo contêm espaços e devem ser codificados na URL ('RREO-Anexo%2001', 'RREO%20Simplificado'); o ORDS normaliza para '+'.",
+  "Strings com espaços à direita: em /entes, capital vem como '0  ' ou '1  '. Aplique trim e não confie nos tipos do spec.",
+  "Esquema real diverge do spec, então valide em runtime e tolere campos extras: entes usa exercicio e cnpj (não an_exercicio e co_cnpj); rreo e rgf têm esfera; msc_orcamentaria tem complemento_fonte; rgf não tem demonstrativo; regiao e uf estão invertidos no spec para estados e União.",
+  "DF: use id_ente=53 (esfera 'D'). Brasília 5300108 também existe em /entes (esfera 'M', capital=1), mas teve 0 entregas em 2025, enquanto o 53 teve 71. União = 1. A população da União em /entes (8569324) parece errada; não use.",
+  "populacao depende do exercício: Rio veio com 6625849 no RREO e extrato de 2025 e 6730729 em /entes (exercicio 2026). Não reaproveite a população de /entes para outros anos.",
+  "RREO vs RREO Simplificado: o /anexos-relatorios não distingue os dois (tudo vem 'QDCC'). Nenhum RREO Simplificado foi observado: os 3 municípios checados (3304557, 2516151, 4205704) tinham tipo_relatorio 'P'. Use tipo_relatorio do extrato (P/S) para escolher co_tipo_demonstrativo por ente e período.",
+  "Escopo: os anexos 08 (MDE) e 12 (Saúde) do RREO não aparecem no enum do spec nem em /anexos-relatorios. Indicadores de educação e saúde via RREO não estão disponíveis nesta API (ausência observada; não tentado por consulta).",
+  "A API é 'versão beta' (spec 1.1.0, Last-Modified 2026-06-24): o contrato pode mudar. Monitore o ETag do siconfi.yaml (\"80534262\").",
+  "Os links externalDocs do spec para tesouro.fazenda.gov.br não resolvem no DNS, e o link 'Veja mais' do Siconfi leva a uma página de 2017 sobre XBRL. Não há documentação oficial além do spec.",
+  "TLS: o certificado tem validade de 6 meses (2026-06-22 a 2026-12-22). Não fixar certificado (pinning). Use sempre https://: o http:// responde 307.",
+  "Tamanho: uma página de 5000 linhas de RREO deve ter perto de 1,9 MB (inferência a partir de ~374 bytes/linha). A resposta é chunked, sem Content-Length, então limite o tamanho máximo lido por resposta e trate o JSON como entrada não confiável (valide tipos e campos).",
+  "Hora de coleta: use o relógio próprio em UTC. O cabeçalho Date do tesourotransparente veio de cache e estava defasado ~5,5 h. data_status e data_referencia vêm em ISO 8601 com 'Z', mas o fuso real desses carimbos não foi verificado."
+ ],
+ "erros_observados": "1) Parâmetro de tipo inválido. GET https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=abc&nr_periodo=6&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2001&id_ente=3304557 (2026-10-02T01:22:23Z) devolveu HTTP 400, Content-Type application/problem+json, 372 bytes: {\"code\": \"BadRequest\", \"title\": \"Bad Request\", \"message\": \"Invalid value provided for parameter an_exercicio. The detailed error message: Character a is neither a decimal digit number, decimal point, nor \\\"e\\\" notation exponential mark..\", \"type\": \"tag:oracle.com,2020:error/BadRequest\", \"instance\": \"tag:oracle.com,2020:ecid/Ro0p8AGdFiXGzl8yoM4n9g\"}. 2) Valor fora do enum (nr_periodo=7, 01:22:30Z): HTTP 200 com items=[] e count=0, sem erro. 3) id_ente ausente (01:23:09Z) e co_esfera=E sem id_ente (01:23:19Z): HTTP 200 com items=[]. 4) Path inexistente /ords/cdwhprd/siconfi/tt/rreo_inexistente (01:26:28Z): HTTP 404, application/problem+json, {\"code\": \"NotFound\", \"message\": \"Not Found\", \"type\": \"tag:oracle.com,2020:error/NotFound\", \"instance\": \"tag:oracle.com,2020:ecid/kQX2qnOvJbf3K0cUi5iSgA\"}. 5) O link 'describedby' /ords/cdwhprd/siconfi/metadata-catalog/tt/item no host público (01:26:35Z): 404 no mesmo formato. 6) Timeout: anexos-relatorios com Accept-Encoding: gzip (01:27:29Z) esgotou 120 s sem receber bytes (curl 28). 7) http://www.tesouro.fazenda.gov.br/mdf (link do spec): falha de DNS (curl 6). Nenhum 429 ou 5xx observado.",
+ "latencia_e_tamanho_observados": "Tempo total pelo curl, de Windows/Git Bash, em 2026-10-02 entre 01:18Z e 01:30Z. Chamadas de dados: entre 0,19 e 1,09 s (entes completo 0,36 s com cache hit; RREO-Anexo 01 do Rio 1,09 s, TTFB 1,03 s; extrato 0,19 a 0,73 s; consultas com limit pequeno 0,33 a 0,64 s; 304 condicional 0,19 s). Exceção: /anexos-relatorios levou 69,26 s (TTFB 69,26 s) sem cache e 0,22 s com cache; a variante com gzip esgotou 120 s. Tamanhos: /entes 866510 bytes (5598 itens, ~155 B/item); RREO-Anexo 01 do Rio 2025/6 247524 bytes (661 itens, ~374 B/item); /anexos-relatorios 10809 bytes (168 itens); extrato 10365 a 19918 bytes (34 a 71 itens); páginas vazias ~520 a 772 bytes; erros 171 a 372 bytes; swagger yaml 44465 bytes. Transfer-Encoding chunked, sem compressão. Os relógios local e do servidor estavam ~3 s defasados (por exemplo, local 01:19:43Z contra Date 01:19:46 GMT).",
+ "redirects_e_tls": "http://apidatalake.tesouro.gov.br/docs/siconfi/ devolve 307 Temporary Redirect com Location: https://apidatalake.tesouro.gov.br/docs/siconfi/ (CDN Azure, X-Cache CONFIG_NOCACHE). Por https não houve redirect em nenhuma rota da API. Certificado: Subject CN=apidatalake.tesouro.gov.br; emissor C=US, O=DigiCert Inc, OU=www.digicert.com, CN=GeoTrust TLS RSA CA G1; validade de 2026-06-22 00:00:00 GMT a 2026-12-22 23:59:59 GMT. O curl/schannel registrou renegociação TLS durante o handshake. HSTS: nas rotas /docs vem 'max-age=10886400; includeSubDomains; preload'; nas rotas /ords vem 'max-age=31536000;includeSubDomains'. Outros cabeçalhos: X-Content-Type-Options nosniff, ETag em todas as respostas 200, Referrer-Policy e X-XSS-Protection só em /docs. Sem CORS observado na API (não foi testado com Origin). A página de entrada do tesourotransparente respondeu 200 direto (sem redirect), com HSTS 'max-age=63072000; includeSubDomains; preload' e Access-Control-Allow-Origin: https://www.tesouro.fazenda.gov.br/.",
+ "codigos_esfera_e_ente": "Códigos de ente: código IBGE inteiro. A União é 1. Estados e DF usam o código de UF com 2 dígitos (11 a 53; por exemplo 33 = Rio de Janeiro e 53 = Distrito Federal). Municípios usam 7 dígitos (por exemplo 3304557 = Rio de Janeiro e 5300108 = Brasília). /entes (2026-10-02T01:19:43Z) trouxe 5598 entes: esfera 'M' 5570, 'E' 26, 'U' 1 (cod_ibge 1, 'União', regiao 'BR', uf null) e 'D' 1 (cod_ibge 53, 'Distrito Federal', regiao 'CO', uf 'BR'). Os 26 estados vêm com uf='BR' e regiao real (NO, NE, SE, SU, CO). Valores de regiao: NE 1802, SE 1672, SU 1194, CO 472, NO 457, BR 1. capital='1  ' em 27 municípios (as 26 capitais estaduais e Brasília). O cod_ibge 2605459 (Fernando de Noronha) não aparece. Brasília 5300108 aparece como município (esfera 'M', uf 'DF') e teve 0 entregas em 2025; as entregas do DF estão no 53 (71 itens em 2025). Esferas em outros contextos: o filtro co_esfera de /rreo e /rgf aceita, segundo o spec, M = Municípios, E = Estados e DF, U = União e C = Consórcio. O campo esfera nas respostas do RREO e do RGF trouxe 'M' (Rio, município) e 'E' (ente 33). /anexos-relatorios trouxe esferas C, E, M e U. O spec Entes lista M, E, U e D. Poderes (co_poder do RGF): E Executivo, L Legislativo, J Judiciário, M Ministério Público, D Defensoria Pública.",
+ "tipos_demonstrativo_e_anexos": "co_tipo_demonstrativo, conforme o enum do spec: em /rreo, 'RREO' e 'RREO Simplificado'; em /rgf, 'RGF' e 'RGF Simplificado'. Pela documentação, o Simplificado vale só para municípios com menos de 50 mil habitantes que optaram pela publicação simplificada (no RGF, com periodicidade S, semestral). No RREO, a periodicidade da resposta é sempre 'B', mesmo no Simplificado (spec). Na resposta observada do RREO vieram demonstrativo 'RREO' e periodicidade 'B'. Nenhum Simplificado foi observado: 3 municípios checados no extrato, todos com tipo_relatorio 'P'. No extrato, tipo_relatorio P = padrão e S = simplificado. Nomes exatos dos anexos em /anexos-relatorios (2026-10-02T01:20:24Z, 168 itens): esfera U, RREO: 'RREO-Anexo 01', '02', '03', '04', '04 - RGPS', '04 - RPPS', '04.0 - RGPS', '04.1', '04.2', '04.3', '04.3 - RGPS', '04.4 - RGPS', '05', '06', '07', '09', '10 - RGPS', '10 - RPPS', '10.1 - RPPS', '10.2 - RGPS', '11', '13', '14', sempre com o prefixo 'RREO-Anexo ', por exemplo 'RREO-Anexo 04.3 - RGPS'. Esfera E, RREO: 'RREO-Anexo 01', '02', '03', '04', '04 - RPPS', '04.1', '04.2', '05', '06', '07', '09', '10 - RPPS', '11', '13', '14'. Esfera M, RREO: o mesmo conjunto de E num bloco, mais um bloco reduzido com 'RREO-Anexo 01', '02', '03', '05', '06', '07', '14'. Inferência não verificável: esse bloco reduzido talvez seja o RREO Simplificado. RGF: 'RGF-Anexo 01' a 'RGF-Anexo 06' (U, E; M em vários blocos, um deles só com 01, 02, 03, 04, 06 e outro só com 01, 02, 06). C (Consórcio): 'RGF-Anexo 01', 'RGF-Anexo 05', 'RGF-Anexo 06', 'RREO-Anexo 01', 'RREO-Anexo 02'. DCA (U, E, M): 'DCA-Anexo I-AB', 'DCA-Anexo I-C', 'DCA-Anexo I-D', 'DCA-Anexo I-E', 'DCA-Anexo I-F', 'DCA-Anexo I-G', 'DCA-Anexo I-HI', além de 'Anexo I-AB' a 'Anexo I-HI' (QDCC 2013). O campo demonstrativo de /anexos-relatorios só traz 'DCA' ou 'QDCC'; todos os anexos RREO-* e RGF-* vêm como 'QDCC'. Por isso este endpoint não serve para separar RREO, RREO Simplificado, RGF e RGF Simplificado. Divergências: 4 anexos da União ('RREO-Anexo 04.3', 'RREO-Anexo 04.4 - RGPS', 'RREO-Anexo 10.1 - RPPS', 'RREO-Anexo 10.2 - RGPS') não estão no enum no_anexo do spec, e não há anexo 08 nem 12 do RREO em nenhuma das duas fontes. Para o conceito 'despesas pagas', a fonte direta observada é o RREO-Anexo 01, coluna 'DESPESAS PAGAS ATÉ O BIMESTRE (j)' (acumulado no ano; 25 linhas no caso do Rio 2025/6). Amostras brutas e log em <scratchpad>\\siconfi\\docs\\ (siconfi.yaml, log_requisicoes.tsv, raw\\*.json e *.headers)."
+}

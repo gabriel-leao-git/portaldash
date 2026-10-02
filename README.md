@@ -47,6 +47,10 @@ Os scripts (`db:dev`, `db:migrate`, `ingest`) leem o `.env.local`
 automaticamente. Para o banco local, use nas duas variáveis
 `postgresql://postgres:portaldash@127.0.0.1:54329/portaldash`.
 
+No Windows, mantenha o repositório num caminho curto (ex.: `C:\Users\voce\portaldash`):
+o PostgreSQL embutido usado em `db:dev` e nos testes falha quando o caminho
+completo dos seus arquivos passa de 260 caracteres.
+
 ## Qualidade
 
 | Comando | O que faz |

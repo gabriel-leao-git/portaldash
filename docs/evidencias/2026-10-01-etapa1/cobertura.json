@@ -1,0 +1,195 @@
+{
+ "metodo": "Fonte: API Siconfi (Tesouro Nacional). Base usada, tirada do contrato oficial: https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/ (campo host do OpenAPI em https://apidatalake.tesouro.gov.br/docs/siconfi.yaml, lido em 2026-10-02T01:19:29Z, HTTP 200). O contrato informa limite de 1 requisição/s e páginas de 5.000 itens.\n\nExecução: 40 requisições sequenciais, com pausa de 1,1 s antes de cada uma. São 2 de documentação (/docs/siconfi/ e /docs/siconfi.yaml) e 38 à API. Todas deram HTTP 200, coletadas entre 2026-10-02T01:19:23Z e 2026-10-02T01:24:14Z (UTC), ou seja, noite de 2026-10-01 no horário de Brasília. O log completo (URL, status, bytes, horário) está em <scratchpad>\\siconfi\\cobertura\\log_requisicoes.jsonl.\n\nPassos:\n(1) GET /entes (sem parâmetros): 5.598 itens, limit 6000, hasMore=false. Filtrei esfera em {E, D, U}: 26 com 'E', 1 com 'D' (Distrito Federal, cod_ibge 53) e 1 com 'U' (União, cod_ibge 1). O id_ente é o cod_ibge; o contrato descreve id_ente como 'Código IBGE do Ente'.\n(2) Teste de consulta com muitos entes de uma vez: GET /rreo?an_exercicio=2025&nr_periodo=6&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2001&co_esfera=E, sem id_ente, devolveu HTTP 200 com 0 itens. GET /extrato_entregas?id_ente=11, sem an_referencia, também devolveu 0 itens. Não existe consulta que traga vários entes de uma vez: o contrato marca id_ente (e an_referencia no extrato) como obrigatórios.\n(3) Meio mais econômico: GET /extrato_entregas?id_ente={cod}&an_referencia={ano}. Uma requisição por ente e por ano traz todos os bimestres do RREO daquele ano, com status (HO/RE) e data_status, e ainda RGF, DCA e MSC. Rodei 2026 para os 28 entes (27 estaduais + União) e 2025 só para União, SP, RJ e DF, por causa do limite de cerca de 40 requisições.\n(4) Comparabilidade: GET /rreo?an_exercicio=2026&nr_periodo=4&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2001 com co_esfera=U&id_ente=1 (834 itens) e com co_esfera=E&id_ente=35 (703 itens). Também a mesma consulta para 2025 b6 com id_ente=35 (707 itens). Os valores foram lidos com parse_float=str/Decimal, sem float.\n\nAmostras brutas na pasta acima: entes_raw.json, entes_estados_df_uniao.json, extrato_2026/*.json (27 arquivos), extrato_2025/*.json (3), extrato_uniao_2025.json, extrato_uniao_2026.json, rreo_2026_b4_a01_uniao.json, rreo_2026_b4_a01_SP.json, rreo_2025_b6_a01_SP.json, siconfi_openapi.yaml e cobertura_resumo.json (consolidação por ente).",
+ "periodos_testados": [
+  "RREO exercício 2025, bimestre 6 (exercício fechado): extrato 2025 consultado só para União (1), SP (35), RJ (33) e DF (53); dados do Anexo 01 consultados só para SP",
+  "RREO exercício 2026, bimestres 1 a 4: extrato 2026 consultado para os 28 entes. O bimestre 4 (jul–ago) é o período mais recente com dados; o bimestre 5 não aparece em nenhum extrato",
+  "RREO-Anexo 01 de 2026, bimestre 4: União (id_ente=1) e SP (id_ente=35), para a comparação de colunas e contas",
+  "Testes negativos: /rreo sem id_ente (co_esfera=E) e /extrato_entregas sem an_referencia, ambos com 0 itens"
+ ],
+ "ufs": [
+  {
+   "uf": "BR (União)",
+   "id_ente": "1",
+   "nome": "União",
+   "situacao": "Identificação: em /entes, esfera='U', regiao='BR', uf=null; no /rreo vem uf='BR'. 2025: b1 a b6 todos HO. b1 2025-05-09T22:31:07Z; b2 2025-05-30T08:41:54Z; b3 2025-07-31T22:32:21Z; b4 2025-09-30T10:18:41Z; b5 2025-11-25T16:54:55Z; b6 HO 2026-01-30T22:36:41Z (forma P). DCA 2025: HO 2026-04-29T14:38:58Z. 2026: b1 HO 2026-03-31T10:56:42Z; b2 HO 2026-05-29T14:59:49Z; b3 HO 2026-07-29T17:45:03Z; b4 HO 2026-09-30T14:28:06Z. Nenhum RE observado. O Anexo 01 de 2026 b4 já estava disponível no /rreo na coleta (834 itens). Atenção: o b1 de 2025 está HO com data posterior ao fim do bimestre seguinte, então a data pode não ser a da entrega original."
+  },
+  {
+   "uf": "RO",
+   "id_ente": "11",
+   "nome": "Rondônia",
+   "situacao": "2026: b1 a b4 entregues, todos HO. b1 2026-03-27T15:05:08Z; b2 2026-05-29T09:45:09Z; b3 2026-07-28T09:41:55Z; b4 2026-09-29T16:11:28Z (forma M). 2025 b6: não verificado."
+  },
+  {
+   "uf": "AC",
+   "id_ente": "12",
+   "nome": "Acre",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-30T16:59:31Z (P); b2 2026-05-28T17:51:51Z (M); b3 2026-07-29T19:40:55Z (P); b4 2026-09-29T16:36:57Z (M). 2025 b6: não verificado."
+  },
+  {
+   "uf": "AM",
+   "id_ente": "13",
+   "nome": "Amazonas",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-30T22:00:44Z; b2 2026-05-20T14:24:35Z; b3 2026-07-30T20:42:51Z; b4 2026-09-25T16:22:08Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "RR",
+   "id_ente": "14",
+   "nome": "Roraima",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-27T17:15:11Z; b2 2026-05-29T10:11:58Z; b3 2026-07-28T12:56:14Z; b4 2026-09-30T09:53:57Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "PA",
+   "id_ente": "15",
+   "nome": "Pará",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-30T18:05:36Z; b2 2026-05-29T09:18:01Z; b3 2026-07-30T18:59:30Z; b4 2026-09-29T09:20:46Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "AP",
+   "id_ente": "16",
+   "nome": "Amapá",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-30T20:14:33Z; b2 2026-05-30T22:22:34Z; b3 2026-07-27T14:50:50Z; b4 2026-09-28T16:20:05Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "TO",
+   "id_ente": "17",
+   "nome": "Tocantins",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-27T11:35:07Z; b2 2026-05-28T10:51:27Z; b3 2026-07-30T09:13:40Z; b4 2026-09-30T08:53:43Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "MA",
+   "id_ente": "21",
+   "nome": "Maranhão",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-30T16:25:29Z; b2 2026-05-29T17:32:34Z; b3 2026-07-30T16:52:39Z; b4 2026-09-29T20:37:48Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "PI",
+   "id_ente": "22",
+   "nome": "Piauí",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-30T16:20:20Z; b2 2026-05-28T07:23:16Z; b3 2026-07-29T17:14:46Z; b4 2026-09-29T08:01:28Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "CE",
+   "id_ente": "23",
+   "nome": "Ceará",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-30T13:45:09Z; b2 2026-05-29T11:13:10Z (P); b3 2026-07-30T14:35:00Z; b4 2026-09-30T13:25:56Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "RN",
+   "id_ente": "24",
+   "nome": "Rio Grande do Norte",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-30T16:32:28Z; b2 2026-05-29T17:54:32Z; b3 2026-07-29T14:42:25Z; b4 2026-09-18T14:47:08Z, o b4 mais cedo entre os estados. 2025 b6: não verificado."
+  },
+  {
+   "uf": "PB",
+   "id_ente": "25",
+   "nome": "Paraíba",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-30T09:44:19Z; b2 2026-05-29T14:19:09Z; b3 2026-07-30T11:11:12Z; b4 2026-09-30T15:41:25Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "PE",
+   "id_ente": "26",
+   "nome": "Pernambuco",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-30T14:13:18Z; b2 2026-05-29T09:02:24Z; b3 2026-07-30T15:38:33Z; b4 2026-09-30T11:59:58Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "AL",
+   "id_ente": "27",
+   "nome": "Alagoas",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-30T17:35:13Z; b2 2026-05-28T20:36:27Z; b3 2026-07-30T18:05:13Z; b4 2026-09-29T18:08:23Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "SE",
+   "id_ente": "28",
+   "nome": "Sergipe",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-30T22:43:57Z; b2 2026-05-29T16:02:34Z; b3 2026-07-29T19:54:36Z; b4 2026-09-30T22:34:57Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "BA",
+   "id_ente": "29",
+   "nome": "Bahia",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-27T15:59:59Z; b2 2026-05-28T15:41:13Z; b3 2026-07-27T18:59:21Z; b4 2026-09-30T17:09:29Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "MG",
+   "id_ente": "31",
+   "nome": "Minas Gerais",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-30T22:41:22Z; b2 2026-05-30T22:33:26Z; b3 2026-07-30T22:31:34Z; b4 2026-09-30T22:30:39Z. Todas as datas caem perto das 22:30Z do último dia. 2025 b6: não verificado."
+  },
+  {
+   "uf": "ES",
+   "id_ente": "32",
+   "nome": "Espírito Santo",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-30T18:57:38Z; b2 2026-05-29T17:20:02Z (P); b3 2026-07-30T16:54:29Z; b4 2026-09-30T15:27:26Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "RJ",
+   "id_ente": "33",
+   "nome": "Rio de Janeiro",
+   "situacao": "2025: b1 RE 2025-06-18T22:31:27Z; b2 a b5 HO (2025-05-30T14:29:56Z, 2025-07-30T17:54:44Z, 2025-09-30T22:31:44Z, 2025-11-27T11:22:08Z). b6 entregue mas RETIFICADO: RE 2026-05-06T17:14:12Z, no mesmo dia da MSC de Encerramento (2026-05-06). DCA 2025: RE 2026-05-08T10:22:12Z. 2026: b1 RE 2026-03-30T11:28:18Z; b2 RE 2026-05-29T12:32:07Z; b3 HO 2026-07-30T16:23:58Z; b4 HO 2026-09-30T22:36:35Z, o b4 mais tardio observado."
+  },
+  {
+   "uf": "SP",
+   "id_ente": "35",
+   "nome": "São Paulo",
+   "situacao": "2025: b1 RE 2025-07-28T17:56:58Z; b2 a b5 HO (2025-05-29T15:32:28Z, 2025-07-28T12:52:22Z, 2025-09-30T10:13:10Z, 2025-11-28T14:16:48Z). b6 entregue mas RETIFICADO: RE 2026-04-16T16:07:44Z, um dia antes da MSC de Encerramento (2026-04-17). DCA 2025: HO 2026-04-30T14:38:12Z. 2026: b1 RE 2026-06-02T16:09:31Z, data posterior à do b2; b2 HO 2026-05-29T14:14:24Z; b3 HO 2026-07-30T13:05:10Z; b4 HO 2026-09-30T11:45:11Z. Os dados do Anexo 01 de 2026 b4 (703 itens) e de 2025 b6 (707 itens) estavam disponíveis no /rreo na coleta, com uf='SP' no /rreo."
+  },
+  {
+   "uf": "PR",
+   "id_ente": "41",
+   "nome": "Paraná",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-30T22:57:03Z; b2 2026-05-30T22:31:22Z; b3 2026-07-29T13:35:46Z; b4 2026-09-30T22:33:51Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "SC",
+   "id_ente": "42",
+   "nome": "Santa Catarina",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-27T16:40:55Z; b2 2026-05-27T17:45:16Z; b3 2026-07-20T14:39:44Z; b4 2026-09-29T16:42:29Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "RS",
+   "id_ente": "43",
+   "nome": "Rio Grande do Sul",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-30T11:35:09Z; b2 2026-05-29T16:10:48Z; b3 2026-07-29T10:49:34Z; b4 2026-09-30T09:40:35Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "MS",
+   "id_ente": "50",
+   "nome": "Mato Grosso do Sul",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-30T09:34:48Z; b2 2026-05-29T16:44:24Z; b3 2026-07-30T11:24:44Z; b4 2026-09-29T12:24:53Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "MT",
+   "id_ente": "51",
+   "nome": "Mato Grosso",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-27T18:59:30Z; b2 2026-05-28T10:42:08Z; b3 2026-07-29T12:06:45Z; b4 2026-09-24T16:33:07Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "GO",
+   "id_ente": "52",
+   "nome": "Goiás",
+   "situacao": "2026: b1 a b4 HO. b1 2026-03-27T17:18:27Z; b2 2026-05-29T14:46:16Z; b3 2026-07-29T16:31:03Z; b4 2026-09-29T17:34:48Z. 2025 b6: não verificado."
+  },
+  {
+   "uf": "DF",
+   "id_ente": "53",
+   "nome": "Distrito Federal",
+   "situacao": "Identificação: em /entes vem esfera='D', não 'E'; no /rreo o filtro co_esfera=E inclui o DF, segundo o contrato. 2025: b1 a b5 HO (2025-03-30T22:36:36Z, 2025-05-30T15:30:33Z, 2025-07-30T17:37:59Z, 2025-09-29T16:12:39Z, 2025-11-28T16:57:43Z; forma F, exceto o b3, forma P). b6 entregue mas RETIFICADO: RE 2026-05-08T16:59:04Z (forma M), mesma data da MSC de Encerramento e da DCA 2025 (RE 2026-05-08T16:59:48Z). 2026: b1 a b4 HO, forma F. b1 2026-03-30T12:45:20Z; b2 2026-05-29T17:41:02Z; b3 2026-07-29T17:12:55Z; b4 2026-09-30T15:42:12Z."
+  }
+ ],
+ "resumo_cobertura": "Período mais recente com dados, 2026 b4 (jul–ago): 28 de 28 entes (26 estados + DF + União) têm o RREO no extrato. Os 4 bimestres de 2026 (b1 a b4) estão presentes para todos, sem nenhuma ausência. As homologações do b4 vão de 2026-09-18T14:47:08Z (RN) a 2026-09-30T22:36:35Z (RJ); 26 dos 28 caíram entre 2026-09-24 e 2026-09-30. O b5 de 2026 ainda não aparece em nenhum extrato.\n\nRetificações em 2026: RJ b1 e b2 e SP b1. Todos os demais estão HO.\n\n2025 b6 (exercício fechado): verifiquei só 4 de 28 entes. A União está HO (2026-01-30T22:36:41Z). SP, RJ e DF estão todos RE, com retificação entre 2026-04-16 e 2026-05-08, meses depois do prazo e coincidindo com as datas da MSC de Encerramento ou da DCA. Os outros 24 estados ficaram sem verificação: cobri-los custaria mais 24 requisições ao extrato 2025, e o limite não comportava.\n\nOs dados de RREO do b4 de 2026 já estavam servidos pelo /rreo para União e SP cerca de 11 a 14 horas após a homologação. Para os outros entes isso não foi testado.\n\nRessalva: o extrato mostra homologação e retificação, mas não garante que o /rreo já tenha os dados. Além disso, o /rreo não informa qual versão (HO ou RE) está servindo.",
+ "comparabilidade_uniao_estados": "Comparei RREO-Anexo 01, 2026 b4, União (id_ente=1) contra SP (id_ente=35). Concluo apenas o que os dados mostram.\n\n(a) Estrutura: os itens têm os mesmos 15 campos (exercicio, demonstrativo, periodo, periodicidade, instituicao, cod_ibge, uf, populacao, anexo, esfera, rotulo, coluna, cod_conta, conta, valor) e o mesmo rotulo único 'Padrão'. O conjunto de 16 colunas é idêntico nos dois, incluindo 'DESPESAS EMPENHADAS NO BIMESTRE', 'DESPESAS EMPENHADAS ATÉ O BIMESTRE (f)', 'DESPESAS LIQUIDADAS NO BIMESTRE', 'DESPESAS LIQUIDADAS ATÉ O BIMESTRE (h)' e 'DESPESAS PAGAS ATÉ O BIMESTRE (j)'.\n\n(b) Conceito de 'pagas': só existe a coluna acumulada 'DESPESAS PAGAS ATÉ O BIMESTRE (j)'. Não há 'pagas no bimestre', ao contrário de empenhadas e liquidadas. No b6 (SP 2025) aparece também a coluna 'INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS (k)'; não testei o b6 da União.\n\n(c) Contas: na coluna de pagas, 21 cod_conta são comuns, como DespesasExcetoIntraOrcamentarias, DespesasCorrentes, PessoalEEncargosSociais, JurosEEncargosDaDivida, DespesasDeCapital, SubtotalDasDespesas e TotalDespesas.\n- Só a União tem: TransferenciasAEstadosDistritoFederalEMunicipios, BeneficiosPrevidenciarios e o bloco AmortizacaoRefinanciamentoDaDivida, este com 7 subcontas e rótulo 'AMORTIZAÇÃO DA DÍVIDA / REFINANCIAMENTO (XII)'.\n- Só SP tem: TransferenciasAMunicipios, JurosEEncargosDaDividaIntra e AmortizacaoDaDividaIntra.\n\n(d) Totais não comparáveis entre si: na União, TotalDespesas = '3999925192391.91', que é SUBTOTAL (XI) '2858865426569.12' + REFINANCIAMENTO (XII) '1141059765822.79'; conferi com Decimal. Em SP, TotalDespesas = SubtotalDasDespesas = '231294096928.76', porque não há a linha de refinanciamento. Linhas candidatas mais homogêneas: DespesasExcetoIntraOrcamentarias, com 'pagas até b4 2026' de '2821965337713.47' na União e '224014883002.29' em SP, e SubtotalDasDespesas. Isso ainda precisa de validação conceitual.\n\n(e) Rótulos: a numeração romana difere entre União e estado no mesmo período. Na União: 'DESPESAS (EXCETO INTRA-ORÇAMENTÁRIAS) (IX)' e TOTAL (XIII); em SP: '(VIII)' e TOTAL (XII). Em SP, os rótulos foram iguais em 2025 b6 e 2026 b4. A chave estável é cod_conta, não o texto de conta.\n\n(f) Hierarquia: totais e subcategorias convivem na mesma coluna. Correntes + Capital = Exceto Intra, e Exceto Intra + Intra = Subtotal, conferido com Decimal nos 3 arquivos. Há ainda duas cod_conta para a mesma linha: DespesasIntraOrcamentarias e DespesasIntraOrcamentariasTotal, com o mesmo rótulo e o mesmo valor. Somar as duas conta em dobro.\n\n(g) Inferência, a validar: a linha da União 'Transferências a Estados, DF e Municípios' (pagas até b4 2026 = '531673082300.42') indica que somar União + estados pode duplicar valores entre esferas.\n\n(h) O campo uf vem como 'BR' na União e 'SP' em SP; o campo esfera vem como U e E.",
+ "uniao": "id_ente=1. Em /entes vem ente='União', esfera='U', regiao='BR', uf=null e cnpj='00394411000109'. No /rreo, instituicao='Governo Federal', uf='BR' e esfera='U'.\n\nRREO 2025: b1 a b6 HO; b6 em 2026-01-30T22:36:41Z.\nRREO 2026: b1 a b4 HO; b4 em 2026-09-30T14:28:06Z.\nDCA 2025: HO 2026-04-29T14:38:58Z.\n\nNo extrato da União, RGF e MSC aparecem por instituição: são 72 instituições na MSC Agregada por mês (por exemplo, TRTs, TREs, Câmara, Senado), meses 1 a 12 de 2025 e 1 a 8 de 2026. A MSC de Encerramento de 2025 foi entregue em 2026-04-01.\n\nO campo populacao da União é 8569324 em /entes, no extrato e no /rreo. Esse valor não condiz com a população do país (inferência), então não deve ser usado em cálculo per capita da União.\n\nConsulta /rreo usada: co_esfera=U&id_ente=1, que devolveu 834 itens no Anexo 01 de 2026 b4.",
+ "alternativas_anuais": "Tudo abaixo vem do contrato oficial siconfi.yaml e dos extratos. Não consultei os dados de DCA nem de MSC.\n\nDCA:\n- Endpoint /dca, com an_exercicio, no_anexo (opcional; anexos 'DCA-Anexo I-AB', 'I-C', 'I-D', 'I-E', 'I-F', 'I-G', 'I-HI'; os anexos sem o prefixo DCA são do QDCC de 2013) e id_ente obrigatório.\n- Periodicidade anual.\n- O exemplo do contrato mostra conta '12.363 - Ensino Profissional' e coluna 'Inscrição de Restos a Pagar Processados'.\n- Entregas observadas da DCA 2025: União HO 2026-04-29T14:38:58Z; SP HO 2026-04-30T14:38:12Z; RJ RE 2026-05-08T10:22:12Z; DF RE 2026-05-08T16:59:48Z. Defasagem de cerca de 4 meses após o fim do exercício.\n\nMSC:\n- Endpoints /msc_orcamentaria (classes 5 e 6), /msc_patrimonial (1 a 4) e /msc_controle (7 e 8). Todos os filtros são obrigatórios: id_ente, an_referencia, me_referencia, co_tipo_matriz (MSCC = mensal/agregada; MSCE = encerramento anual), classe_conta e id_tv (beginning_balance, period_change, ending_balance).\n- A orçamentária traz funcao, subfuncao, natureza_despesa, fonte_recursos, poder_orgao, ano_inscricao, educacao_saude e data_referencia, com granularidade mensal.\n- Entregas observadas: todos os 27 entes estaduais têm 'MSC Agregada' dos meses 1 a 8 de 2026, entregue por instituição (4 a 9 instituições por estado; 72 na União). A matriz do mês 8 do 'Governo' foi entregue entre 2026-09-10 e 2026-09-30, defasagem de cerca de 10 a 30 dias.\n- A 'MSC Encerramento' de 2025 foi entregue em: União 2026-04-01, SP 2026-04-17, RJ 2026-05-06 e DF 2026-05-08.\n- Não verificado: quais contas da MSC correspondem a 'despesa paga' e se a soma por instituição bate com o RREO.",
+ "notas": [
+  "Para quem for implementar: consulta sem id_ente ou sem an_referencia devolve HTTP 200 com 0 itens, não um erro. Uma resposta vazia não significa 'não entregou' nem valor zero; a ingestão precisa tratar 'sem dados' como estado próprio.",
+  "valor vem como número JSON, não como string; o contrato diz 'type: integer, format: float'. Não observei notação exponencial nem null nos 3 arquivos de RREO. É preciso fazer o parse com Decimal (parse_float=Decimal) para não perder centavos.",
+  "/entes diverge do contrato. Os estados vêm com uf='BR' e regiao igual à região geográfica, enquanto o contrato diz que regiao vale 'BR' para estados. Os campos se chamam cnpj e exercicio, e não co_cnpj e an_exercicio como no contrato. capital vem como string '0  ' ou '1  ', com espaços. As siglas de UF dos estados, exceto SP, foram inferidas do código IBGE e não vistas nesta coleta; o /rreo traz a sigla no campo uf (visto 'SP').",
+  "Os links de paginação do ORDS nas respostas apontam para um host interno (host-5hrds-scan.prosubnet.vcndados.oraclevcn.com). A paginação deve ser montada com o host público, usando offset e limit. Tamanho de página: 5.000 em rreo e extrato, 6.000 em entes. Todas as consultas feitas aqui voltaram com hasMore=false.",
+  "O extrato tem uma única linha por entregável, período e instituição, sem histórico. Em itens RE, a data original de homologação não aparece. data_status parece ser a data da retificação: o b1 2026 de SP está RE em 2026-06-02, depois do b2 HO em 2026-05-29. Mas o b1 2026 do RJ está RE em 2026-03-30T11:28Z, então isso não é conclusivo. Também não dá para garantir que uma data HO seja a da entrega original: o b1 2025 da União está HO em 2025-05-09.",
+  "Achado relevante para o PortalDash: nos 3 estados verificados (SP, RJ, DF), o b6 de 2025 foi retificado de 2026-04-16 a 2026-05-08, junto com a MSC de Encerramento e a DCA. Os números do b6 podem mudar meses depois do prazo (inferência). O portal deveria reingerir e versionar os dados, registrando a data de coleta, porque o /rreo não traz campo de versão nem de data.",
+  "Os horários de data_status vêm com sufixo 'Z'. Várias homologações caem perto das 22:30Z no dia do prazo (MG em todos os bimestres, PR, RJ, SE). Não verifiquei se o fuso é de fato UTC.",
+  "Datas de referência, publicação e coleta: a referência é o exercício e o bimestre; a publicação ou entrega é o data_status do extrato; a coleta é o coleta_utc no log. São coisas distintas.",
+  "Pendência sugerida: rodar o extrato de 2025 para os 24 estados restantes (24 requisições, de forma sequencial) para fechar a cobertura do b6. Opcionalmente, conferir o /rreo do b4 de 2026 para os estados homologados mais tarde, como RJ, MG, PR e SE, perto das 22:30Z do dia 30/09.",
+  "Observações paralelas: no extrato 2026 do RJ, o RGF Q2 não tem linha da Defensoria (5 de 6 instituições). No Pará, as linhas de MSC do 'Ministério Público de Contas' aparecem só nos meses 1 a 4. Isso não afeta o RREO."
+ ]
+}

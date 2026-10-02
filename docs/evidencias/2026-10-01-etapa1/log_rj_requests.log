@@ -1,0 +1,16 @@
+2026-10-02T01:18:55Z	200	2139	https://apidatalake.tesouro.gov.br/docs/siconfi/	docs_index.html
+2026-10-02T01:18:59Z	200	44465	https://apidatalake.tesouro.gov.br/docs/siconfi.yaml	siconfi_openapi.yaml
+2026-10-02T01:19:09Z	200	866510	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/entes	entes.json
+2026-10-02T01:19:21Z	000		https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/anexos-relatorios	anexos_relatorios.json
+2026-10-02T01:21:32Z	200	29722	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/extrato_entregas?id_ente=33&an_referencia=2025	extrato_2025.json
+2026-10-02T01:21:43Z	200	(HEAD)	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/extrato_entregas?id_ente=33&an_referencia=2025	(HEAD headers only)
+2026-10-02T01:21:51Z	200	18361	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/extrato_entregas?id_ente=33&an_referencia=2026	extrato_2026.json
+2026-10-02T01:22:05Z	200	1783591	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2025&nr_periodo=6&co_tipo_demonstrativo=RREO&id_ente=33	rreo_2025_p6_all_page1.json
+2026-10-02T01:23:35Z	200	238124	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2025&nr_periodo=5&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2001&id_ente=33	rreo_2025_p5_anexo01.json
+2026-10-02T01:23:46Z	200	1413985	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2026&nr_periodo=4&co_tipo_demonstrativo=RREO&id_ente=33	rreo_2026_p4_all.json
+2026-10-02T01:24:58Z	200	10809	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/anexos-relatorios	anexos_relatorios.json (retry max-time 300)
+2026-10-02T01:25:31Z	200	1605	https://portal.fazenda.rj.gov.br/contabilidade/relatorios-fiscais/	sefazrj_relatorios_fiscais.html
+2026-10-02T01:26:01Z	200	63766	https://www.transparencia.rj.gov.br/	transparencia_rj_home.html
+2026-10-02T01:26:08Z	200	42356	https://www.transparencia.rj.gov.br/transparencia/gestao-fiscal-e-governamental/	transparencia_rj_gestao_fiscal.html
+2026-10-02T01:26:16Z	200	611	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2026&nr_periodo=5&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2001&id_ente=33	rreo_2026_p5_anexo01_vazio.json
+2026-10-02T01:26:23Z	200	18361	https://apidatalake.tesouro.gov.br/ords/siconfi/tt/extrato_entregas?id_ente=33&an_referencia=2026	extrato_2026_hostlegado.json

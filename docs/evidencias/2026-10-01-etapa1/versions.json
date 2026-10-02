@@ -1,0 +1,254 @@
+{
+ "verificado_em": "2026-10-01, entre ~22h e 23h BRT. Fontes: registry do npm (npm view), GitHub Advisory Database (api.github.com/advisories e /repos/vercel/next.js/security-advisories), nodejs.org/dist/index.json, o schedule.json do nodejs/Release, nextjs.org, postgresql.org, docs.railway.com, railpack.com, owasp.org e csrc.nist.gov. Também fiz testes práticos na pasta temporária desta máquina (Windows): PGlite 0.5.8, embedded-postgres 18.4.0-beta.17 com pg 8.23.1, postgres.js 3.4.9 e drizzle-orm 0.45.3, e ESLint 10.11.0 junto com eslint-config-next 16.3.8.",
+ "componentes": [
+  {
+   "componente": "Node.js",
+   "versao_recomendada": "24.21.0 (linha 24 'Krypton'). Fixar com engines.node \">=24.21.0 <25\" e .nvmrc com '24.21.0' ou '24'",
+   "fonte_url": "https://nodejs.org/en/about/previous-releases",
+   "status_suporte": "Pelo github.com/nodejs/Release/blob/main/schedule.json: a v24 está em Active LTS até 2026-10-20, entra em Maintenance nessa data e tem EOL em 2028-04-30. A v22 'Jod' está em Maintenance LTS até 2027-04-30 (última versão 22.23.3). A v26 é a Current (26.10.0), vira LTS em 2026-10-28 e tem EOL em 2029-04-30. A v20 já é EOL. A página do nodejs.org diz: 'Production applications should only use Active LTS or Maintenance LTS releases'.",
+   "advisories_relevantes": [
+    "O Node local (24.13.1) está desatualizado e perdeu 3 releases de segurança da linha 24: v24.14.1 (2026-03-24), v24.17.0 (2026-06-17) e v24.18.1 (2026-07-28). Fonte: https://nodejs.org/dist/index.json, campo security=true",
+    "O último release de segurança das linhas 22, 24 e 26 saiu em 2026-07-28 (22.23.2, 24.18.1 e 26.5.1). Os releases posteriores (24.21.0 em 2026-09-07, 22.23.3 em 2026-09-23) não têm a marca de segurança"
+   ],
+   "notas": "Recomendo a v24: é LTS, todas as ferramentas suportam, e o Vitest 5 exige ^22.12, ^24 ou >=26. Vale reavaliar a v26 depois de 2026-10-28. Importante: o Railpack usa 'lts' como padrão quando não há versão fixada, então a partir de 28/10 ele passaria a usar a 26 sozinho. Por isso a versão precisa ficar fixa em engines e no .nvmrc, ou na variável RAILPACK_NODE_VERSION."
+  },
+  {
+   "componente": "pnpm",
+   "versao_recomendada": "11.28.2, a última da 11.x, fixada no campo packageManager do package.json. A máquina tem 11.24.0",
+   "fonte_url": "https://pnpm.io/blog/releases/11.0",
+   "status_suporte": "No npm: latest = 12.8.1 (a 12.0.0 saiu em 2026-08-26), latest-11 = 11.28.2 e next-11 = 11.28.3, o que indica que a linha 11 ainda recebe releases. Não li as notas da versão 12.",
+   "advisories_relevantes": [],
+   "notas": "O que mudou na pnpm 11, segundo o blog oficial: exige Node 22 ou mais novo. minimumReleaseAge passa a ser 1440 por padrão, ou seja, pacotes publicados há menos de 1 dia não instalam. blockExoticSubdeps passa a ser true. allowBuilds (um mapa de pacote para booleano) substitui onlyBuiltDependencies e ignoredBuiltDependencies. O .npmrc fica só para autenticação e registry, e o resto da configuração vai para o pnpm-workspace.yaml. O create-next-app 16.3.8 já detecta pnpm 11 e grava 'allowBuilds: sharp: false, unrs-resolver: false'. Se o embedded-postgres for usado, o pacote @embedded-postgres/<plataforma> tem postinstall (scripts/hydrate-symlinks.js) e precisa entrar no allowBuilds."
+  },
+  {
+   "componente": "Next.js",
+   "versao_recomendada": "16.3.8, publicada em 2026-09-30. É a versão mínima sem advisories conhecidos na linha 16",
+   "fonte_url": "https://nextjs.org/blog/september-2026-security-release",
+   "status_suporte": "Pela https://nextjs.org/support-policy: a 16.x está em Active LTS e a 15.x em Maintenance LTS (última versão 15.5.27). A 14.x e anteriores não têm mais suporte. A 16.3.8 exige Node >=20.9.0 (engines) e aceita react/react-dom ^18.2.0 ou ^19.0.0 como peer.",
+   "advisories_relevantes": [
+    "GHSA-cjq9-62q9-8jv4 / CVE-2026-94483 (High): SSRF na Image Optimization quando há images.remotePatterns. Corrigido na 16.3.8 / 15.5.27 (2026-09-30)",
+    "GHSA-4jqv-mc3x-m676 / CVE-2026-94543 (Medium): cache poisoning de páginas SSG/ISR em apps self-hosted com Pages Router. Corrigido na 16.3.8",
+    "GHSA-mcj8-r9mp-w47p / CVE-2026-94484 (Medium): cache poisoning em SSG/ISR quando há página catch-all na raiz. Corrigido na 16.3.8",
+    "GHSA-f87g-xv8r-7p7x / CVE-2026-94485 (Medium): rotas de metadata image (opengraph-image) ignoram dynamicParams em builds com webpack (Turbopack não é afetado). Corrigido na 16.3.8",
+    "GHSA-h694-7cp9-m8p3 (Medium; a API do advisory dá o CVE-2026-103004): 'use cache' aninhado com root params gera chave de cache errada. Corrigido na 16.3.8",
+    "GHSA-3w37-wq28-93x7 / CVE-2026-94544 (Medium): uma fill pendente de 'use cache' pode vazar conteúdo de Draft Mode para respostas normais. Corrigido na 16.3.8",
+    "GHSA-39w2-rjm5-chcv / CVE-2026-94486 (Low): o endpoint MCP do next dev não valida a origem da requisição. Afeta só desenvolvimento. Corrigido na 16.3.8",
+    "GHSA-vcvr-r3jv-pc5j / CVE-2026-94545 (Critical): RCE em next/og ImageResponse (>=16.2.0 e <16.3.6). Corrigido na 16.3.6 / 15.5.26 (2026-09-22)",
+    "GHSA-2xp9-vwfh-vxw4 (Critical): RCE sem autenticação na Image Optimization API com arquivos AVIF. Corrigido na 16.3.3 / 15.5.24 (2026-08-25)",
+    "GHSA-p293-qw3h-jr36 / CVE-2026-75604 (Critical): RCE sem autenticação em servidores rodando em Windows. Corrigido na 16.3.3 / 15.5.24",
+    "Lote de 2026-07-22, corrigido na 16.2.11 / 15.5.21: GHSA-6gpp-xcg3-4w24 / CVE-2026-64642 (bypass de Middleware/Proxy com Turbopack e locale único); GHSA-89xv-2m56-2m9x / CVE-2026-64649 (SSRF em Server Actions com custom server); GHSA-m99w-x7hq-7vfj / CVE-2026-64641 (DoS via Server Actions); GHSA-4c39-4ccg-62r3 / CVE-2026-64646 (payload de Server Action sem limite no Edge); GHSA-955p-x3mx-jcvp / CVE-2026-64643 (exposição de endpoints internos de Server Functions); GHSA-68g3-v927-f742 e GHSA-4633-3j49-mh5q (cache confusion em requisições com body); GHSA-p9j2-gv94-2wf4 / CVE-2026-64645 (SSRF em rewrites)",
+    "Lote de 2026-05-11, corrigido na 16.2.5 / 16.2.6: bypasses de Middleware/Proxy GHSA-267c-6grr-h53f / CVE-2026-44575, GHSA-26hh-7cqf-hhc6 / CVE-2026-45109 (completa uma correção anterior, ficou na 16.2.6) e GHSA-492v-c6pp-mqqv / CVE-2026-44574; cache poisoning de RSC GHSA-wfc6-r584-vfw7 / CVE-2026-44576; DoS com Server Components GHSA-8h8q-6873-q5fj; XSS com nonces de CSP GHSA-ffhc-5mcf-pf4q / CVE-2026-44581"
+   ],
+   "notas": "Nos advisories de 30/09, a API do repositório mostra 'patched: 16.3.?'. A versão exata 16.3.8 / 15.5.27 vem do post oficial do blog. Houve 3 releases de segurança em cerca de 5 semanas (25/08, 22/09 e 30/09), então é preciso acompanhar https://github.com/vercel/next.js/security/advisories. O 'next lint' foi removido na v16.0.0 e o lint passa a rodar com 'eslint' direto, usando flat config em eslint.config.mjs (fonte: https://nextjs.org/docs/app/api-reference/config/eslint). No 16.3, o next build faz a checagem de tipos chamando o tsc local do projeto (experimental.useTypeScriptCli) e já aceita TypeScript 7 (https://nextjs.org/blog/next-16-3)."
+  },
+  {
+   "componente": "React / React DOM",
+   "versao_recomendada": "19.2.8, a versão que o create-next-app 16.3.8 fixa (nextjsReactPeerVersion). A 19.3.0 (2026-09-09) também não aparece em nenhuma faixa vulnerável conhecida",
+   "fonte_url": "https://react.dev/versions",
+   "status_suporte": "A 19.3 é a mais recente (19.3.0 em 2026-09-09). O peer do Next 16.3.8 é ^19.0.0. O App Router usa o React que vem embutido no Next, então o mais importante é manter o Next atualizado.",
+   "advisories_relevantes": [
+    "GHSA-wx67-qw84-cm4g / CVE-2026-44907 (High): DoS em Server Functions (react-server-dom-*). Corrigido nas 19.2.8, 19.1.9 e 19.0.8",
+    "GHSA-rv78-f8rc-xrxh / CVE-2026-23870 (High): DoS em RSC. Corrigido na 19.2.6",
+    "GHSA-fv66-9v8q-g76r / CVE-2025-55182 (Critical): RCE em RSC. Corrigido na 19.2.1"
+   ],
+   "notas": "Usar @types/react e @types/react-dom ^19 (a última é 19.3.0)."
+  },
+  {
+   "componente": "create-next-app",
+   "versao_recomendada": "16.3.8. Sugestão de comando: pnpm create next-app@16.3.8 portaldash --ts --eslint --app --src-dir --import-alias \"@/*\" --use-pnpm (o Turbopack já é o padrão)",
+   "fonte_url": "https://nextjs.org/docs/app/api-reference/cli/create-next-app",
+   "status_suporte": "Os padrões ('recommended defaults') são TypeScript, ESLint, Tailwind CSS, App Router e AGENTS.md. As flags disponíveis são --ts/--js, --tailwind, --react-compiler, --eslint, --biome, --no-linter, --app, --api, --src-dir, --turbopack (padrão), --webpack, --import-alias, --empty, --use-pnpm, --skip-install, --disable-git, --agents-md (padrão, inclui AGENTS.md e CLAUDE.md), --yes e --reset-preferences.",
+   "advisories_relevantes": [],
+   "notas": "Conferi o template da tag v16.3.8 (packages/create-next-app/templates/index.ts). Ele gera os scripts dev='next dev', build='next build', start='next start' e lint='eslint', e cria o eslint.config.mjs (flat config). Vários valores fixados no template estão defasados e precisam ser trocados depois do scaffold: eslint '^9' (a v9 é EOL desde 2026-08-06), typescript '^5', @types/node '^20' (o projeto vai rodar em Node 24) e react 19.2.8. Ele também grava packageManager com a versão do pnpm que foi usada."
+  },
+  {
+   "componente": "TypeScript",
+   "versao_recomendada": "6.0.3, fixada (publicada em 2026-04-16)",
+   "fonte_url": "https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/",
+   "status_suporte": "A tag latest no npm é a 7.0.2 (2026-07-08), que é o compilador nativo em Go e vem sem API JavaScript. Pelo blog, a API nova deve chegar na 7.1. A Microsoft orienta continuar na 6.0 quando alguma ferramenta usa a API, ou instalar as duas lado a lado com aliases ('@typescript/native': 'npm:typescript@^7.0.2' e 'typescript': 'npm:@typescript/typescript6@^6.0.2', que fornece o binário tsc6).",
+   "advisories_relevantes": [],
+   "notas": "O typescript-eslint 8.71.0, usado pelo eslint-config-next/typescript, declara peer typescript '>=4.8.4 <6.1.0', ou seja, não suporta a 7. A 6.0 mudou vários padrões do tsconfig (blog de 2026-03-23): strict passa a true, module a esnext, target a es2025, rootDir a '.', types a [], e noUncheckedSideEffectImports a true. Também ficaram deprecados baseUrl, moduleResolution node10, esModuleInterop false e outras opções. Na prática, como types agora é [], é preciso declarar \"types\": [\"node\"] onde os scripts de ingestão precisarem."
+  },
+  {
+   "componente": "ESLint + eslint-config-next",
+   "versao_recomendada": "eslint 10.11.0, eslint-config-next 16.3.8 e, como dependência transitiva, typescript-eslint 8.71.0. O config precisa de settings.react.version explícito, por exemplo { settings: { react: { version: '19.2' } } }. Se aparecer erro, a alternativa é o eslint 9.39.5, que é EOL",
+   "fonte_url": "https://eslint.org/version-support/",
+   "status_suporte": "A v10 é a Current (10.0.0 saiu em 2026-02-06). A v9 é EOL desde 2026-08-06 (última versão 9.39.5).",
+   "advisories_relevantes": [
+    "Não há advisory ativo relevante para o ESLint 10. O GHSA-p5wg-g6qr-c7cg foi retirado (withdrawn)"
+   ],
+   "notas": "O eslint-config-next 16.3.8 depende de plugins que ainda não declaram suporte ao ESLint 10: eslint-plugin-react 7.37.5 (peer ^9.7), eslint-plugin-import 2.32.0 (peer ^9) e eslint-plugin-jsx-a11y 6.10.2 (peer ^9). Testei aqui: ESLint 10.11.0 com o config padrão quebra com 'TypeError: Error while loading rule react/display-name: contextOrFilename.getFilename is not a function', porque a detecção automática da versão do React usa uma API removida no ESLint 10. Com settings.react.version fixo, um lint de teste rodou normalmente (no-explicit-any, rules-of-hooks, no-img-element e jsx-a11y funcionaram). Foi só um teste básico, não cobri todas as regras. O pnpm vai mostrar avisos de peer dependency."
+  },
+  {
+   "componente": "Vitest (+ Vite)",
+   "versao_recomendada": "vitest 5.0.3 (2026-09-30) com vite 8.3.2 instalado explicitamente. Se houver problema, a alternativa madura é vitest 4.1.11 (dist-tag V4)",
+   "fonte_url": "https://vitest.dev/guide/migration/",
+   "status_suporte": "A 5.0.0 saiu em 2026-09-03 e já tem 3 patches. Na v5, o vite passou a ser peer dependency (^6.4.0, ^7.0.0 ou ^8.0.0). Exige Node ^22.12.0, ^24.0.0 ou >=26.0.0.",
+   "advisories_relevantes": [
+    "GHSA-82fw-gwwq-j7x9 / CVE-2026-84373 (Medium): path traversal no @vitest/mocker. Corrigido na 4.1.11 e na 5.0.0-rc.2",
+    "GHSA-5xrq-8626-4rwp / CVE-2026-47429 (Critical): leitura e execução de arquivos quando o servidor da Vitest UI está escutando. Corrigido na 4.1.0 e na 3.2.6",
+    "Vite GHSA-fx2h-pf6j-xcff / CVE-2026-53571 (High): bypass de server.fs.deny com caminhos alternativos do Windows. Corrigido na 8.0.16",
+    "Vite/launch-editor GHSA-v6wh-96g9-6wx3 / CVE-2026-53632 (Medium): vazamento de hash NTLMv2 via caminho UNC no Windows. Corrigido na 8.0.16"
+   ],
+   "notas": "Com o PostgreSQL de teste, usar pool 'forks' ou um setup global que suba um único cluster por execução. Não expor a UI nem a API do Vitest na rede."
+  },
+  {
+   "componente": "Drizzle ORM / drizzle-kit (camada de acesso recomendada)",
+   "versao_recomendada": "drizzle-orm 0.45.3 (2026-09-21, Apache-2.0, sem dependências) e drizzle-kit 0.31.11 (MIT)",
+   "fonte_url": "https://orm.drizzle.team/docs/column-types/pg",
+   "status_suporte": "A tag latest no npm é a 0.45.3. A v1 ainda está em pré-lançamento: a última é a 1.0.0-rc.4, de 2026-06-27. O peer aceita pg >=8, postgres >=3 e @electric-sql/pglite >=0.2.0.",
+   "advisories_relevantes": [
+    "GHSA-gpj5-g38j-94v9 / CVE-2026-39356 (High): SQL injection por escape incorreto de identificadores (sql.identifier(), .as()) quando entrada externa chega a identificadores ou aliases. Corrigido na 0.45.2 e na 1.0.0-beta.20"
+   ],
+   "notas": "Testado aqui: uma coluna numeric(14,2) volta como string ('0.10'), e sum() via sql`` volta como '0.30', tanto com PGlite quanto com node-postgres. db.transaction funcionou. A documentação também oferece numeric({ mode: 'number' | 'bigint' }), que não deve ser usado para dinheiro."
+  },
+  {
+   "componente": "pg (node-postgres) — driver",
+   "versao_recomendada": "8.23.1 (2026-09-30, MIT)",
+   "fonte_url": "https://github.com/brianc/node-pg-types",
+   "status_suporte": "Manutenção ativa: 8.20.0 em 2026-03, 8.23.0 em 2026-08 e 8.23.1 em 2026-09-30.",
+   "advisories_relevantes": [
+    "O único advisory no GHSA é antigo: GHSA-wc9v-mj63-m9g5 (2017, afetava versões abaixo da 7.1.2)"
+   ],
+   "notas": "Testado aqui: NUMERIC volta como string ('0.30') e count(*), que é int8, também volta como string ('2'). O README do pg-types explica que int8 vem como string para não perder precisão. Consultas parametrizadas usam $1, $2..."
+  },
+  {
+   "componente": "PostgreSQL (servidor)",
+   "versao_recomendada": "Major 18 (18.6 é a minor atual). A 17 (17.11) também é aceitável. No Railway, fixar a tag do major",
+   "fonte_url": "https://www.postgresql.org/support/versioning/",
+   "status_suporte": "A 18 tem suporte até 2030-11-14, a 17 até 2029-11-08, a 16 até 2028-11-09, a 15 até 2027-11-11 e a 14 até 2026-11-12. A 13 é EOL.",
+   "advisories_relevantes": [],
+   "notas": "Para testes: o PGlite 0.5.8 traz PostgreSQL 18.3 e o embedded-postgres 18.4.0-beta.17 traz PostgreSQL 18.4. As duas versões foram confirmadas com select version()."
+  },
+  {
+   "componente": "embedded-postgres (testes sem Docker)",
+   "versao_recomendada": "18.4.0-beta.17 (2026-06-05, MIT)",
+   "fonte_url": "https://www.npmjs.com/package/embedded-postgres",
+   "status_suporte": "O sufixo 'beta' faz parte do esquema de versão do pacote: todas as versões publicadas usam esse formato. Ele baixa binários nativos através de @embedded-postgres/windows-x64 (108 MB nesta máquina).",
+   "advisories_relevantes": [],
+   "notas": "Testado aqui no Windows: initialise() e start() levaram cerca de 11 s, e versão reportada foi 'PostgreSQL 18.4 on x86_64-windows'. Funcionou com postgres.js, pg e Drizzle. Sem flags, o initdb usa o locale do sistema, criando o banco com collation 'Portuguese_Brazil.1252' e encoding WIN1252, diferente do Railway. É obrigatório passar initdbFlags: ['--encoding=UTF8', '--locale=C'] ou ['--encoding=UTF8', '--locale-provider=icu', '--icu-locale=en-US', '--locale=C']; testei os dois. O pacote de binário tem postinstall (hydrate-symlinks), que precisa de allowBuilds no pnpm 11."
+  },
+  {
+   "componente": "@electric-sql/pglite",
+   "versao_recomendada": "0.5.8 (2026-08-26, Apache-2.0), apenas para testes unitários rápidos e opcionais",
+   "fonte_url": "https://pglite.dev/docs/orm-support",
+   "status_suporte": "Release ativo (linha 0.5.x desde 2026-06). O README lista em 'Limitations': 'PGlite is single user/connection'. O @electric-sql/pglite-socket 0.2.11 expõe o PGlite por TCP com um multiplexador, mas o próprio pacote avisa que 'not all use cases are guaranteed to work'.",
+   "advisories_relevantes": [],
+   "notas": "Testado aqui: a versão é 'PostgreSQL 18.3 (PGlite 0.5.8) on wasm32'. A collation padrão é 'C' ('ç' < 'd' dá false, enquanto em pt_BR ou ICU dá true). int8 volta como number para valores pequenos e como BigInt para valores grandes (9007199254740993n), enquanto pg e postgres.js devolvem string. NUMERIC volta como string. Há integração direta com Drizzle (drizzle-orm/pglite) e com Kysely (PGliteDialect desde a 0.29.0)."
+  },
+  {
+   "componente": "big.js / decimal.js",
+   "versao_recomendada": "big.js 7.0.1 (2025-04-21, MIT, cerca de 59 KB descompactado). decimal.js 10.6.0 (2025-07-06, MIT, cerca de 284 KB) só se precisar de funções como pow/ln",
+   "fonte_url": "https://www.npmjs.com/package/big.js",
+   "status_suporte": "Ambos são estáveis e não têm advisories no GHSA.",
+   "advisories_relevantes": [],
+   "notas": "Testado: big.js usa por padrão RM=1 (arredondamento half-up) e DP=20, e decimal.js usa rounding=4 (ROUND_HALF_UP) e precision=20 dígitos significativos. Os dois arredondam 1.005 para 1.01 e 2.675 para 2.68, igual ao cast numeric do Postgres que testei."
+  },
+  {
+   "componente": "@types/node",
+   "versao_recomendada": "^24 (a última é 24.19.1), alinhado ao runtime Node 24",
+   "fonte_url": "https://www.npmjs.com/package/@types/node",
+   "status_suporte": "A tag latest geral é a 26.6.4, que corresponde ao Node 26. Não usar essa enquanto o runtime for o Node 24.",
+   "advisories_relevantes": [],
+   "notas": "O create-next-app grava '^20', que precisa ser corrigido."
+  }
+ ],
+ "camada_banco": {
+  "opcoes": [
+   {
+    "nome": "Drizzle ORM + drizzle-kit (sobre pg)",
+    "versao": "drizzle-orm 0.45.3 / drizzle-kit 0.31.11 (a 1.0 ainda está em RC: 1.0.0-rc.4)",
+    "pros": "Consultas parametrizadas por padrão, tanto no builder quanto no template sql``. Definição do schema em TypeScript com tipos inferidos. Sem dependências em runtime. Suporta os drivers pg, postgres.js e PGlite com o mesmo schema. Transações com db.transaction (testei com rollback automático em caso de erro). Licença Apache-2.0. Fica próximo do SQL e facilita escrever SUM/ROUND no banco.",
+    "contras": "Ainda é 0.x e a 1.0 está em RC, então há uma migração futura de API e de formato das migrations. O site de docs pode estar descrevendo comportamentos da v1 (por exemplo, migrations em pastas com migration.sql e snapshot.json) e é preciso conferir contra a 0.45.x instalada. Teve um advisory de SQL injection em identificadores (GHSA-gpj5-g38j-94v9, corrigido na 0.45.2). O pacote descompactado tem cerca de 10,5 MB porque traz todos os dialetos, mas o bundle final só leva o que é importado.",
+    "decimal_numeric": "numeric() devolve string por padrão; testei com pg, PGlite e postgres.js. A opção mode: 'number' existe e deve ser proibida para valores monetários.",
+    "migrations": "drizzle-kit generate cria arquivos .sql versionados, que podem ser revisados, commitados e editados, e aceita migrations custom. drizzle-kit migrate aplica e registra o histórico, e também há migrate() para rodar em runtime. No Railway, rodar no preDeployCommand."
+   },
+   {
+    "nome": "Prisma ORM",
+    "versao": "@prisma/client 7.10.0 (2026-08-25). Atenção: no npm, a dist-tag 'latest' do pacote 'prisma' (o CLI) aponta para 8.0.0-rc.19",
+    "pros": "Ferramenta madura e completa (migrate, studio, client tipado). A v7 não usa mais o engine em Rust e trabalha com driver adapters (@prisma/adapter-pg usa o pg). Migrations em SQL ficam em prisma/migrations. Transações interativas e em lote.",
+    "contras": "É o mais pesado: cerca de 42 MB o CLI e 74 MB o client descompactados, e precisa de uma etapa 'prisma generate'. A v7 é só ESM, exige driver adapter, prisma.config.ts e o novo generator 'prisma-client' com output obrigatório. Exige Node >=22.18 no CLI. A dist-tag latest do CLI em RC (8.x) diferente da do client (7.10) facilita instalar versões desencontradas. Para um projeto pequeno, a DSL própria (.prisma) adiciona uma camada a mais.",
+    "decimal_numeric": "O campo Decimal vira objeto Decimal (Decimal.js / Prisma.Decimal), e não string. É exato, mas exige serializar antes de passar para Client Components.",
+    "migrations": "prisma migrate dev gera os SQL versionados e prisma migrate deploy aplica (o guia do Railway cita isso no pre-deploy)."
+   },
+   {
+    "nome": "Kysely (query builder)",
+    "versao": "0.29.6 (2026-09-16, MIT, engines node >=22)",
+    "pros": "Query builder tipado próximo do SQL, parametrizado por padrão. Usa pg por baixo (PostgresDialect). Tem PGliteDialect nativo desde a 0.29.0. Leve (cerca de 1,7 MB descompactado). Transações com db.transaction().execute().",
+    "contras": "Os tipos do banco precisam ser mantidos à mão ou com um gerador externo, como kysely-codegen. As migrations são arquivos TypeScript com up() e down() via FileMigrationProvider, e não SQL puro; a CLI kysely-ctl é separada e a própria doc diz 'your mileage may vary'. Em 2026 teve vários advisories High de injection: em JSON path até a 0.28.17, e via sql.lit/backslash no MySQL. Todos estão corrigidos antes da 0.29, mas mostram que a superfície de risco existe.",
+    "decimal_numeric": "Herda o comportamento do driver pg, então NUMERIC e int8 vêm como string.",
+    "migrations": "Arquivos TS com up/down (que podem chamar sql`` cru). Não gera SQL a partir de um diff do schema."
+   },
+   {
+    "nome": "Driver puro: pg (node-postgres) ou postgres.js",
+    "versao": "pg 8.23.1 (2026-09-30, MIT). postgres 3.4.9 (2026-04-05, Unlicense)",
+    "pros": "Nenhuma camada extra e controle total do SQL. pg usa $1, $2... e postgres.js usa tagged templates, ambos parametrizados. Transações com BEGIN/COMMIT no client (pg) ou com sql.begin() (postgres.js). São os menores pacotes (pg tem cerca de 100 KB mais suas dependências e postgres.js cerca de 300 KB). O pg é usado por baixo pelo Prisma (adapter-pg) e pelo embedded-postgres.",
+    "contras": "Não há tipos inferidos do schema nem ferramenta de migration: seria preciso montar um runner próprio ou adotar node-pg-migrate ou dbmate (não verifiquei essas ferramentas aqui). Mais código repetitivo e mais chance de erro ao montar SQL dinâmico. postgres.js tem sql.unsafe(), que é perigoso, e lançamentos mais espaçados (último em 2026-04).",
+    "decimal_numeric": "Os dois devolvem NUMERIC como string. Testado: postgres.js devolve '0.3' e o README diz '[numeric] will be returned as a string'. pg devolve '0.30'. Os dois também devolvem int8 como string.",
+    "migrations": "Não incluem. É preciso trazer uma solução própria ou uma ferramenta externa."
+   }
+  ],
+  "recomendacao": "Drizzle ORM 0.45.3 com drizzle-kit 0.31.11, usando o driver pg (node-postgres) 8.23.1. Uma única instância de Pool por processo: uma no serviço web e outra no serviço de ingestão. Colunas monetárias como numeric(p,s) no modo padrão (string). Migrations geradas em SQL e versionadas no git, aplicadas com 'drizzle-kit migrate' no preDeployCommand do Railway.",
+  "justificativa": "Num projeto pequeno, com leitura pública e ingestão em lote, o Drizzle atende tudo o que foi pedido sem o peso do Prisma. As consultas são parametrizadas por padrão, NUMERIC volta como string sem configuração (verificado na prática), as migrations são SQL versionado e revisável, e as transações são simples. Também permite escrever agregações direto em SQL tipado. Escolhi o pg em vez do postgres.js por quatro motivos: manutenção mais frequente (8.23.1 saiu ontem), licença MIT, é o mesmo driver que o embedded-postgres usa e que o Prisma usaria, e devolve NUMERIC e int8 como string do mesmo jeito. O Kysely seria a segunda opção, mas as migrations dele são TS e não SQL, e o histórico recente de advisories pesa contra. O Prisma 7 funciona, mas traz mais peso (generate, ESM obrigatório, adapter, Decimal como objeto) e a confusão de dist-tags 7 e 8. Para mitigar os riscos do Drizzle: fixar as versões exatas, nunca passar entrada do usuário para sql.identifier ou .as() (ordenação dinâmica só por allowlist), proibir numeric({mode:'number'}) e planejar a migração para a 1.0 quando ela sair do RC."
+ },
+ "banco_teste_sem_docker": {
+  "opcoes": "1) embedded-postgres 18.4.0-beta.17 (MIT): binários nativos reais do PostgreSQL 18.4 (@embedded-postgres/windows-x64, 108 MB), com ciclo initialise/start/createDatabase/stop por código. Verificado aqui: subiu em cerca de 11 s e funcionou com pg, postgres.js e Drizzle. Fidelidade alta, porque é o mesmo motor, o mesmo protocolo e o mesmo driver de produção, com várias conexões, locks e isolamento reais. Pontos de atenção: (a) sem initdbFlags o cluster sai com encoding WIN1252 e collation Portuguese_Brazil.1252, então é preciso passar ['--encoding=UTF8','--locale=C'] ou a variante ICU ['--encoding=UTF8','--locale-provider=icu','--icu-locale=en-US','--locale=C'], ambas testadas; (b) a minor 18.4 fica atrás da 18.6; (c) postinstall que exige allowBuilds no pnpm 11; (d) a última publicação é de 2026-06. 2) @electric-sql/pglite 0.5.8 (Apache-2.0): Postgres 18.3 compilado em WASM, roda dentro do processo, sem binários nem portas, sobe em menos de 1 s. Tem integração com drizzle-orm/pglite e com o PGliteDialect do Kysely; o Prisma só via 'prisma dev'. Fidelidade menor, conforme verificado: só uma conexão (não testa concorrência, pool nem locks entre sessões), collation C por padrão (ORDER BY em texto acentuado muda) e int8 devolvido como number ou BigInt em vez de string. Isso obriga a trocar de driver nos testes e não exercita o pg de produção. 3) @electric-sql/pglite-socket 0.2.11: expõe o PGlite por TCP e permite usar o pg normal, com multiplexador de conexões, mas o pacote avisa que 'not all use cases are guaranteed to work'. 4) Fora do escopo ou não verificado aqui: o instalador nativo do PostgreSQL para Windows (exige instalação na máquina); um ambiente efêmero no Railway para testes de integração; Testcontainers, que exige Docker e fica descartado.",
+  "recomendacao": "Usar embedded-postgres para os testes de integração do banco (repositórios, migrations, ingestão em lote). O globalSetup do Vitest sobe um cluster por execução numa porta livre com initdbFlags ['--encoding=UTF8','--locale-provider=icu','--icu-locale=en-US','--locale=C'] e persistent:false, aplica as migrations do drizzle-kit, isola cada arquivo de teste com um banco próprio ou com transação e ROLLBACK, e derruba o cluster no teardown. O driver é o mesmo pg de produção. O PGlite fica apenas como opção para testes unitários puros de SQL, se a lentidão incomodar, sem depender de ordenação de texto nem de tipos int8. Em CI Linux (por exemplo, GitHub Actions) o mesmo pacote baixa o binário linux-x64, mas isso não foi testado aqui. Antes de rodar, incluir '@embedded-postgres/windows-x64' e '@embedded-postgres/linux-x64' em allowBuilds no pnpm-workspace.yaml e validar com pnpm, porque o meu teste usou npm."
+ },
+ "decimal_lib": {
+  "opcoes": "A) Fazer as somas e médias no próprio Postgres NUMERIC (SUM, AVG, ROUND(x, 2)), que é exato. Verificado: 0.1::numeric + 0.2::numeric dá '0.3', e numeric(14,2) arredonda 1.005 para 1.01 e 2.675 para 2.68 (half away from zero). Os valores viajam como string do driver até a UI. B) Para formatar, usar Intl.NumberFormat com a string direto. Verificado no Node 24: new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format('12345678901234567.89') devolve 'R$ 12.345.678.901.234.567,89' exato, enquanto o mesmo valor como number vira '...568,00'. C) big.js 7.0.1 (MIT, cerca de 59 KB, padrão RM=1 half-up e DP=20): basta para parse, validação e soma ou percentual do lado da aplicação, por exemplo na ingestão. D) decimal.js 10.6.0 (MIT, cerca de 284 KB, padrão rounding=4 HALF_UP e precision=20 dígitos significativos; é a lib usada pelo Prisma): mais completa (pow, ln, sqrt), mas é preciso ajustar Decimal.set({ precision }) para não truncar valores grandes em multiplicação e divisão. Nenhuma das duas tem advisory no GHSA.",
+  "recomendacao": "Agregações e arredondamentos ficam no Postgres, com colunas NUMERIC(p,s) de escala explícita. Na aplicação, valores monetários são sempre string; nunca usar Number(), parseFloat ou numeric({mode:'number'}). Formatar com Intl.NumberFormat recebendo a string. Usar big.js 7.0.1 só onde for inevitável calcular no JS, como normalizar e validar entradas da ingestão ou fazer conversões, e validar o formato com regex (por exemplo, ^-?\\d{1,12}(\\.\\d{1,2})?$) antes de inserir. Atenção a fontes JSON da ingestão: JSON.parse transforma números em float antes de qualquer lib atuar. Se a origem mandar números JSON, é preciso pegar o texto cru, ou aceitar e documentar a perda, ou pedir string."
+ },
+ "railway": "VERSÃO DO POSTGRES: a documentação (https://docs.railway.com/guides/postgresql) diz apenas que o template usa a 'SSL-enabled Postgres image' baseada na imagem oficial do Docker Hub e não informa qual major é o padrão. O repositório da imagem (https://github.com/railwayapp-templates/postgres-ssl) tem Dockerfile.13 a Dockerfile.18, tags por major (:17, :18) e por minor (:17.6), base Debian trixie fixada, e o README diz que ':latest' hoje 'points to PostgreSQL 16'. O upgrade de major com um clique (https://docs.railway.com/databases/postgresql-major-upgrade, changelog de 2026-09-11) aceita origem 14 a 17 'to any newer major Railway publishes', mas só funciona se o serviço estiver numa tag de major específica, porque ':latest is not supported'. Na prática: ao criar o banco, conferir a imagem no painel e fixar ghcr.io/railwayapp-templates/postgres-ssl:18 (ou :17). Não usar :latest. Também não trocar a tag na mão sem passar pelo fluxo de upgrade, porque isso não roda pg_upgrade.\n\nVARIÁVEIS: o serviço Postgres expõe PGHOST, PGPORT, PGUSER, PGPASSWORD, PGDATABASE e DATABASE_URL (rede privada), além de DATABASE_PUBLIC_URL para acesso externo. O banco é 'deployed private' por padrão. Liberar acesso público cria um TCP Proxy e 'you will be billed for Network Egress'. Nos serviços web e de ingestão, usar uma variável de referência ${{Postgres.DATABASE_URL}} (https://docs.railway.com/guides/variables), que é privada e usa <service>.railway.internal (https://docs.railway.com/networking/private-networking/how-it-works). A rede privada 'is only available at runtime, not during the build phase'. Ambientes criados depois de 2025-10-16 resolvem IPv4 e IPv6; ambientes legados, só IPv6. Consequência: o next build não alcança o banco, então páginas que consultam o banco não podem ser pré-renderizadas no build e precisam ser dinâmicas. DATABASE_PUBLIC_URL só deve ser usada pontualmente, por exemplo para rodar um seed local.\n\nBUILD DO NEXT COM PNPM: segundo https://docs.railway.com/config-as-code/reference, o builder padrão é RAILPACK ('New services default to Railpack'), e as opções documentadas são RAILPACK e DOCKERFILE. A deprecação do Nixpacks aparece só em respostas no fórum station.railway.com, não na documentação. O Railpack (https://railpack.com/languages/node) descobre a versão do Node nesta ordem: RAILPACK_NODE_VERSION, devEngines.runtime, engines.node, .nvmrc, .node-version, mise.toml ou .tool-versions; sem nada disso, usa 'lts'. Para o pnpm, olha o package.json, depois engines.pnpm, depois o pnpm-lock.yaml, e por último a versão padrão. Ele faz cache de .next/cache e define NODE_ENV=production, NPM_CONFIG_PRODUCTION=false e CI=true. O comando de start vem do script 'start'. Então: fixar engines.node, packageManager 'pnpm@11.28.2' e engines.pnpm. O guia https://docs.railway.com/guides/nextjs recomenda output:'standalone' e start 'node .next/standalone/server.js'. Só que a documentação do Next (https://nextjs.org/docs/app/api-reference/config/next-config-js/output) avisa que o modo standalone não copia public/ nem .next/static, então o script de build precisa fazer 'cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/'. PORT e HOSTNAME são lidos pelo server.js. As migrations vão no pre-deploy command (https://docs.railway.com/deployments/pre-deploy-command), por exemplo 'pnpm drizzle-kit migrate'. Ele roda num container separado, com as variáveis e a rede privada. Se falhar, não há nova tentativa e o deploy não segue. O filesystem não persiste e volumes não são montados.\n\nINGESTÃO SEPARADA (CRON): criar um segundo serviço no mesmo repositório, com startCommand próprio (por exemplo, 'node dist/ingest.js' ou 'pnpm tsx scripts/ingest.ts') e deploy.cronSchedule (https://docs.railway.com/reference/cron-jobs). As execuções precisam de pelo menos 5 minutos de intervalo, sempre em UTC. O processo deve 'terminate as soon as that task is finished, leaving no open resources', o que inclui fechar o Pool do pg. 'If a previous execution is still running … Railway will skip the new cron job'. Na configuração como código, usar railway.json ou railway.toml com build.builder, buildCommand, deploy.startCommand, preDeployCommand, cronSchedule, healthcheckPath e watchPatterns.",
+ "referencias_seguranca": [
+  {
+   "nome": "OWASP Application Security Verification Standard (ASVS)",
+   "edicao_vigente": "5.0.0. Release no GitHub 'v5.0.0_release' publicado em 2025-05-30. Existe também um release 'latest (Bleeding Edge)' de 2026-09-03, que não é edição estável",
+   "url": "https://owasp.org/www-project-application-security-verification-standard/ (download: https://github.com/OWASP/ASVS/tree/v5.0.0)"
+  },
+  {
+   "nome": "OWASP Top 10",
+   "edicao_vigente": "OWASP Top 10:2025. A página owasp.org/Top10 redireciona para a 2025. As categorias são: A01 Broken Access Control, A02 Security Misconfiguration, A03 Software Supply Chain Failures, A04 Cryptographic Failures, A05 Injection, A06 Insecure Design, A07 Authentication Failures, A08 Software or Data Integrity Failures, A09 Security Logging and Alerting Failures, A10 Mishandling of Exceptional Conditions. A página consultada não diz se é RC ou final, nem a data",
+   "url": "https://top10.owasp.org/2025/"
+  },
+  {
+   "nome": "NIST SP 800-218 — Secure Software Development Framework (SSDF)",
+   "edicao_vigente": "Versão 1.1, final, publicada em 2022-02-03. É a edição final em vigor",
+   "url": "https://csrc.nist.gov/pubs/sp/800/218/final"
+  },
+  {
+   "nome": "NIST SP 800-218 Rev. 1 — SSDF Version 1.2",
+   "edicao_vigente": "Initial Public Draft publicado em 2025-12-17, com comentários até 2026-01-30. Ainda não há versão final: /r1/final e /r1/2pd retornam 404 em 2026-10-01",
+   "url": "https://csrc.nist.gov/pubs/sp/800/218/r1/ipd"
+  },
+  {
+   "nome": "NIST SP 800-218A (perfil comunitário do SSDF)",
+   "edicao_vigente": "Final. A URL responde 200, mas não li o conteúdo nesta verificação. É relevante apenas se o projeto usar IA generativa",
+   "url": "https://csrc.nist.gov/pubs/sp/800/218/a/final"
+  },
+  {
+   "nome": "Monitoramento contínuo — Next.js Security Advisories / GitHub Advisory Database",
+   "edicao_vigente": "Fontes vivas, sem edição. Houve 3 releases de segurança do Next entre 2026-08-25 e 2026-09-30",
+   "url": "https://github.com/vercel/next.js/security/advisories"
+  }
+ ],
+ "riscos": [
+  "Cadência de segurança do Next.js: 3 releases de segurança em cerca de 5 semanas, sendo 2 com RCE crítico (next/og ImageResponse corrigido na 16.3.6; Image Optimization com AVIF corrigido na 16.3.3). A versão mínima é a 16.3.8, e é preciso ter processo para aplicar patches em horas, por exemplo Dependabot ou Renovate mais o feed de advisories.",
+  "Conflito com o pnpm 11: o padrão minimumReleaseAge=1440 bloqueia por 24 h a instalação de qualquer versão recém-publicada, inclusive patches de segurança do Next (a 16.3.8 saiu em 2026-09-30 às 16:07 UTC). É preciso definir antes como abrir exceção pontual para patches urgentes (ver a documentação do pnpm) e manter packageManager fixado. Existe ainda a pnpm 12.8.1, e a escolha entre 11 e 12 deve ser consciente.",
+  "O histórico de bypass de Middleware/Proxy é grande (GHSA-267c-6grr-h53f, GHSA-26hh-7cqf-hhc6, GHSA-492v-c6pp-mqqv, GHSA-6gpp-xcg3-4w24, entre outros). O proxy (antigo middleware) não deve ser a única barreira de autorização. Toda Server Action ou Route Handler de escrita ou admin precisa checar autorização por conta própria. Server Actions são endpoints públicos (GHSA-955p-x3mx-jcvp mostrou que os endpoints podem ser descobertos).",
+  "Image Optimization concentrou SSRF e RCE (GHSA-cjq9-62q9-8jv4, GHSA-2xp9-vwfh-vxw4). Não configurar images.remotePatterns com hosts não confiáveis. Se não houver imagens remotas, deixar sem remotePatterns ou desligar a otimização.",
+  "O Railway é um ambiente self-hosted do ponto de vista do Next: os advisories de cache poisoning em SSG/ISR (GHSA-4jqv-mc3x-m676, GHSA-mcj8-r9mp-w47p) e de 'use cache' (GHSA-h694-7cp9-m8p3, GHSA-3w37-wq28-93x7) afetam esse tipo de hospedagem e não afetam a Vercel. Evitar catch-all na raiz junto com ISR e não ligar cacheComponents ou Draft Mode sem necessidade. Com múltiplas réplicas, o cache de ISR é local a cada instância.",
+  "Desenvolvimento em Windows: o GHSA-p293-qw3h-jr36 (RCE em servidores rodando em Windows, corrigido na 16.3.3) e o GHSA-39w2-rjm5-chcv (endpoint MCP do next dev vazando dados para sites visitados, corrigido na 16.3.8) atingem diretamente a máquina local. Não expor next dev ou next start na rede e manter o Next atualizado também no ambiente local.",
+  "O Node local (24.13.1) está 3 releases de segurança atrasado (24.14.1, 24.17.0, 24.18.1) e deve ser atualizado para a 24.21.0. A v24 entra em Maintenance em 2026-10-20 e a v26 vira LTS em 2026-10-28. Sem versão fixada, o Railpack usa 'lts' e mudaria sozinho para a 26 no deploy.",
+  "Incompatibilidade do TypeScript 7: a tag latest do npm é a 7.0.2, que não tem API JS, e o typescript-eslint 8.71.0 só aceita typescript <6.1.0. Um 'pnpm add -D typescript' sem versão quebra o lint. Fixar a 6.0.3. A 6.0 muda padrões do tsconfig (types: [], strict, target es2025, deprecação de baseUrl), o que pode quebrar os scripts de ingestão que dependem de @types/node.",
+  "ESLint: a v9, que é a que o create-next-app instala, é EOL desde 2026-08-06. Na v10 os plugins usados pelo eslint-config-next 16.3.8 (react 7.37.5, import 2.32.0, jsx-a11y 6.10.2) não declaram suporte. Confirmei a quebra ('contextOrFilename.getFilename is not a function'), que só some com settings.react.version explícito. Outras regras podem quebrar em casos não testados, e haverá avisos de peer dependency.",
+  "Drizzle: a 1.0 está em RC desde 2026-04 e a stable 0.45.x vai virar legado, com migração futura de API e formato de migrations. A documentação online pode descrever a v1. Teve SQL injection em identificadores (corrigido na 0.45.2), então ordenação e colunas dinâmicas vindas da query string devem passar só por allowlist.",
+  "Prisma, se for escolhido: a dist-tag 'latest' do CLI 'prisma' aponta para 8.0.0-rc.19, enquanto a do @prisma/client está na 7.10.0. Um install sem versão mistura RC com stable.",
+  "Fidelidade dos testes: o PGlite usa collation C, uma conexão só e int8 como number ou BigInt, enquanto o pg devolve string. O embedded-postgres sem flags cria o banco em WIN1252 com Portuguese_Brazil.1252, e o Railway roda UTF8 em Debian com glibc. Ordenações de texto e unicidade case-insensitive podem passar no teste e falhar em produção ou o contrário. Mitigar com initdbFlags UTF8 + ICU e COLLATE explícito onde a ordenação importar. As minors também diferem (18.3 e 18.4 nos testes contra 18.6 atual).",
+  "Precisão monetária: o risco maior está na entrada, não na biblioteca. JSON.parse da fonte de ingestão, Number(), parseFloat, numeric({mode:'number'}) e serializar Decimal do Prisma para Client Components introduzem float. O decimal.js trunca em 20 dígitos significativos por padrão. Fazer agregações no SQL e trafegar strings.",
+  "Railway: sem rede privada no build. Qualquer acesso ao banco durante o next build, como prerender de páginas com dados, falha ou embute dados velhos. As migrations precisam ficar no preDeployCommand, que não tem nova tentativa em caso de falha. Usar DATABASE_PUBLIC_URL (TCP proxy) expõe o banco e gera custo de egress. A imagem ':latest' do Postgres aponta para a 16, não suporta upgrade de um clique e deve ser fixada num major.",
+  "Cron de ingestão: intervalo mínimo de 5 min, sempre em UTC. Se o processo não encerrar (Pool do pg aberto, timers pendentes), a execução nunca termina e as próximas são puladas silenciosamente ('Railway will skip the new cron job'). É preciso ter idempotência (UPSERT e chave natural), transação por lote e um lock de execução, por exemplo pg_advisory_lock, se houver risco de sobreposição com uma execução manual.",
+  "Output standalone: o comando sugerido no guia do Railway ('node .next/standalone/server.js') não copia public/ nem .next/static, que precisam ser copiados no build. Sem isso, CSS, JS e imagens dão 404 em produção.",
+  "Supply chain e dependências de teste: o @embedded-postgres/<plataforma> tem postinstall, que o pnpm 11 bloqueia por padrão (precisa de allowBuilds). O Vitest 5 tem só 4 semanas e exige vite como peer, instalado explicitamente (8.3.2, que já tem as correções do Vite no Windows). O histórico de advisories críticos da UI e da API do Vitest pede que nada disso seja exposto na rede."
+ ]
+}

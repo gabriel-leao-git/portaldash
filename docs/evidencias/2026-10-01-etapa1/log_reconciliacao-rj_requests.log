@@ -1,0 +1,24 @@
+# coleta_utc	http	bytes	fonte	url	arquivo/nota
+2026-10-02T01:31:26Z	200	1605	SEFAZ-RJ	https://portal.fazenda.rj.gov.br/contabilidade/wp-content/uploads/sites/25/2026/02/6bimAnexo-02_6oBim_RREO_-2025_MDF-14a_2Ed.pdf	sefazrj_bloqueio_anexo02.html (corpo = pagina de bloqueio por IP, nao PDF)
+(WebFetch)	-	-	SEFAZ-RJ	https://portal.fazenda.rj.gov.br/contabilidade/wp-content/uploads/sites/25/2026/02/6bimAnexo-01_6oBim_RREO_-2025_MDF-14_2aEd.pdf	WebFetch tambem recebeu pagina de bloqueio
+2026-10-02T01:31:51Z	200	754	Wayback CDX	https://web.archive.org/cdx/search/cdx?url=portal.fazenda.rj.gov.br/contabilidade/wp-content/uploads/sites/25/2026/*&output=json&limit=200&filter=mimetype:application/pdf	wb_cdx_2026.json
+2026-10-02T01:32:08Z	200	-	Wayback CDX	https://web.archive.org/cdx/search/cdx?url=portal.fazenda.rj.gov.br/contabilidade/wp-content/uploads/sites/25/*&output=json&limit=2000&filter=original:.*(Anexo-01|Anexo_01|Anexo-1_|RREO).*	wb_cdx_rreo.json (truncado em 2000)
+2026-10-02T01:32:35Z	504	-	Wayback CDX	.../uploads/sites/25/2026/* (sem filtro)	wb_cdx_2026_all.json (erro 504)
+2026-10-02T01:33:37Z	200	8638	Wayback CDX	.../uploads/sites/25/2025/*	wb_cdx_2025_all.json (25 linhas, nenhum RREO)
+2026-10-02T01:33:56Z	200	-	Wayback CDX	.../uploads/sites/25/2026/02/*	so 1 PDF (NT-SUNOT), nenhum RREO
+2026-10-02T01:34:09Z	200	-	Wayback available	https://archive.org/wayback/available?url=portal.fazenda.rj.gov.br/contabilidade/wp-content/uploads/sites/25/2026/02/6bimAnexo-01_6oBim_RREO_-2025_MDF-14_2aEd.pdf	archived_snapshots={}
+2026-10-02T01:34:46Z	200	34005	IOERJ	https://www.ioerj.com.br/	ioerj_home.html
+2026-10-02T01:35:08Z	200	36574	IOERJ	https://www.ioerj.com.br/portal/modules/conteudoonline/do_seleciona_edicao.php?data=MjAyNjAxMzA=	ioerj_edicao_20260130.html
+2026-10-02T01:35:30Z	200	26947	IOERJ	mostra_edicao.php?session=(Parte I EDICAO EXTRA 30/01/2026)	ioerj_extra_20260130.html
+2026-10-02T01:35:48Z	200	134181	IOERJ	https://www.ioerj.com.br/portal/modules/conteudoonline/include/pdfjs/web/viewer-min.js	ioerj_viewer-min.js
+2026-10-02T01:36:15Z	200	54192	IOERJ	mostra_edicao.php?session=(Parte I regular 30/01/2026)	ioerj_parteI_20260130.html
+2026-10-02T01:36:28Z	200	3786949	Wayback	https://web.archive.org/web/20260504170515id_/https://portal.fazenda.rj.gov.br/contabilidade/wp-content/uploads/sites/25/2026/04/Volume-01.pdf	PDF removido (>2MB); trecho em sefazrj_PrestacaoContas2025_Volume01_trechos.txt; sha256 3a472c1e3a113df4e3ec50be716d25fc1b059ce8af3eaed01b326b9042003d7e
+2026-10-02T01:37:58Z	200	5411641	IOERJ	https://www.ioerj.com.br/portal/modules/conteudoonline/mostra_edicao.php?k=2CD8A0E7-DBFP9-4919-8EF5-222C22757AB2	DOERJ Parte I Extra 020-A 30/01/2026; sem RREO; PDF removido (>2MB); doerj_20260130_extra_sem_rreo.txt
+2026-10-02T01:38:16Z	200	36889	IOERJ	do_seleciona_edicao.php?data=MjAyNjAzMjA=	ioerj_edicao_20260320.html
+2026-10-02T01:38:17Z	200	36262	IOERJ	do_seleciona_edicao.php?data=MjAyNjAxMjk=	ioerj_edicao_20260129.html
+2026-10-02T01:38:28Z	200	25661	IOERJ	mostra_edicao.php?session=(Parte I EDICAO EXTRA 20/03/2026)	ioerj_parteI_extra_20260320.html (sumario sem Fazenda/RREO)
+2026-10-02T01:38:56Z	200	58005	IOERJ	mostra_edicao.php?session=(Parte I regular 20/03/2026)	ioerj_parteI_20260320.html (Fazenda so RH/Receita/Rioprevidencia)
+2026-10-02T01:39:23Z	200	3454	Wayback CDX	https://web.archive.org/cdx/search/cdx?url=portal.fazenda.rj.gov.br/contabilidade/wp-content/uploads/*&output=json&limit=500&filter=statuscode:200&filter=original:.*nexo.?0?1_6.*	wb_cdx_anexo01_6bim.json
+2026-10-02T01:40:18Z	200	65245	Wayback	https://web.archive.org/web/20250118032313id_/https://portal.fazenda.rj.gov.br/contabilidade/wp-content/uploads/sites/25/2024/01/Anexo-01_6oBim_RREO_-2023_MDF-13aEd..pdf	sefazrj_Anexo-01_6oBim_RREO_2023_MDF-13aEd_wayback20250118032313.pdf sha256 d9965a65039a4d4d72efe8795a4e0689d7cd95369984101998b8fd9a97e3d271
+2026-10-02T01:41:16Z	200	244964	SICONFI	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/rreo?an_exercicio=2023&nr_periodo=6&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2001&id_ente=33	siconfi_rreo_2023_p6_anexo01.json (count=677)
+2026-10-02T01:41:18Z	200	29722	SICONFI	https://apidatalake.tesouro.gov.br/ords/cdwhprd/siconfi/tt/extrato_entregas?id_ente=33&an_referencia=2023	siconfi_extrato_2023.json (count=103)
