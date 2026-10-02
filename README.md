@@ -73,9 +73,10 @@ varredura de segredos.
 
 ## Deploy (Railway)
 
-Veja [docs/architecture.md](docs/architecture.md#deploy-no-railway): serviço web
-(`railway.json`, só leitura), serviço cron de ingestão (`railway.ingest.json`,
-que também aplica as migrations) e PostgreSQL 18 com tag de versão fixa.
+Projeto "portal dash" no Railway: serviço web (só leitura), serviço cron de
+ingestão (que também aplica as migrations) e PostgreSQL 18 com major fixo. As
+configurações de cada serviço estão em
+[docs/architecture.md](docs/architecture.md#deploy-no-railway).
 
 ## Documentação
 

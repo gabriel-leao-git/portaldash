@@ -169,43 +169,38 @@ pool do site abre sessões com `default_transaction_read_only=on` e
 
 ## Deploy no Railway
 
-Nada é publicado automaticamente por este repositório. São três serviços no
-mesmo projeto do Railway:
+Projeto "portal dash" (ambiente `production`), configurado em 2026-10-02 pela
+CLI e pela API do Railway. Nenhum deploy é disparado por este repositório além
+do deploy automático que o próprio Railway faz a cada push no `main`.
 
-| Serviço | Configuração | Variáveis |
-| --- | --- | --- |
-| PostgreSQL | imagem `ghcr.io/railwayapp-templates/postgres-ssl:18` (fixar o major; não usar `:latest`) | — |
-| `web` | `railway.json` (padrão da raiz): build `pnpm build`, start `pnpm start`, healthcheck `/api/v1/health` | `DATABASE_URL` |
-| `ingestao` | **obrigatório** apontar o arquivo de configuração do serviço para `/railway.ingest.json`: pre-deploy `pnpm db:migrate`, start `pnpm ingest --origem=cron`, cron `0 9 * * *` (06:00 em Brasília), sem reinício | `INGEST_DATABASE_URL` |
+O formato `railway.json` (Config as Code) foi descontinuado pelo Railway:
+desde 2026-10 a API recusa definir arquivo de configuração por serviço, e os
+arquivos existentes só valem até 2026-12-01. Como os dois serviços usam o mesmo
+repositório e o arquivo da raiz se aplicaria a ambos, as configurações ficam
+nas próprias instâncias de serviço (painel/API), registradas abaixo. A
+migração para Infrastructure as Code (`.railway/railway.ts`) fica pendente até
+o formato documentar cron e política de reinício.
+
+| Serviço | Origem | Configuração | Variáveis |
+| --- | --- | --- | --- |
+| `Postgres` | imagem `ghcr.io/railwayapp-templates/postgres-ssl:18` (major fixo) | volume `postgres-volume` | geradas pelo Railway |
+| `portaldash` (web) | GitHub `gabriel-leao-git/portaldash`, `main` | builder Railpack; build `pnpm build`; start `pnpm start`; healthcheck `/api/v1/health` (120 s); reinício `ON_FAILURE` (5) | `DATABASE_URL` (papel somente leitura) |
+| `ingestao` | GitHub `gabriel-leao-git/portaldash`, `main` | builder Railpack; build `node --version` (não precisa do build do Next); pre-deploy `pnpm db:migrate`; start `pnpm ingest --origem=cron`; cron `0 9 * * *` (06:00 em Brasília); reinício `NEVER` | `INGEST_DATABASE_URL=${{Postgres.DATABASE_URL}}` |
 
 Regras:
 
-- Só o serviço `ingestao` recebe `INGEST_DATABASE_URL` (credencial de escrita e
-  DDL). As migrations rodam no pre-deploy dele; o `web` nunca roda migrations
-  (`pnpm db:migrate` exige `INGEST_DATABASE_URL` e falha sem ela).
-- Sem o caminho de configuração próprio, o serviço `ingestao` herdaria o
-  `railway.json` da raiz e subiria um `next start` no lugar da ingestão (o cron
-  nunca terminaria). Não configure o cron só pelo painel.
-- `web` com `DATABASE_URL` do papel `portaldash_leitura` (seção anterior). Até o
-  papel ser criado, `${{Postgres.DATABASE_URL}}` funciona, mas dá ao site a
-  credencial de administrador; a sessão continua somente leitura por
-  configuração do pool, o que é defesa adicional e não substitui o papel.
+- Só o serviço `ingestao` recebe `INGEST_DATABASE_URL` (escrita e DDL). As
+  migrations rodam no pre-deploy dele; o web nunca roda migrations
+  (`pnpm db:migrate` exige `INGEST_DATABASE_URL`).
+- O web usa o papel `portaldash_leitura` (seção anterior), nunca a credencial
+  de administrador. Além disso, o pool do site abre sessões somente leitura.
 - Mudanças de schema devem ser compatíveis com a versão anterior do site
-  (expandir antes de contrair), porque `web` e `ingestao` fazem deploy de forma
+  (expandir antes de contrair): web e ingestão fazem deploy de forma
   independente.
-
-Primeiro deploy:
-
-1. Criar o PostgreSQL com a imagem de major fixo.
-2. Criar o serviço `ingestao` a partir do repositório, apontar para
-   `/railway.ingest.json` e definir `INGEST_DATABASE_URL=${{Postgres.DATABASE_URL}}`.
-   O deploy aplica as migrations.
-3. Rodar a ingestão uma vez ("Run now" no cron). A primeira carga de 28 entes e
-   dois exercícios leva cerca de 15 a 20 minutos (intervalo de 1,5 s entre
-   requisições, com desaceleração automática se a fonte devolver 429).
-4. (Recomendado) Criar o papel `portaldash_leitura` com o SQL da seção anterior.
-5. Criar o serviço `web` a partir do repositório (usa `railway.json`) com
-   `DATABASE_URL` do papel de leitura e gerar o domínio público.
+- Para recriar o ambiente: criar o PostgreSQL com a imagem acima; criar
+  `ingestao` vazio, definir variável e configuração, e só então conectar o
+  repositório (o primeiro deploy aplica as migrations); rodar a ingestão uma
+  vez; criar o papel de leitura; configurar o web e gerar o domínio.
 
 A rede privada do Railway só existe em tempo de execução; por isso nenhuma
 página consulta o banco durante o build.
