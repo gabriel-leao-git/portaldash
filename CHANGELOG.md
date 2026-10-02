@@ -38,9 +38,13 @@ funcionalidade pública). Metodologia 0.1.0.
 - Páginas: dashboard Brasil, lista e página de cada estado, metodologia, fontes
   e sobre, com períodos na URL, tabelas alternativas aos gráficos e estados de
   vazio, erro e dados parciais.
-- Segurança: CSP com nonce, cabeçalhos de segurança, sessão de banco somente
-  leitura no site, migrations só no serviço de ingestão, CI com auditoria de
-  dependências e varredura de segredos.
+- Segurança: CSP com nonce, cabeçalhos de segurança, papel de banco somente
+  leitura para o site (provisionado pelas migrations) além da sessão somente
+  leitura, migrations só no serviço de ingestão, CI com auditoria de
+  dependências e varredura de segredos (gitleaks 8.30.1, histórico completo).
+- Deploy: configuração dos serviços do Railway documentada em
+  `docs/architecture.md` (sem `railway.json`, descontinuado pelo Railway),
+  com deploy automático do `main` só depois da CI.
 - Documentação: arquitetura, contrato de dados, metodologia, diretrizes
   editoriais, critérios de aceitação, registro da validação da fonte com
   evidências e documentos de segurança.

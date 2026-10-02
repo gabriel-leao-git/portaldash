@@ -1,6 +1,6 @@
 # Contrato de dados
 
-**Status:** rascunho para revisão de Gabriel. **Redação:** 2026-10-01, horário de Brasília. **Metodologia de referência:** v0.1.0, provisória (ver D1 na seção 1.17).
+**Status:** rascunho para revisão de Gabriel. **Redação:** 2026-10-01, horário de Brasília. **Atualização:** 2026-10-02 (ritmo de coleta e HTTP 429 na Parte 1; Parte 2 conferida com o código). **Metodologia de referência:** v0.1.0, provisória (ver D1 na seção 1.17).
 
 Este documento descreve o que o PortalDash pode esperar da fonte oficial e o que consome dela (Parte 1). A Parte 2 descreve a API pública do próprio PortalDash.
 
@@ -137,13 +137,21 @@ O PortalDash aceita apenas `https://apidatalake.tesouro.gov.br` com o base path 
 
 - **Documentado:** "ATENÇÃO: Para fins de performance, o limite é de uma (01) requisição por segundo." [E03]. A página de entrada pede que se obedeçam "às orientações de uso para evitar o bloqueio do serviço" [E01], sem dizer como é o bloqueio (duração ou código HTTP).
 - **Documentado:** "por padrão, as consultas retornam 5.000 itens por página" [E01]; no spec, "Por padrão nossas consultas retornam 5.000 itens por página" [E03]. Em `/entes` o padrão observado é 6000 (seção 1.4).
-- Não foram observados HTTP 429 nem cabeçalhos `X-RateLimit-*` ou `Retry-After` [docs].
-- **Atualização de 2026-10-02 (ingestão completa):** com chamadas sequenciais a 1,1 s, 81 de 407 respostas foram HTTP 429 vindas da CDN (`X-Cache: CONFIG_NOCACHE`), sem `Retry-After`. O limite efetivo é mais restritivo que o documentado. Evidência e números em `docs/validacao-fonte-siconfi-2026-10.md`, seção 17.2, e `docs/evidencias/2026-10-02-ingestao-completa/requisicoes.csv`.
+- Na Etapa 1, não foram observados HTTP 429 nem cabeçalhos `X-RateLimit-*` ou `Retry-After` [docs].
+- **Atualização de 2026-10-02 (ingestão completa):** com chamadas sequenciais a 1,1 s (mediana medida: 1,111 s), 81 das 407 respostas da execução 3 foram HTTP 429 vindas da borda da CDN (`X-Cache: CONFIG_NOCACHE`). O registro dessa execução não guardou o `Retry-After`; nas 2 respostas 429 da execução 4, já com o registro atual, ele veio ausente. Cabeçalhos `X-RateLimit-*` não são registrados. O limite efetivo é mais restritivo que o documentado. Os 429 vieram aproximadamente a cada 11 requisições, o que sugere uma janela deslizante (**inferência** da seção 17.2). Evidência e números em `docs/validacao-fonte-siconfi-2026-10.md`, seção 17.2, e `docs/evidencias/2026-10-02-ingestao-completa/requisicoes.csv`.
 - **Houve um 502 durante acesso concorrente.** Em E07 (01:19:22Z), `/anexos-relatorios` devolveu uma página HTML com título "Service unavailable", o texto "Our services aren't available right now." e o errorref `20261002T011924Z-167767458dd25zpvhC1RIO08ng000000056g000000004e3t`. Um segundo antes (01:19:21Z), outra chamada à mesma rota começou e ficou 120 s sem resposta (E08). Uma terceira, iniciada às 01:20:24Z, enquanto E08 ainda aguardava, recebeu 200 só depois de 69,26 s (E09). [critica] diz que E09 foi "nesse mesmo minuto"; o log de [docs] e o `x-azure-ref` de E09 (`20261002T012026Z-…`) mostram que ela começou cerca de 1 min depois de E07.
 - **A própria Etapa 1 descumpriu a etiqueta no agregado.** Cada agente fez chamadas sequenciais, mas os agentes rodaram em paralelo. Somando os logs, foram 98 requisições ao host entre 01:18Z e 01:41Z, 25 delas no minuto 01:21, e houve 8 segundos com 2 requisições simultâneas (por exemplo 01:21:32Z, 01:21:47Z, 01:22:05Z e 01:23:46Z) [critica].
 - **Inferência:** o 502 e o timeout coincidiram com chamadas sobrepostas à rota mais lenta (E07 e E08 com 1 s de diferença; E09 iniciada enquanto E08 aguardava). A relação de causa não foi demonstrada.
-- **Regra do PortalDash (implementada, `src/server/integrations/siconfi/`):** chamadas sequenciais de um único cliente, intervalo mínimo de 1,5 s entre requisições e `pg_advisory_lock` impedindo execuções simultâneas. Retentativas: no máximo 3, com backoff, para erro de rede, timeout, 5xx e 429. Ao receber 429, o intervalo dobra (até 6 s) pelo resto da execução e a próxima tentativa espera o `Retry-After`, se houver, ou 10 s × tentativa. Se as tentativas se esgotarem, a coleta daquela declaração falha e o último snapshot ativo é mantido. (A decisão inicial era 1,1 s sem retentar 429; foi endurecida depois da evidência de 2026-10-02.)
-- **Volume esperado (inferência aritmética):** uma requisição ao `/rreo` por ente, exercício e bimestre, mais uma ao `/extrato_entregas` por ente e exercício. Para a ingestão-piloto (2026 b1 a b4 e 2025 b1 a b6, 28 entes), [critica] estima cerca de 280 requisições ao `/rreo`, ou cerca de 6 min a ≥1,1 s, sem contar o tempo de resposta.
+- **Regra do PortalDash** (implementada em `src/server/integrations/siconfi/http.ts` e `config.ts`; lock em `src/server/ingestion/executar.ts`):
+  - Um único cliente por execução, com fila: uma requisição por vez.
+  - Intervalo mínimo de 1,5 s (`INTERVALO_MINIMO_MS`) entre o início de requisições consecutivas, retentativas incluídas.
+  - Até 3 tentativas por requisição (`MAX_TENTATIVAS`: a original e até 2 retentativas), só para erro de rede, timeout, 5xx e 429. Antes da 2ª tentativa a espera é de 2 s e antes da 3ª, de 4 s, mais até 0,5 s aleatório; depois de um 429 vale a espera do 429, se for maior.
+  - Ao receber 429, o intervalo mínimo dobra (1,5 s → 3 s → 6 s, com teto de 6 s) e fica assim até o fim da execução. A próxima tentativa espera o `Retry-After`, se vier (limitado a 120 s), ou 10 s × o número da tentativa que recebeu o 429.
+  - Sem retentativa: qualquer outro status diferente de 200 abaixo de 500 (por exemplo, 400 e 404), `Content-Type` que não seja JSON e corpo acima de 16 MiB. O redirect é recusado (`redirect: "error"`); como o `fetch` o reporta como falha de rede, ele passa pelas retentativas antes de falhar.
+  - Esgotadas as tentativas, falha a coleta daquela declaração, ou a do extrato daquele ente e exercício (e aí nenhuma declaração desse ente e exercício é coletada na execução). O último snapshot ativo é mantido.
+  - `pg_try_advisory_lock` impede execuções simultâneas: uma segunda execução não espera; termina como `bloqueada`, sem fazer requisições.
+  - A decisão inicial era 1,1 s sem retentar 429; foi endurecida depois da evidência de 2026-10-02. Na execução 4, já com a regra nova, houve 2 respostas 429 em 60 requisições, e as duas foram recuperadas na tentativa seguinte, cerca de 10 s depois (`requisicoes.csv`).
+- **Volume esperado (inferência aritmética):** uma requisição ao `/rreo` por ente, exercício e bimestre, mais uma ao `/extrato_entregas` por ente e exercício. A carga completa de 2025 b1 a b6 e 2026 b1 a b4 dos 28 entes soma 280 + 56 = 336 requisições. Sem nenhum 429, isso leva no mínimo cerca de 8,4 min a 1,5 s, sem contar o tempo de resposta. Se dois 429 vierem logo no início, o intervalo sobe para 6 s e o mínimo passa a cerca de 34 min. [critica] havia estimado cerca de 6 min para as 280 consultas ao `/rreo` a ≥1,1 s.
 
 ### 1.3 Endpoints usados pelo PortalDash
 
@@ -244,6 +252,7 @@ Toda resposta 200 vem no envelope ORDS [docs]:
 | Período ainda não entregue | 200 | `application/json` | `items` vazio | E55 | "sem dado", nunca zero |
 | Ente sem entregas no ano | 200 | `application/json` | `items` vazio | E24 | "sem dado" |
 | Indisponibilidade | 502 | **HTML**, não JSON | página "Service unavailable" | E07 | retentativa (5xx) |
+| Limite de taxa da CDN | 429 | não registrado | não lido | seção 1.2 (atualização de 2026-10-02) | retentativa com espera; intervalo dobrado até 6 s (seção 1.2) |
 | Origem lenta | — | — | nenhum byte em 120 s | E08, E11 | timeout, depois retentativa |
 
 Corpo real do 400 (E14):
@@ -261,7 +270,7 @@ Corpo real do 400 (E14):
 - O campo `instance` (ecid) identifica a requisição no ORDS. Vale registrá-lo para eventuais pedidos de suporte [docs].
 - Uma resposta vazia não é erro nem zero. O 200 com `items` vazio aparece tanto para parâmetro inválido quanto para dado inexistente. Por isso [docs] recomenda validar os parâmetros localmente e cruzar com o extrato antes de concluir que não há dado.
 - Os 5xx podem chegar como HTML. O cliente não pode supor JSON fora do 200 nem fazer parse do corpo sem antes conferir o `Content-Type`.
-- **Lacuna:** 429, 500, 503 e 504 não foram observados, e o formato desses casos é desconhecido.
+- **Lacuna:** 500, 503 e 504 não foram observados, e o formato desses casos é desconhecido. Do 429 (seção 1.2) só ficaram registrados o status, o `X-Cache` e, na execução 4, a ausência de `Retry-After`; o corpo e o `Content-Type` não foram guardados.
 
 ### 1.6 Timeouts, latência e tamanhos observados
 
@@ -592,7 +601,7 @@ A camada bruta guarda a resposta inteira. O indicador nunca lê `TotalDespesas`,
 - **R1. Contrato beta e mutável.** O spec se declara "versão beta" e o arquivo tem `Last-Modified` de 2026-06-24 (E03). Campos, enums e o base path podem mudar sem aviso. Mitigação: validar o esquema em tempo de execução, tolerar campos extras e monitorar o ETag do spec.
 - **R2. Retificação silenciosa.** O `/rreo` não tem versão e o extrato não guarda histórico (seção 1.14). Um valor muda no lugar e a série publicada muda junto. Mitigação (decisão): respostas brutas deduplicadas, snapshots com hash, histórico próprio do extrato e recoleta.
 - **R3. Republicação sem reflexo no Siconfi.** O caso do RREO de dez/2025 da União (seção 1.14) mostra que a publicação oficial pode divergir da API sem nenhum RE no extrato. Conciliar uma coluna não valida as outras [uniao-rec].
-- **R4. Bloqueio e indisponibilidade.** O limite é de 1 req/s (documentado) e o bloqueio por excesso é desconhecido. Houve um 502 em HTML sob concorrência (E07), e a origem chegou a levar 69,26 s (E09). Mitigação (decisão): limitador global, lock, retentativas limitadas e manutenção do último snapshot ativo.
+- **R4. Bloqueio e indisponibilidade.** O limite documentado é de 1 req/s, mas a CDN devolveu HTTP 429 a chamadas sequenciais com 1,1 s de intervalo (seção 1.2). Limiar, janela e duração do bloqueio são desconhecidos. Houve um 502 em HTML sob concorrência (E07), e a origem chegou a levar 69,26 s (E09). Mitigação (implementada): cliente sequencial com intervalo mínimo de 1,5 s, desaceleração até 6 s depois de um 429, lock entre execuções, retentativas limitadas e manutenção do último snapshot ativo.
 - **R5. Cache do CDN com TTL desconhecido.** Depois de uma retificação, a API pode continuar servindo a versão anterior por um tempo desconhecido (seção 1.7).
 - **R6. Dois caminhos ativos.** O caminho legado responde igual ao documentado (E56). Um dos dois pode ser desativado, e o documentado vem de um campo `host` fora do padrão (E03).
 - **R7. Paginação sem ordenação.** Se os dados mudarem durante a paginação, linhas podem se repetir ou se perder (seção 1.4). Mitigação recomendada ([docs], [critica]): conferir a chave natural e tratar repetição como snapshot inválido. Uma linha perdida não é detectável pela chave (**lacuna**), mas o Anexo 01 coube numa página em todas as amostras.
@@ -614,16 +623,16 @@ A camada bruta guarda a resposta inteira. O indicador nunca lê `TotalDespesas`,
 - **L4. Fuso de `data_status`.** Não foi verificado (seção 1.14).
 - **L5. Defasagem entre homologação e disponibilidade no `/rreo`.** Só há limites superiores, de cerca de 35 a 38 h (seção 1.14).
 - **L6. Extrato de 2025 incompleto.** O b6 de 2025 não foi consultado para 24 dos 28 entes.
-- **L7. Política de bloqueio.** Duração, código HTTP e limiar são desconhecidos.
+- **L7. Política de bloqueio.** O código do limite de taxa foi observado: HTTP 429, vindo da borda da CDN (seção 1.2). Limiar, janela e duração continuam desconhecidos.
 - **L8. Quebra estrutural histórica.** Só foi observada no RJ (2015 a 2021) e na União (2019). Não se sabe se é igual para todos os entes, nem como eram os anos anteriores a 2015.
 - **L9. DF e FCDF.** A interação entre as despesas da União pelo Fundo Constitucional do DF e as despesas do DF não foi investigada.
 - **L10. Rastreabilidade das evidências.** As amostras e os logs estão num diretório temporário de sessão, fora do repositório. Os PDFs maiores que 2 MB foram apagados depois da extração. Do RREO de dez/2025 da União ficaram URL, `ETag`, `Last-Modified` e tamanho, sem hash [uniao-rec]; dos PDFs da SEFAZ-RJ e do DOERJ, os hashes estão no log [rj-rec]. Os relatórios da União, do RJ e da reconciliação chegaram truncados à revisão crítica, e afirmações que só existiam no texto truncado não foram checadas [critica]. **Recomendação:** antes que a sessão expire, copiar amostras selecionadas e pequenas para fixtures de contrato versionadas.
-- **L11. Medições de uma só origem.** A latência e o comportamento de rede foram medidos de uma máquina Windows, numa noite. O comportamento a partir do Railway é desconhecido.
+- **L11. Medições de uma só origem.** A latência e o comportamento de rede foram medidos de uma máquina Windows, numa noite. A partir do Railway, só há o resultado da primeira ingestão em produção (2026-10-02): 340 requisições, 280 declarações ativadas, 0 rejeitadas, situação `concluida`, sem erros. Latência, respostas 429 e tempo total dessa execução não foram analisados.
 - **L12. `/entes` sem cache.** O tempo de resposta nessa condição não foi medido (seção 1.6).
 - **L13. Teto de `limit`.** Não foi determinado (seção 1.4).
 - **L14. RREO Simplificado.** Os códigos de `forma_envio` e `tipo_relatorio` estão documentados no spec (seção 1.3.2), mas nenhum `tipo_relatorio` `S` nem resposta de `RREO Simplificado` foi observado. Isso não afeta os 28 entes do escopo, que tiveram `P` em todas as linhas de 2026.
 - **L15. Origem de `populacao`.** O spec descreve o campo como estimativa de habitantes "para o exercício de referência dos dados", sem citar a fonte. O comportamento observado não confirma essa safra (seção 1.15). O campo não é usado.
-- **L16. Comportamento de 429, 500, 503 e 504.** O 429 foi observado em 2026-10-02 (seção 1.2, atualização): vem da CDN, sem `Retry-After`. A política exata de limitação e o formato de 500, 503 e 504 continuam desconhecidos.
+- **L16. Comportamento de 429, 500, 503 e 504.** O 429 foi observado em 2026-10-02 (seção 1.2, atualização): vem da borda da CDN e, nas 2 ocorrências em que o cabeçalho foi registrado, sem `Retry-After`. A política exata de limitação e o formato de 500, 503 e 504 continuam desconhecidos.
 
 ---
 
@@ -631,22 +640,36 @@ A camada bruta guarda a resposta inteira. O indicador nunca lê `TotalDespesas`,
 
 Contrato público, somente leitura. Versão da API: `1`. Mudanças incompatíveis
 exigem nova versão (`/api/v2`) ou, enquanto o projeto estiver em 0.x, versão
-MINOR com a quebra destacada no `CHANGELOG.md`. Implementação em
-`src/app/api/v1/`, testes em `tests/api/`.
+MINOR com a quebra destacada no `CHANGELOG.md`. Rotas em `src/app/api/v1/`;
+escolha do período e situações em `src/server/services/despesas.ts` e
+`src/server/repositories/rreo.ts`; formato das respostas em
+`src/server/api/respostas.ts`; testes em `tests/api/`.
+
+Nenhuma versão foi publicada ainda. Em relação à primeira redação desta parte,
+mudaram: a escolha do período por rota (2.3), o 404 para recorte explícito sem
+dado, a situação `nao_coletado` (2.6) e o campo `serieUniao` em `/brasil`.
 
 ### 2.1 Regras gerais
 
-- Só `GET`. Outros métodos devolvem 405.
+- Só leitura. As rotas exportam apenas `GET`; o Next.js responde `HEAD` com o
+  mesmo handler e `OPTIONS` com 204 e cabeçalho `Allow`. `POST`, `PUT`, `PATCH`
+  e `DELETE` devolvem 405 sem corpo (comportamento do framework).
 - O navegador e os clientes da API nunca recebem dados direto da fonte: tudo
-  vem das declarações validadas e ativas no banco do PortalDash.
+  vem das declarações validadas e ativas no banco do PortalDash, lidas numa
+  sessão somente leitura (`default_transaction_read_only=on`,
+  `statement_timeout` de 5 s; `src/server/db/pool.ts`).
 - Valores monetários são **strings decimais** com ponto (ex.:
-  `"2821965337713.47"`), exatamente como a fonte declarou, sem zeros à
-  direita. Nunca são convertidos em número de ponto flutuante.
-- `null` significa ausência de dado. Ausência nunca é representada como zero.
+  `"2821965337713.47"`): o número que a fonte declarou, lido como texto e
+  normalizado sem zeros à direita. Nunca passam por ponto flutuante.
+- `null` significa ausência de dado e vem sempre com uma `situacao` (2.6).
+  Ausência nunca é representada como zero.
 - Datas e horários em ISO 8601 UTC; datas de período em `AAAA-MM-DD`.
-- `Content-Type: application/json; charset=utf-8`. Respostas de dados com
-  `Cache-Control: public, max-age=300` (o recorte inteiro está na URL); erros e
-  `/health` com `no-store`.
+- Todas as respostas JSON levam `Content-Type: application/json; charset=utf-8`
+  e `X-Content-Type-Options: nosniff`.
+- Cache: as respostas 200 de `/brasil`, `/estados`, `/estados/{uf}` e `/fontes`
+  levam `Cache-Control: public, max-age=300`; os erros e o `/health`, `no-store`.
+  Os dados só mudam depois de uma ingestão. Sem `ano` e `bimestre` na URL, uma
+  cópia em cache pode levar até 5 min para refletir um período novo.
 
 ### 2.2 Parâmetros
 
@@ -656,66 +679,155 @@ MINOR com a quebra destacada no `CHANGELOG.md`. Implementação em
 | `bimestre` | `1` a `6` (1 = jan–fev … 6 = nov–dez) | opcional; exige `ano` |
 | `conceito` | `pago` | opcional; único conceito validado |
 
-- Sem `bimestre`, usa o bimestre mais recente com dado validado (no `ano`
-  informado, se houver), preferindo os que têm dado da União.
-- Parâmetro desconhecido ou repetido → 400.
+- Parâmetro desconhecido, repetido (mesmo vazio) ou fora da allowlist, e
+  `bimestre` sem `ano` → 400 com `detalhes` por campo. Parâmetro vazio
+  (`?ano=`) conta como ausente.
+- `/fontes` não aceita parâmetros; `/health` ignora a query string.
 - UF em `/estados/{uf}`: sigla de 2 letras da allowlist (26 estados e DF),
-  sem diferenciar maiúsculas.
+  sem diferenciar maiúsculas. A UF é conferida antes dos parâmetros: UF
+  desconhecida dá 404 mesmo com parâmetros inválidos.
+- A validação acontece antes de qualquer acesso ao banco. Com o banco fora do
+  ar, parâmetro inválido continua dando 400 (`tests/api/indisponivel.test.ts`).
 
-### 2.3 Rotas
+### 2.3 Escolha do período
+
+O período (exercício e bimestre) é escolhido entre os que têm pelo menos uma
+declaração ativa do Anexo 01 **entre os entes do escopo da rota**:
+
+| Rota | Escopo da disponibilidade | Sem `bimestre` |
+| --- | --- | --- |
+| `/brasil` | União e os 27 entes estaduais | o período mais recente que tenha a União; se nenhum tiver (dentro do `ano` pedido, quando houver), o mais recente com qualquer ente do escopo |
+| `/estados` | só os 27 entes estaduais; a União não conta | o período mais recente do escopo |
+| `/estados/{uf}` | só o ente pedido | o período mais recente do ente |
+
+- Sem `ano` nem `bimestre`: o período mais recente do escopo, com a
+  preferência da tabela.
+- Só `ano`: o bimestre mais recente daquele ano no escopo. Se o ano não tem
+  nenhuma declaração ativa no escopo → 404 `sem_dados`.
+- `ano` e `bimestre` (recorte explícito): o período é usado exatamente como
+  pedido se houver pelo menos uma declaração ativa do escopo nele; senão → 404
+  `sem_dados`, nunca um painel vazio com 200. Isso vale para bimestre ainda não
+  entregue ou não coletado e para bimestre futuro do ano corrente (por exemplo,
+  `?ano=2026&bimestre=6` em 2026-10-02). O recorte explícito nunca é trocado
+  por outro período.
+- Em `/brasil`, um recorte explícito em que só estados têm dado responde 200,
+  com a União em `valor: null` e a situação correspondente. Em
+  `/estados/{uf}`, um recorte explícito só responde 200 se o próprio ente tiver
+  versão ativa naquele período.
+- `filtros`, na resposta, traz o período efetivamente usado.
+- As páginas do site seguem o mesmo critério por escopo (`/`, `/estados` e
+  `/estados/{uf}`), mas mostram estado vazio em vez de 404
+  (`src/server/services/paginas.ts`).
+
+### 2.4 Rotas
 
 | Rota | Conteúdo |
 | --- | --- |
-| `GET /api/v1/brasil` | União (indicador, composição e proveniência) e os 27 entes estaduais lado a lado, com cobertura. **Sem total nacional nem soma de estados.** |
-| `GET /api/v1/estados` | Os 27 entes estaduais lado a lado, com cobertura. |
-| `GET /api/v1/estados/{uf}` | Um estado: indicador, composição, proveniência e série cumulativa do exercício (bimestres 1 a 6). |
-| `GET /api/v1/fontes` | Fontes, situação da última coleta (sem mensagens de erro) e períodos com dado validado. Não aceita parâmetros. |
-| `GET /api/v1/health` | `{"status":"ok"}` ou 503. Sem versão, host ou configuração. |
+| `GET /api/v1/brasil` | Campos comuns (2.5), `uniao` (indicador com composição e proveniência), `serieUniao` (série cumulativa da União no exercício) e `estados: { cobertura, itens }`, com os 27 entes estaduais lado a lado. **Sem total nacional nem soma de estados.** |
+| `GET /api/v1/estados` | Campos comuns, `cobertura` e `estados`: os 27 entes estaduais lado a lado, sem composição. |
+| `GET /api/v1/estados/{uf}` | Campos comuns, `indicador` (com composição e proveniência) e `serieExercicio`. |
+| `GET /api/v1/fontes` | `metodologia` e `fontes`. Para cada fonte: identificação, documentação, contrato, uso no portal, `integracao` (`ultimaExecucao` com `situacao`, `iniciadaEm` e `finalizadaEm`; `ultimaAtualizacaoConcluida`) e `periodosDisponiveis` (até 24, do mais recente para o mais antigo, cada um com `ano`, `bimestre` e `entesComDado`). Sem mensagens de erro. |
+| `GET /api/v1/health` | `{"status":"ok"}` (200, `no-store`) ou 503 `indisponivel`. Sem versão, host ou configuração. |
 
-### 2.4 Campos comuns (`/brasil`, `/estados`, `/estados/{uf}`)
+Em `/fontes`, `ultimaExecucao.situacao` é `em_execucao`, `concluida`,
+`concluida_com_falhas` ou `falhou`. `ultimaAtualizacaoConcluida` é o fim da
+última execução `concluida` ou `concluida_com_falhas`. Uma execução termina
+como `falhou` quando nenhum extrato foi lido ou quando havia coletas planejadas
+e nenhuma foi concluída (`src/server/ingestion/executar.ts`); ela nunca aparece
+como atualização concluída.
+
+### 2.5 Campos comuns (`/brasil`, `/estados`, `/estados/{uf}`)
 
 | Campo | Descrição |
 | --- | --- |
 | `versaoApi` | `"1"` |
-| `metodologia` | `{ versao, url }` — versão da metodologia (independente da versão do software) |
+| `metodologia` | `{ versao, url }`: versão da metodologia (independente da versão do software) e `"/metodologia"` |
 | `definicaoIndicador` | `{ id, nome, qualificador, conceito }` |
-| `filtros` | recorte efetivamente usado: `{ ano, bimestre, conceito }` |
+| `filtros` | período efetivamente usado: `{ ano, bimestre, conceito }` |
 | `referenciaTemporal` | `{ tipo: "acumulado_no_exercicio", exercicio, bimestre, inicio, fim, descricao }` |
 | `unidade` | `{ moeda: "BRL", base: "nominal" }` |
-| `avisos` | textos obrigatórios que acompanham o número |
+| `avisos` | textos obrigatórios que acompanham o número: os 4 avisos do indicador em todas as rotas; em `/brasil` e `/estados/{uf}`, também o aviso de que União e estados não se somam; e o aviso de composição oculta quando a composição de `uniao` (`/brasil`) ou de `indicador` (`/estados/{uf}`) não é exibida (2.6) |
 
-### 2.5 Indicador por ente (`IndicadorEnte`)
+### 2.6 Indicador por ente (`IndicadorEnte`)
 
 | Campo | Descrição |
 | --- | --- |
-| `ente` | `{ codIbge, uf, nome, esfera }` (`esfera`: `uniao`, `estado` ou `distrito_federal`) |
-| `situacao` | `disponivel`; `sem_dado_validado` (entrega registrada no extrato, mas sem versão coletada e validada); `sem_registro_de_entrega` |
-| `valor` | despesas pagas exceto intraorçamentárias (string) ou `null` |
-| `proveniencia` | `{ fonte, consulta, statusEntrega, dataStatusSiconfi, coletadoEm, verificadoEm }` ou `null`. `consulta` é a URL pública da fonte com o recorte; `statusEntrega` é `homologado` ou `retificado` |
-| `composicao` | só em `/brasil` (União) e `/estados/{uf}`: `{ categorias, grupos }`, cada item com `codConta`, `nome`, `categoria`, `valor` (string ou `null`) e `participacaoPercentual` (string com 1 casa, sobre o total exceto intra, ou `null`) |
+| `ente` | `{ codIbge, uf, nome, esfera }`. `uf` é `null` na União; `esfera` é `uniao`, `estado` ou `distrito_federal` |
+| `situacao` | uma das quatro situações da tabela abaixo |
+| `valor` | despesas pagas exceto intraorçamentárias (string) quando `disponivel`; senão `null` |
+| `proveniencia` | `{ fonte, consulta, statusEntrega, dataStatusSiconfi, coletadoEm, verificadoEm }` quando `disponivel`; senão `null` |
+| `composicao` | só em `uniao` (`/brasil`) e em `indicador` (`/estados/{uf}`): `{ categorias, grupos }` ou `null` |
 
-`cobertura` (em `/brasil` e `/estados`): `{ totalEntes, comDado, semDado: [{ uf, nome, situacao }] }`.
+| `situacao` | Quando |
+| --- | --- |
+| `disponivel` | há versão validada e ativa da declaração, com a célula do indicador |
+| `sem_dado_validado` | os extratos coletados registram a entrega do RREO desse bimestre, mas não há versão validada ativa (coleta ainda não feita, coleta que falhou ou conteúdo rejeitado nas verificações) |
+| `sem_registro_de_entrega` | os extratos coletados registram entregas do RREO desse ente e exercício, mas nenhuma desse bimestre |
+| `nao_coletado` | não há entrega do RREO desse ente e exercício nos extratos coletados: o extrato não foi coletado ou não trouxe nenhuma linha de RREO. Nada se afirma sobre a entrega |
 
-`serieExercicio` (em `/estados/{uf}`): lista de `{ bimestre, situacao, valor }`.
-Cada valor é acumulado desde janeiro; os pontos não devem ser somados.
+As três situações sem dado vêm de `situacaoSemDado`
+(`src/server/services/despesas.ts`), a partir das entregas bimestrais do RREO
+observadas nos extratos (`entregasDoExercicio`,
+`src/server/repositories/rreo.ts`).
 
-### 2.6 Erros
+- `proveniencia.consulta` é a URL pública do `/rreo` da fonte com o recorte
+  (`an_exercicio`, `nr_periodo`, `co_tipo_demonstrativo=RREO`,
+  `no_anexo=RREO-Anexo 01`, `id_ente`).
+- `statusEntrega` (`homologado`, `retificado` ou `null`) e
+  `dataStatusSiconfi` são os gravados na versão ativa. Se o extrato muda de
+  status e a nova coleta traz conteúdo igual ao ativo, eles só são atualizados
+  na primeira coleta feita 10 dias ou mais depois da nova `data_status`
+  (`JANELA_CONFIRMACAO_RETIFICACAO_DIAS`, `src/server/ingestion/executar.ts`);
+  até lá, a declaração é recoletada a cada execução. Conteúdo diferente vira
+  nova versão ativa na hora, já com o novo status.
+- `coletadoEm` é o momento da coleta da versão ativa. `verificadoEm` é a última
+  vez em que a fonte foi consultada e devolveu o mesmo conteúdo (ou a própria
+  coleta, se não houve conferência depois).
+- `composicao` é `null` quando o indicador não está `disponivel` ou quando uma
+  identidade dos grupos falhou na verificação da versão (correntes = pessoal +
+  juros + outras; capital = investimentos + inversões + amortização). Nesse
+  segundo caso, `avisos` traz o aviso de composição oculta. Quando presente,
+  `categorias` tem 2 itens (correntes e capital) e `grupos` tem 6. Cada item
+  traz `codConta`, `nome`, `categoria` (`corrente` ou `capital`), `valor`
+  (string, ou `null` se a célula faltar ou não for única) e
+  `participacaoPercentual` (string arredondada a 1 casa decimal, sem zeros à
+  direita, sobre o total exceto intra; `null` se o valor faltar ou o total for
+  zero).
+
+`cobertura` (em `/estados` e, em `/brasil`, dentro de `estados`):
+`{ totalEntes, comDado, semDado: [{ uf, nome, situacao }] }`, só com os 27
+entes estaduais; `situacao` é uma das três situações sem dado.
+
+`serieExercicio` (em `/estados/{uf}`) e `serieUniao` (em `/brasil`): lista de
+`{ bimestre, situacao, valor }` do exercício do recorte. Traz todos os
+bimestres de 1 até o do recorte, cada um com a sua situação, e, depois dele, só
+os que têm dado validado. A situação de cada ponto segue a mesma regra do
+indicador. Cada valor é acumulado desde janeiro; os pontos não devem ser
+somados.
+
+### 2.7 Erros
 
 ```json
 { "erro": { "codigo": "parametro_invalido", "mensagem": "Parâmetros inválidos",
             "detalhes": [{ "campo": "bimestre", "mensagem": "Use um bimestre de 1 a 6" }] } }
 ```
 
-| Status | `codigo` | Quando |
-| --- | --- | --- |
-| 400 | `parametro_invalido` | parâmetro desconhecido, repetido ou fora da allowlist |
-| 404 | `nao_encontrado` | UF fora da allowlist |
-| 404 | `sem_dados` | nenhum dado validado no recorte pedido |
-| 405 | — | método diferente de GET |
-| 503 | `indisponivel` | banco indisponível (sem detalhes internos) |
+| Status | `codigo` | `mensagem` | Quando |
+| --- | --- | --- | --- |
+| 400 | `parametro_invalido` | `Parâmetros inválidos` (com `detalhes`) | parâmetro desconhecido, repetido ou fora da allowlist; `bimestre` sem `ano` |
+| 404 | `nao_encontrado` | `UF desconhecida` | UF fora da allowlist |
+| 404 | `sem_dados` | `Não há dados validados para o recorte solicitado` | nenhuma declaração ativa do escopo no recorte (2.3): ano sem dado, recorte explícito sem dado (inclusive bimestre futuro) ou banco sem nenhuma declaração ativa |
+| 405 | — (sem corpo) | — | `POST`, `PUT`, `PATCH` ou `DELETE` |
+| 503 | `indisponivel` | `Dados temporariamente indisponíveis` (`Serviço indisponível` no `/health`) | qualquer falha ao consultar o banco ou montar a resposta |
 
-### 2.7 O que a API não expõe
+As respostas de erro em JSON levam `Cache-Control: no-store`. Na falha de
+banco, o log do servidor registra só o tipo e o código do erro, sem a mensagem
+do driver, que pode conter host e porta.
+
+### 2.8 O que a API não expõe
 
 Identificadores internos, hashes, corpos brutos, mensagens de erro da
-ingestão, credenciais, host do banco ou configuração. Coberto por
-`tests/api/rotas.test.ts`.
+ingestão, credenciais, host e porta do banco ou configuração. Coberto por
+`tests/api/rotas.test.ts` (respostas normais) e
+`tests/api/indisponivel.test.ts` (503 sem host, porta, usuário, senha nem
+código de erro do driver).

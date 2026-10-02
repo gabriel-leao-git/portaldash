@@ -7,7 +7,7 @@
 | **Linha-manchete** | **PROVISÓRIA**. Depende de confirmação de Gabriel (seção 15, D1). |
 | **Versão do software na data da redação** | `0.1.0` (`package.json`). A numeração da metodologia é independente da do software. Hoje as duas coincidem por acaso. |
 | **Data da redação** | 2026-10-01 (horário de Brasília) |
-| **Última revisão** | 2026-10-02: alinhamento às regras já implementadas no código, sem mudar a versão (seção 17.2) |
+| **Última revisão** | 2026-10-02: alinhamento às regras já implementadas no código, sem mudar a versão (seção 17.2), e registro dos avisos obrigatórios ainda não implementados (seção 14.1) |
 | **Implementação** | `src/server/methodology/indicador.ts` (`METODOLOGIA_VERSAO = "0.1.0"`, linhas, rótulos e avisos) e `src/server/methodology/verificacoes.ts` (verificações de ativação) |
 | **Base factual** | Evidências da Etapa 1 (validação da fonte), coletadas entre 2026-10-02T01:18Z e 2026-10-02T01:51Z (UTC), ou seja, na noite de 2026-10-01 em Brasília. O registro completo está na seção 19. Os resultados da primeira ingestão completa (2026-10-02, banco local de desenvolvimento) estão em `docs/validacao-fonte-siconfi-2026-10.md`, seção 17. |
 | **Fonte de dados** | Siconfi / Tesouro Nacional: API de dados abertos (`apidatalake.tesouro.gov.br`), Relatório Resumido da Execução Orçamentária (RREO). |
@@ -22,6 +22,7 @@
 - **Proposta:** regra sugerida neste documento que ainda não foi aprovada.
 - **Implementado:** regra que o código atual já aplica. O arquivo é sempre indicado; em caso de divergência entre este documento e o código, a divergência é um defeito a corrigir, não uma escolha.
 - **Conferido na revisão:** dado lido diretamente numa amostra bruta da Etapa 1 durante a revisão deste documento (2026-10-01), sem nenhuma nova consulta à fonte. O arquivo é sempre indicado e a coleta original é a da evidência citada.
+- **Conferido em 2026-10-02:** contagem feita por consulta somente leitura ao banco local de desenvolvimento que recebeu a primeira ingestão completa (snapshots e respostas brutas guardadas), sem nova consulta à fonte.
 - Os valores da fonte estão em reais (R$ 1,00), salvo indicação contrária. Horários em UTC, com sufixo `Z`.
 - Quando a revisão crítica (R7) corrigiu outro relatório, este documento segue a revisão crítica.
 
@@ -63,7 +64,7 @@
 
 **Cálculo na leitura.** Nesta versão, o indicador é calculado na leitura a partir dos snapshots ativos (seção 7). Não há tabela de indicadores persistida. Por isso, uma mudança de metodologia altera na hora todos os valores exibidos, de todos os períodos, e precisa ser registrada no histórico (seção 17).
 
-**Verificações na ingestão.** Já o resultado das verificações (seção 7) é calculado na ingestão e gravado com a versão da metodologia no campo `verificacoes` do snapshot (`metodologia`, `aprovado`, `composicaoConsistente` e a lista de resultados). Implementado em `src/server/methodology/verificacoes.ts` e `src/server/ingestion/snapshot.ts`. Consequência: uma mudança nas regras de verificação **não** reavalia sozinha as versões já ativas. Quando a recoleta traz conteúdo igual ao ativo, só a data da última conferência é atualizada (`src/server/ingestion/executar.ts`). Um conteúdo antes rejeitado é reavaliado pelas regras vigentes sempre que é coletado de novo (seção 7.5).
+**Verificações na ingestão.** Já o resultado das verificações (seção 7) é calculado na ingestão e gravado com a versão da metodologia no campo `verificacoes` do snapshot (`metodologia`, `aprovado`, `composicaoConsistente` e a lista de resultados). Implementado em `src/server/methodology/verificacoes.ts` e `src/server/ingestion/snapshot.ts`. Consequência: uma mudança nas regras de verificação **não** reavalia sozinha as versões já ativas. Quando a recoleta traz conteúdo igual ao ativo, as verificações gravadas não mudam: só a data da última conferência é atualizada e, fora da janela de confirmação de retificação, o status do extrato (seção 9.3, item 5; `src/server/ingestion/executar.ts`). Um conteúdo antes rejeitado é reavaliado pelas regras vigentes sempre que é coletado de novo (seção 7.5).
 
 ### 1.1 Entes e identificação
 
@@ -201,7 +202,7 @@ Para "pagas" **não existe** a coluna "no bimestre": só "até o bimestre" [R1, 
 
 ## 3. Indicador principal (provisório)
 
-> **Atenção: a escolha da linha-manchete é provisória.** Ela foi recomendada pela revisão crítica da Etapa 1 [R7] e depende de confirmação de Gabriel (seção 15, D1). Enquanto não houver decisão, a interface mostra o aviso AV-09.
+> **Atenção: a escolha da linha-manchete é provisória.** Ela foi recomendada pela revisão crítica da Etapa 1 [R7] e depende de confirmação de Gabriel (seção 15, D1). Enquanto não houver decisão, o aviso AV-09 é obrigatório. Ele ainda **não** está implementado na interface nem na API (seção 14.1).
 
 ### 3.1 Definição exata
 
@@ -324,14 +325,16 @@ Regras:
 
    Elas são conferidas em toda declaração (`src/server/methodology/verificacoes.ts`), mas **não** impedem a ativação: o indicador principal continua publicado mesmo que falhem. Se qualquer uma falhar, o snapshot é gravado com `composicaoConsistente` = `false` e a composição por grupo dessa declaração **não é exibida** (regra 8). Parcela ausente não vira zero: a identidade é conferida só com as parcelas presentes, e o detalhe do resultado registra quais faltaram.
 4. **Nunca somar níveis diferentes.** Não somar uma categoria com seus grupos, nem grupos com o total. Não calcular "outros" por diferença.
-5. **Grupo ausente = "sem dado".** Um grupo sem célula aparece como "sem dado", nunca como zero. A fonte omite células que a publicação mostra como 0: a Reserva de Contingência da União 2025 b6 tem pagas 0 no PDF e nenhuma célula no Siconfi [R4, R7].
+5. **Grupo ausente = sem dado.** Um grupo sem célula nunca aparece como zero. Implementado: a API devolve `valor: null` e `participacaoPercentual: null` para o grupo (`src/server/services/despesas.ts`), e o gráfico e a tabela da composição mostram "não informado" (`src/components/charts/CategoryChart.tsx`). A fonte omite células que a publicação mostra como 0: a Reserva de Contingência da União 2025 b6 tem pagas 0 no PDF e nenhuma célula no Siconfi [R4, R7].
 6. **Subcontas exclusivas ficam de fora.** `TransferenciasAEstadosDistritoFederalEMunicipios`, `BeneficiosPrevidenciarios`, `TransferenciasAMunicipios` e `DemaisDespesasCorrentes` não existem em todos os entes. Não entram na composição nem em comparações entre entes [R2, R7].
-7. **Percentuais.** Se a participação de cada grupo for exibida, ela é um cálculo do PortalDash, não da fonte. Deve ser feita em decimal a partir do mesmo snapshot e rotulada como cálculo derivado.
+7. **Percentuais.** A participação de cada grupo é um cálculo do PortalDash, não da fonte. Implementado: `participacaoPercentual` (`src/server/services/despesas.ts`) é a razão em decimal entre o grupo e o valor do indicador do mesmo snapshot, com 1 casa decimal, e vale `null` quando o grupo não tem célula ou o indicador é zero. A legenda do gráfico diz "Percentuais sobre o total pago exceto intraorçamentárias" (`src/components/charts/CategoryChart.tsx`), e a pergunta crítica que usa esses percentuais diz "Participação calculada sobre o total pago no mesmo recorte" (`src/server/services/perguntas.ts`).
 8. **Composição oculta (Implementado).** Com `composicaoConsistente` = `false`, a API devolve `composicao: null` para o ente, a página não mostra a seção por grupo e o aviso AV-13 passa a acompanhar o recorte (`AVISO_COMPOSICAO_OCULTA` em `src/server/services/despesas.ts`):
 
    > "A composição por grupo não é exibida para esta declaração: a soma dos grupos não confere com o total de despesas correntes ou de capital."
 
-   Só o resultado `falhou` oculta a composição. O resultado `nao_verificavel` (nenhuma parcela do grupo presente) não a oculta, e os grupos ausentes aparecem como "sem dado" (regra 5). Uma célula de grupo repetida na coluna (j) é tratada como não informada: nunca é somada nem escolhida.
+   Só o resultado `falhou` oculta a composição. O resultado `nao_verificavel` (nenhum dos grupos da categoria presente) não a oculta, e os grupos ausentes aparecem como "não informado" (regra 5). Uma célula de grupo repetida na coluna (j) é tratada como não informada: nunca é somada nem escolhida.
+
+   Na leitura, um snapshot cujo campo `verificacoes` não tenha `composicaoConsistente` é tratado como consistente (`coalesce(..., true)` em `declaracoesAtivas`, `src/server/repositories/rreo.ts`). Isso só é correto para snapshots cujas identidades dos grupos não falharam; nas 280 declarações da ingestão de 2026-10-02, nenhum resultado `falhou` foi registrado (seção 7.2).
 
 ---
 
@@ -354,7 +357,7 @@ Regras:
 2. **"Pago no bimestre" não existe na fonte.** O PortalDash não o publica na v0.1.0. Ele só sairia pela diferença b(n) − b(n−1), que pode misturar versões diferentes das duas declarações, porque o `/rreo` não permite rastrear retificações [R7]. Publicar ou não essa diferença está pendente (seção 15, D6).
 3. **Sem séries mensais.** O Siconfi é bimestral. O RREO oficial da União é mensal, com colunas "No Mês" e "Até o Mês". As colunas "No Mês" do PDF não equivalem às colunas "NO BIMESTRE" do Siconfi, e só os acumulados dos meses pares coincidem [E21, E22, R3, R7]. Nenhum valor mensal é derivado de dados bimestrais. A MSC (mensal) não foi validada para "despesa paga" [R7].
 4. **Evolução no ano** = curva acumulada b1→b6 do mesmo ente e exercício, ponto a ponto, sem interpolar e sem calcular diferenças.
-5. **Comparação entre anos:** só no mesmo bimestre e no mesmo ente (por exemplo, 4º bim. 2026 × 4º bim. 2025), em valores nominais e com aviso de possível retificação (AV-11).
+5. **Comparação entre anos:** só no mesmo bimestre e no mesmo ente (por exemplo, 4º bim. 2026 × 4º bim. 2025), em valores nominais e com aviso de possível retificação (AV-11). Implementado só na pergunta crítica de variação anual (`src/server/services/perguntas.ts`): ela aparece quando os dois períodos estão `disponivel` e o valor do ano anterior é maior que zero; a variação percentual é calculada em decimal, com 1 casa, e o sentido ("maiores" ou "menores") vem do sinal da diferença exata. Quando a variação arredonda para 0,0%, o texto diz "praticamente iguais [...] (variação menor que 0,05%)".
 6. **Exercício em andamento.** Bimestres ainda não entregues aparecem como "sem dado", com a situação `sem_registro_de_entrega` quando o extrato coletado não registra a entrega (seção 8). O RJ 2026 b5 devolveu HTTP 200 com `items` vazio [E14, R5]. Na coleta, o 5º bimestre de 2026 não aparecia em nenhum extrato [R2, R3]. Isso é esperado: pela convenção da LRF, o 5º bimestre (set–out) nem tinha terminado na data da coleta (inferência). Implementado: na série do exercício (`serieExercicio`), bimestres posteriores ao selecionado só aparecem se tiverem dado; e um recorte explícito sem nenhuma declaração ativa no escopo, como um bimestre futuro, não é exibido (HTTP 404 `sem_dados` na API, seção 8.2).
 
 ### 5.2 As datas não se confundem
@@ -420,7 +423,7 @@ Todos são limites superiores, porque nenhuma coleta tentou o `/rreo` antes. Nã
 O fluxo tem cinco passos:
 
 1. coleta;
-2. resposta bruta guardada, deduplicada pelo sha256 do corpo, com URL, parâmetros, ETag, X-Cache e data de coleta;
+2. resposta bruta guardada, deduplicada por URL (com os parâmetros) e sha256 do corpo, com a data da primeira coleta; cada requisição, inclusive as que falham, é registrada à parte com status HTTP, ETag, X-Cache, duração e erro (`src/server/ingestion/store.ts`);
 3. snapshot candidato da declaração, com hash canônico do conteúdo, independente da ordem dos itens (a fonte não garante ordem estável [R1]);
 4. validações (7.1 a 7.4);
 5. ativação transacional, ou rejeição mantendo o snapshot ativo anterior (7.5).
@@ -434,7 +437,7 @@ Antes delas, a montagem do snapshot recusa a resposta inteira se houver chave re
 
 ### 7.1 Integridade da resposta
 
-- A resposta deve ser HTTP 200 com JSON no envelope ORDS: `items`, `hasMore`, `limit`, `offset`, `count`, `links` [R1]. Implementado em `src/server/integrations/siconfi/parse.ts`: o envelope precisa ter `items`, `hasMore` booleano e `count` igual ao número de itens.
+- A resposta deve ser HTTP 200 com JSON no envelope ORDS: `items`, `hasMore`, `limit`, `offset`, `count`, `links` [R1]. Implementado em `src/server/integrations/siconfi/http.ts` (só status 200, `Content-Type` `application/json`, corpo de até 16 MiB, UTF-8 válido; redirect é erro) e em `src/server/integrations/siconfi/parse.ts` (o envelope precisa ter `items`, `hasMore` booleano e `count` igual ao número de itens).
 - Se `hasMore` for `true`, a paginação continua no host público com `offset` montado localmente. Os `links` da resposta apontam para um host interno e nunca são seguidos [R1, R3]. Implementado em `src/server/integrations/siconfi/client.ts`, que também recusa `hasMore` com página vazia e respostas com mais de 10 páginas.
 - `items` vazio não é zero. Na fonte, significa declaração indisponível (seção 8). Também chegam como 200 vazio: parâmetro fora do enum, `id_ente` ausente e período não entregue [R1, R5]. Na ingestão, o `/rreo` só é consultado para bimestres que o extrato registra como entregues (`src/server/ingestion/planejamento.ts`); se essa consulta vier vazia, a coleta da declaração falha ("Resposta sem células", `src/server/ingestion/snapshot.ts`), nada é gravado e o ativo anterior, se houver, continua.
 - Cada item precisa pertencer à declaração pedida: `exercicio`, `periodo`, `cod_ibge`, `demonstrativo` e `anexo` iguais aos da requisição. Esses campos repetem os parâmetros [R3, R5]. Implementado em `client.ts`: um item fora do recorte invalida a resposta inteira.
@@ -449,11 +452,11 @@ Antes delas, a montagem do snapshot recusa a resposta inteira se houver chave re
 | `DespesasCorrentes` | Obrigatória, exatamente uma (identidade I1) | Bloqueante |
 | `DespesasDeCapital` | Obrigatória, exatamente uma (identidade I1) | Bloqueante |
 | `DespesasIntraOrcamentariasTotal` | Opcional. Se existir, precisa ser única, e `SubtotalDasDespesas` passa a ser obrigatória e única (identidade I2) | Bloqueante quando a linha intra existe |
-| Os 6 grupos da seção 4 | Opcionais. Grupo ausente aparece como "sem dado". | Não bloqueante |
+| Os 6 grupos da seção 4 | Opcionais. Grupo ausente aparece como "não informado", nunca como zero (seção 4, regra 5). | Não bloqueante |
 
 - Resposta não vazia sem uma célula obrigatória, ou com uma delas repetida na coluna (j) sob chaves distintas (outro `rotulo` ou `conta`; a chave idêntica é tratada na seção 7.3), gera um snapshot **rejeitado**: ele é gravado com a situação `rejeitado` e o resultado das verificações, e não é ativado.
 - **Hipótese e risco:** a fonte omite células em vez de enviar zero. No RJ não se observou nenhum valor igual a 0 [R5]. Se um ente não pagar nada numa categoria inteira (por exemplo, capital no 1º bimestre), a célula pode faltar e o snapshot será rejeitado. Isso não foi observado. O comportamento é conservador de propósito: a rejeição é registrada para revisão manual.
-- **Lacuna (Etapa 1):** a célula do indicador foi observada no `/rreo` só na União, em SP, no RJ, em MG e no DF. Para os outros 23 estados, a presença era apenas inferida pelo extrato [R7]. A ingestão a confirma resposta a resposta, ao aplicar esta seção 7, e nenhum estado é publicado antes disso. **Atualização (2026-10-02):** a primeira ingestão completa, em banco local de desenvolvimento, ativou 280 declarações (os 28 entes, 2025 b1 a b6 e 2026 b1 a b4), todas aprovadas nas verificações, sem nenhum resultado `falhou` registrado (`docs/validacao-fonte-siconfi-2026-10.md`, seção 17.1; contagem conferida no banco na mesma data).
+- **Lacuna (Etapa 1):** a célula do indicador foi observada no `/rreo` só na União, em SP, no RJ, em MG e no DF. Para os outros 23 estados, a presença era apenas inferida pelo extrato [R7]. A ingestão a confirma resposta a resposta, ao aplicar esta seção 7, e nenhum estado é publicado antes disso. **Atualização (2026-10-02):** a primeira ingestão completa, em banco local de desenvolvimento, deixou 280 declarações ativas (os 28 entes, 2025 b1 a b6 e 2026 b1 a b4), todas aprovadas nas verificações, sem nenhum resultado `falhou` registrado (`docs/validacao-fonte-siconfi-2026-10.md`, seção 17.1; contagem conferida no banco na mesma data). Foram quatro execuções na mesma noite: duas declarações que falharam por HTTP 429 na terceira foram ativadas na quarta (`docs/evidencias/2026-10-02-ingestao-completa/execucoes.json`).
 
 ### 7.3 Unicidade
 
@@ -501,9 +504,10 @@ Implementado em `src/server/ingestion/executar.ts` e `src/server/ingestion/store
 | Conteúdo idêntico a um snapshot já rejeitado | **Reavaliação.** As verificações rodam de novo com as regras vigentes. Se o conteúdo ainda falha, nenhum snapshot novo é gravado: o rejeitado só ganha nova data de conferência e o erro é registrado de novo. Se agora passa (por exemplo, depois de uma mudança das regras), é gravado e ativado como versão nova. |
 | Chave repetida ou resposta sem células | A resposta bruta fica guardada, mas nenhum snapshot é gravado (seções 7.1 e 7.3). O erro é registrado e o ativo anterior continua. |
 | Payload inválido, item fora do recorte, paginação anômala ou lote incompleto (uma página falha) | Nada é gravado para a declaração além do registro de cada requisição. O ativo anterior continua. |
-| Falha na fonte (rede, timeout, 5xx ou HTTP 429 depois das retentativas) | Nada muda: o último ativo continua. Um HTTP 502 já foi observado num endpoint de metadados [R7]. Os 429 da CDN estão descritos na seção 9.3. |
+| Falha na fonte (rede, timeout, 5xx ou HTTP 429 depois das retentativas; outros status HTTP falham sem retentativa) | Nada muda: o último ativo continua. Um HTTP 502 já foi observado num endpoint de metadados [R7]. Os 429 da CDN estão descritos na seção 9.3. |
 | Extrato de entregas | É coletado e guardado como histórico a cada execução, independentemente da ativação de snapshots. Se o extrato de um ente falhar, nenhuma declaração desse ente e exercício é coletada naquela execução. |
 | Situação da execução | `falhou` (código de saída 1) se nenhum extrato foi lido, ou se havia coletas planejadas e nenhuma foi concluída (ativada ou sem mudança). Caso contrário, `concluida_com_falhas` se houve algum erro e `concluida` se não houve. Só execuções `concluida` ou `concluida_com_falhas` finalizadas contam como última atualização concluída em `/fontes` (`ultimaExecucao` em `src/server/repositories/rreo.ts`, usada por `src/server/services/fontes.ts`). |
+| Outra ingestão em andamento | O lock consultivo do PostgreSQL impede a execução simultânea: nada é coletado nem registrado como execução, a situação devolvida é `bloqueada` e o código de saída é 0 (`scripts/ingest.ts`). |
 
 ---
 
@@ -513,7 +517,7 @@ Implementado em `src/server/ingestion/executar.ts` e `src/server/ingestion/store
 
 ### 8.1 Situação de cada ente, por período (Implementado)
 
-Cada valor de ente e período tem uma `situacao` na API v1, decidida em `src/server/services/despesas.ts` (`indicadorDoEnte`). A série do exercício (`serieExercicio`) usa a mesma regra, ponto a ponto. Os textos exibidos estão em `src/lib/situacao.ts`: o rótulo curto aparece na tabela comparativa de estados e na tabela do gráfico de evolução (nesta, como "sem dado (rótulo curto)"); a explicação aparece no cartão do indicador.
+Cada valor de ente e período tem uma `situacao` na API v1, decidida em `src/server/services/despesas.ts` (`indicadorDoEnte`). A série do exercício usa a mesma regra, ponto a ponto: `serieExercicio` em `/api/v1/estados/{uf}` e `serieUniao` em `/api/v1/brasil`. Os textos exibidos estão em `src/lib/situacao.ts`: o rótulo curto aparece na tabela comparativa de estados e na tabela do gráfico de evolução (nesta, como "sem dado (rótulo curto)"); a explicação aparece no cartão do indicador.
 
 | `situacao` | Quando | Rótulo curto | Explicação exibida |
 |---|---|---|---|
@@ -524,17 +528,17 @@ Cada valor de ente e período tem uma `situacao` na API v1, decidida em `src/ser
 
 Detalhes da regra:
 
-- A decisão usa a observação mais recente do extrato guardada em `entregas_observadas` (`entregasDoExercicio` em `src/server/repositories/rreo.ts`), só com entregas bimestrais do RREO. Como só essas entregas são guardadas, um extrato coletado sem nenhuma entrega bimestral do RREO no exercício também resulta em `nao_coletado`.
+- A decisão usa a observação mais recente de cada bimestre no histórico do extrato (`entregas_observadas`, lido por `entregasDoExercicio` em `src/server/repositories/rreo.ts`) e considera só as entregas bimestrais do RREO. Por isso, um extrato coletado sem nenhuma entrega bimestral do RREO no exercício também resulta em `nao_coletado`: sem linhas guardadas, esse caso não se distingue de um extrato nunca coletado.
 - O extrato só registra a entrega; não prova que o `/rreo` já serve o conteúdo (defasagem, seção 5.2).
 - Fonte indisponível **com** versão ativa anterior: o valor ativo continua `disponivel`, com as datas de coleta e de última conferência visíveis (seção 5.2), o que torna explícito há quanto tempo o dado não é confirmado.
-- Fonte indisponível **sem** versão ativa: `sem_dado_validado` se o extrato já registrou a entrega; `nao_coletado` se nem o extrato foi coletado. Não há situação própria de "fonte indisponível".
-- Célula ausente numa declaração existente: a célula simplesmente não vem; não chega como `null` [R1, R3, R5]. Célula obrigatória ausente rejeita a versão (seção 7.2); grupo da composição ausente aparece como "sem dado" no grupo (seção 4).
+- Fonte indisponível **sem** versão ativa: `sem_dado_validado` se algum extrato já coletado registrou a entrega; `nao_coletado` se o PortalDash nunca coletou o extrato do ente e do exercício. Não há situação própria de "fonte indisponível".
+- Célula ausente numa declaração existente: a célula simplesmente não vem; não chega como `null` [R1, R3, R5]. Célula obrigatória ausente rejeita a versão (seção 7.2); grupo da composição ausente aparece como "não informado" (seção 4, regra 5).
 - Na fonte, um período ainda não entregue ou inexistente devolve HTTP 200 com `items` vazio; exemplo RJ 2026 b5 [E14, R5]. A ingestão não consulta o `/rreo` para bimestres sem entrega no extrato (seção 7.1).
 
 ### 8.2 Recorte sem dados e indisponibilidade (Implementado)
 
 - **Períodos disponíveis por escopo** (`periodosDisponiveis` e `escolherPeriodo`): `/brasil` considera todos os entes e, sem bimestre explícito, prefere o período mais recente que tenha a União; `/estados` considera só os 27 entes estaduais (26 estados e o DF); `/estados/{uf}` considera só o próprio ente. O seletor de período da interface lista só os períodos com dado no escopo.
-- **Recorte explícito sem dados.** Com `ano` e `bimestre` informados e nenhuma declaração ativa no escopo, inclusive para um bimestre que ainda não terminou, a API responde HTTP 404 com o código `sem_dados` ("Não há dados validados para o recorte solicitado", `src/server/api/respostas.ts`). A página mostra "Ainda não há dados validados para este recorte" (`src/components/ui/estados.tsx`). Nenhum valor é inventado nem substituído por outro período.
+- **Recorte sem dados.** Com `ano` e `bimestre` informados e nenhuma declaração ativa no escopo, inclusive para um bimestre que ainda não terminou, a API responde HTTP 404 com o código `sem_dados` ("Não há dados validados para o recorte solicitado", `src/server/api/respostas.ts`). O mesmo vale para `ano` sem bimestre quando o escopo não tem nenhum período com dado nesse ano, e para a consulta sem filtros quando o escopo ainda não tem dado algum (`escolherPeriodo` devolve `null`). A página mostra "Ainda não há dados validados para este recorte" (`src/components/ui/estados.tsx`). Nenhum valor é inventado nem substituído por outro período. Já `bimestre` sem `ano`, ou `ano` fora do intervalo de 2015 ao ano corrente, é parâmetro inválido (HTTP 400, `src/lib/filtros.ts`).
 - **Banco indisponível.** A API responde HTTP 503 com o código `indisponivel` ("Dados temporariamente indisponíveis"), sem detalhes internos. As páginas lançam erro para o error boundary (`src/app/error.tsx`), que mostra "Dados temporariamente indisponíveis" e um botão para tentar de novo, sem exibir número algum.
 
 ### 8.3 Ausência na fonte e publicação oficial
@@ -586,15 +590,19 @@ Os demais estados estão com 2026, 1º a 4º bimestre, todos HO. O 6º bimestre 
 ### 9.3 Como o PortalDash trata as versões
 
 1. Cada coleta de uma declaração gera uma resposta bruta (deduplicada) e, se o conteúdo mudou, um snapshot novo. Ele só é ativado depois de passar pela seção 7. Snapshots anteriores ficam no histórico e nunca são apagados.
-2. O extrato (`status_relatorio`, `data_status`) é registrado a cada coleta, o que cria um histórico próprio de status que a fonte não oferece.
+2. O extrato (`status_relatorio`, `data_status`) é registrado a cada execução, o que cria um histórico próprio de status que a fonte não oferece. Implementado em `registrarEntregas` (`src/server/ingestion/store.ts`): uma linha em `entregas_observadas` por combinação distinta de status e data, com a primeira e a última observação.
 3. A interface mostra:
    - o valor do snapshot ativo;
-   - o status mais recente coletado (Homologado ou Retificado);
-   - a `data_status`;
-   - a data de coleta.
-4. Mudança de `status_relatorio` ou de `data_status` no extrato dispara nova coleta da declaração. Também há recoleta periódica com `If-None-Match`/`ETag`, numa frequência pendente (D10). As requisições são sempre sequenciais, com intervalo mínimo de 1,1 s, abaixo do limite documentado de 1 requisição por segundo [E01].
-5. **Lacuna:** não há garantia de que o conteúdo servido pelo `/rreo` e o status do extrato sejam do mesmo instante, por causa do cache do CDN e da defasagem desconhecida [R7]. O par status e valor exibido é uma aproximação.
-6. Uma retificação feita pelo ente **não é** uma correção do PortalDash. Correções do PortalDash ficam na seção 18.
+   - o status gravado no snapshot ativo (Homologado ou Retificado), que normalmente é o do extrato mais recente, mas pode ser o anterior durante a janela de confirmação (item 5);
+   - a `data_status` correspondente;
+   - a data de coleta do conteúdo e a da última conferência (seção 5.2).
+
+   O status, a `data_status` e as datas de coleta aparecem juntos só no cartão do indicador (`src/components/ui/SourceBadge.tsx`); a tabela comparativa de estados mostra só o status, sem datas (seção 14.1, AV-03).
+4. **Quando recoletar (Implementado, `src/server/ingestion/planejamento.ts`).** O `/rreo` só é consultado para bimestres que o extrato registra como entregues e quando: (a) não há versão ativa; (b) o `status_relatorio` ou a `data_status` do extrato diferem dos gravados no snapshot ativo; (c) a última conferência tem `--reverificar-dias` dias ou mais (padrão 7, `scripts/ingest.ts`); ou (d) a execução é forçada (`--forcar`). Não se usa `If-None-Match`: o `ETag` de cada resposta é só registrado (tabela `requisicoes`). A execução agendada está configurada para uma vez por dia: cron `0 9 * * *` (06:00 em Brasília) no serviço `ingestao` do Railway, com `pnpm ingest --origem=cron`, ou seja, com os padrões do script (exercício corrente e anterior, todos os entes, reconferência a cada 7 dias). A configuração fica no próprio serviço, não no repositório (`docs/architecture.md`, "Deploy no Railway"). A frequência definitiva continua pendente (D10).
+5. **Janela de confirmação de retificação (Implementado, `src/server/ingestion/executar.ts`).** Quando o extrato muda de status (por exemplo, HO → RE) ou de `data_status` (motivo `status_mudou` no planejamento) e a recoleta traz conteúdo **igual** ao ativo, o `/rreo` pode ainda estar servindo a versão anterior, por causa da defasagem e do cache da CDN. Por isso, durante `JANELA_CONFIRMACAO_RETIFICACAO_DIAS` = **10 dias** contados da `data_status` do extrato, o status e a `data_status` **não** são promovidos no snapshot ativo. Como continuam diferentes dos do extrato, a declaração é recoletada a cada execução nesse período. Passados os 10 dias, a próxima recoleta com o mesmo conteúdo promove o status, e a recoleta por mudança de status cessa. Se nesse meio-tempo o conteúdo mudar, a versão nova é verificada e, se aprovada, ativada já com o status novo. A janela não se aplica a coletas forçadas (`--forcar`) nem a entregas sem `data_status`: nesses casos, o status é promovido na hora. A duração de 10 dias é escolha de engenharia, não medida: os limites superiores de defasagem observados chegaram a cerca de 38 h (seção 5.2), e o TTL da CDN é desconhecido.
+6. **Ritmo das requisições (Implementado, `src/server/integrations/siconfi/config.ts` e `http.ts`).** As requisições são sempre sequenciais, com intervalo base de 1,5 s, mais conservador que o limite documentado de 1 requisição por segundo [E01]. Em HTTP 429, o intervalo dobra, até 6 s, pelo resto da execução, e a tentativa seguinte espera pelo menos o `Retry-After` (quando houver, limitado a 120 s) ou 10 s × número da tentativa. Nas outras falhas retentáveis, a espera é de 2 s antes da 2ª tentativa e 4 s antes da 3ª; a todas se somam até 0,5 s aleatórios. Há até 3 tentativas, só para erro de rede, timeout, 5xx e 429. Motivo: com 1,1 s, a CDN devolveu 81 respostas 429 em 407 requisições; com a regra atual, a execução seguinte teve 2 em 60 e nenhuma falha (`docs/validacao-fonte-siconfi-2026-10.md`, seção 17.2).
+7. **Lacuna:** não há garantia de que o conteúdo servido pelo `/rreo` e o status do extrato sejam do mesmo instante, por causa do cache do CDN e da defasagem desconhecida [R7]. O par status e valor exibido é uma aproximação. A janela do item 5 reduz o risco de rotular como "retificado" um conteúdo anterior à retificação, mas não o elimina.
+8. Uma retificação feita pelo ente **não é** uma correção do PortalDash. Correções do PortalDash ficam na seção 18.
 
 **Exibição do histórico (provisória até a decisão D5):** na v0.1.0, o histórico de snapshots fica guardado e não é exibido.
 
@@ -613,7 +621,7 @@ Os demais estados estão com 2026, 1º a 4º bimestre, todos HO. O 6º bimestre 
   **Inferência conceitual** (R2 a registra como "inferência, a validar"; R7 a adota como motivo para não somar): se o estado gasta o dinheiro recebido, ele reaparece como despesa do estado, e somar União e estados contaria duas vezes. A receita correspondente nos entes recebedores não foi levantada [R2, R7].
 - **Estruturas diferentes, mesma linha.** União e RJ têm linha de refinanciamento; SP, MG e DF (2026 b4) não têm [R7]. O indicador exclui o refinanciamento em todos, o que torna a linha comparável [R7]. Os numerais romanos diferem: "(IX)" na União e "(VIII)" nos estados. A seleção usa o `cod_conta`, não o texto [R2].
 - **Subcontas exclusivas não se comparam** (seção 4).
-- **Cobertura.** A célula do indicador foi confirmada em 5 dos 28 entes (seção 7.2). Os demais dependem da ingestão.
+- **Cobertura.** Na Etapa 1, a célula do indicador foi confirmada em 5 dos 28 entes. Os demais dependem da ingestão, que a confirmou nos 28 para 2025 (b1 a b6) e 2026 (b1 a b4) na primeira ingestão completa, em banco local (seção 7.2).
 
 ### 10.2 Distrito Federal e FCDF: lacuna
 
@@ -621,13 +629,13 @@ Os demais estados estão com 2026, 1º a 4º bimestre, todos HO. O 6º bimestre 
 - Há um "demonstrativo do FCDF" no RREO da União, e o Anexo 04.2 da União traz receitas e despesas previdenciárias do RPPS civil e do FCDF [R3, R7].
 - A interação entre as despesas da União pelo Fundo Constitucional do DF e as despesas do DF **não foi investigada** [R7].
 - **Hipótese não verificada:** parte do gasto público ligado ao DF pode ser executada no orçamento da União via FCDF. Nesse caso, o valor do DF no Siconfi não representaria todo o gasto público no DF, e uma soma União + DF poderia duplicar ou omitir valores.
-- **Enquanto a lacuna estiver aberta:** o DF aparece com o aviso AV-12, e nenhuma conclusão sobre o "tamanho" do gasto do DF frente aos estados é apresentada.
+- **Enquanto a lacuna estiver aberta:** o DF deve aparecer com o aviso AV-12, e nenhuma conclusão sobre o "tamanho" do gasto do DF frente aos estados é apresentada. O AV-12 ainda **não** está implementado: hoje o DF aparece como os estados, sem aviso próprio (seção 14.1).
 
 ### 10.3 Entre estados
 
 - Compara-se só o mesmo indicador no mesmo (exercício, bimestre).
 - Cada ente aparece com seu próprio status (HO ou RE) e suas próprias datas. Diferenças de situação não são escondidas.
-- Ente sem dado aparece como "sem dado". Nunca é excluído em silêncio nem tratado como zero.
+- Ente sem dado aparece como "sem dado", com o motivo (seção 8.1). Nunca é excluído em silêncio nem tratado como zero.
 
 ### 10.4 No tempo
 
@@ -684,7 +692,7 @@ Calcular per capita exigiria uma fonte externa de população (IBGE) e uma decis
 - A da União é em R$ mil, e a reconciliação vale só com precisão de R$ 1 mil [R4].
 - O PDF do RJ de 2023 é em R$ 1,00 e bateu ao centavo [R6].
 
-A precisão de exibição (por exemplo, R$ bilhões com uma casa decimal) está pendente (D11).
+A precisão de exibição (por exemplo, R$ bilhões com uma casa decimal) está pendente (D11). Enquanto isso, o destaque usa escala com arredondamento provisório, e o valor exato fica no cartão do indicador, nas tabelas e na API (seção 15, D11).
 
 ---
 
@@ -707,7 +715,7 @@ A precisão de exibição (por exemplo, R$ bilhões com uma casa decimal) está 
 
 - Nenhum estado foi reconciliado para 2025 ou 2026. A SEFAZ-RJ bloqueou o IP da coleta, devolvendo HTTP 200 com página de bloqueio [E25, R5, R6]. As edições do diário oficial do RJ consultadas não traziam o RREO [R6].
 - SP, MG e DF não foram reconciliados com publicações oficiais [R7].
-- A célula do indicador não foi observada nos outros 23 estados [R7].
+- Na Etapa 1, a célula do indicador não foi observada nos outros 23 estados [R7]. A ingestão de 2026-10-02 a observou nos 28 entes (seção 7.2), o que confirma a consistência interna, não a reconciliação com a publicação de cada estado.
 - Parte dos relatórios da Etapa 1 chegou truncada à revisão crítica. Afirmações que só existiam no texto truncado não foram checadas [R7].
 
 ---
@@ -722,7 +730,7 @@ A precisão de exibição (por exemplo, R$ bilhões com uma casa decimal) está 
 | Estados e DF: mesmo indicador e mesmo (exercício, bimestre), **lado a lado, sem soma** | Célula confirmada em SP, RJ, MG e DF. Para cada UF, a ingestão confirma presença e identidades antes de publicar. Reconciliação externa estadual só no RJ 2023 b6. | [R2, R6, R7] |
 | Curva acumulada no ano (b1→b6) do mesmo ente e exercício | Acumulados em sequência, sem diferenças entre bimestres | [R7] |
 | Ano contra ano, mesmo bimestre e ente | Nominal; aviso de possível retificação; `cod_conta` e coluna estáveis em 2025 e 2026 (União, SP, RJ) | [R7] |
-| Composição pelos grupos comuns do Anexo 01, dentro de um ente | Os 8 `cod_conta` da seção 4; reconciliados na União; subcontas exclusivas fora | [R4, R7] |
+| Composição pelos grupos comuns do Anexo 01, dentro de um ente | Os 8 `cod_conta` da seção 4; reconciliados na União; subcontas exclusivas fora; exibida só quando as identidades dos grupos conferem na declaração (seção 4, regras 3 e 8) | [R4, R7] |
 
 ### 13.2 Não validados (não são publicados)
 
@@ -757,17 +765,20 @@ Os textos abaixo são a base. A redação final pode ser ajustada, mas não pode
 | AV-04 | Sempre junto ao indicador | "Não inclui refinanciamento da dívida, despesas intraorçamentárias nem pagamento de restos a pagar de anos anteriores." |
 | AV-05 | Sempre que União e estados aparecem juntos | "União e estados aparecem lado a lado e não devem ser somados: transferências da União a estados e municípios são despesa da União e podem reaparecer como despesa de quem as recebe (dupla contagem)." |
 | AV-06 | Sempre junto ao indicador | "Valores nominais, em reais correntes, sem correção pela inflação." |
-| AV-07 | Onde houver "sem dado" | "Sem dado: a fonte não tem este valor, ou ele ainda não foi validado pelo PortalDash. Ausência não significa zero." |
+| AV-07 | Onde houver "sem dado" | O motivo da situação do ente (rótulo curto ou explicação da seção 8.1, `src/lib/situacao.ts`) seguido de "Ausência de dado não significa despesa zero." Recorte inteiro sem dados: "Ainda não há dados validados para este recorte" (seção 8.2). |
 | AV-08 | Visões da União | "O relatório oficial da União publicado pelo Tesouro é mensal e em R$ mil. Aqui aparecem só os acumulados de fim de bimestre, em reais, como estão no Siconfi." |
 | AV-09 | Sempre, enquanto D1 estiver pendente | "Metodologia v0.1.0: a escolha da linha principal é provisória e pode mudar." |
 | AV-10 | Composição por grupos | "Os grupos são partes do total exibido; não some grupos com o total." |
 | AV-11 | Comparação entre anos | "Comparação em valores nominais. Um dos períodos pode ter sido retificado pelo ente." |
 | AV-12 | Visões do DF | "A relação entre as despesas do DF e o Fundo Constitucional do DF, pago pela União, ainda não foi investigada." |
+| AV-13 | Visão de um ente cuja composição foi ocultada (seção 4, regra 8) | "A composição por grupo não é exibida para esta declaração: a soma dos grupos não confere com o total de despesas correntes ou de capital." Texto implementado em `AVISO_COMPOSICAO_OCULTA` (`src/server/services/despesas.ts`). |
 
 O valor exato, em reais e centavos, fica disponível na tabela e na API, mesmo quando a exibição principal é arredondada.
 
 Observações sobre os avisos:
 
+- **AV-03:** o status exibido é o gravado no snapshot ativo. Durante a janela de confirmação de retificação (seção 9.3, item 5), ele pode continuar com o status e a data anteriores (por exemplo, "homologado") por até 10 dias contados da `data_status` da retificação, enquanto o conteúdo servido pelo `/rreo` for igual ao ativo. O histórico do extrato guarda a mudança desde a primeira observação.
+- **AV-07 e AV-13:** os textos são os do código, não apenas texto-base. Mudá-los exige alterar este documento junto.
 - **AV-04:** a exclusão do pagamento de restos a pagar de anos anteriores é uma **inferência**, ainda não confirmada no MDF (seções 2.2 e 16, item 1). Se a leitura do MDF a contrariar, o AV-04 e a seção 6 mudam, e a mudança entra no histórico (seção 17).
 - R7 propõe também um aviso sobre valores sem centavos em exercícios antigos. Ele não entra na lista porque a v0.1.0 não publica anos anteriores a 2025 (D3). Volta a ser obrigatório se D3 incluir esses anos (seção 10.4).
 
@@ -777,38 +788,38 @@ Observações sobre os avisos:
 
 | ID | Decisão | Opções registradas na Etapa 1 [R7] | Comportamento na v0.1.0 enquanto pendente |
 |---|---|---|---|
-| **D1** | **Linha-manchete** | (a) `DespesasExcetoIntraOrcamentarias`, recomendada pela revisão crítica; (b) `SubtotalDasDespesas`, que inclui intraorçamentárias. `TotalDespesas` foi descartada. Sub-decisão: juros e amortização ficam dentro da manchete ou aparecem destacados? | (a), marcada como provisória (AV-09) |
+| **D1** | **Linha-manchete** | (a) `DespesasExcetoIntraOrcamentarias`, recomendada pela revisão crítica; (b) `SubtotalDasDespesas`, que inclui intraorçamentárias. `TotalDespesas` foi descartada. Sub-decisão: juros e amortização ficam dentro da manchete ou aparecem destacados? | (a), provisória. O aviso AV-09, que deveria dizer isso ao visitante, ainda não está implementado (seção 14.1) |
 | **D2** | **Agregações** | Permitir "soma dos estados" ou "Brasil"? Se sim: rótulo, aviso de dupla contagem e regra para UF que não entregou ou está desatualizada | Nenhuma agregação; só lado a lado |
-| **D3** | **Profundidade histórica** | A partir de qual exercício? Há quebra estrutural entre 2019 e 2020 e valores sem centavos em 2019. | **Proposta:** publicar só 2025 e 2026, cuja estrutura foi verificada |
+| **D3** | **Profundidade histórica** | A partir de qual exercício? Há quebra estrutural entre 2019 e 2020 e valores sem centavos em 2019. | **Proposta:** publicar só 2025 e 2026, cuja estrutura foi verificada. Situação do código: a ingestão sem `--exercicios` coleta o exercício corrente e o anterior (`scripts/ingest.ts`), hoje 2026 e 2025; a coleta manual e os filtros públicos aceitam desde 2015 (`ANO_MINIMO` em `src/lib/filtros.ts`), e só aparece o que tiver sido coletado e validado. |
 | **D4** | **Valores reais e per capita** | Índice, data-base e fonte para correção. Fonte de população externa ao Siconfi. | Só valores nominais; sem per capita |
-| **D5** | **Política de exibição de retificações** | Mostrar só o último valor com selo "retificado em", ou também o histórico de versões coletadas? O que mostrar quando o 6º bimestre for retificado meses depois? | Valor do snapshot ativo + status + `data_status` + data de coleta; histórico guardado e não exibido |
+| **D5** | **Política de exibição de retificações** | Mostrar só o último valor com selo "retificado em", ou também o histórico de versões coletadas? O que mostrar quando o 6º bimestre for retificado meses depois? | Valor do snapshot ativo + status + `data_status` + data de coleta + data da última conferência (todos juntos só no cartão do indicador e na API; a tabela de estados mostra só o status); histórico guardado e não exibido; status promovido só depois da janela de confirmação quando o conteúdo não muda (seção 9.3) |
 | D6 | Apresentação temporal | Mostrar só o acumulado (recomendado) ou também derivar "no bimestre" por diferença, com aviso | Só o acumulado |
 | D7 | Escopo de entes | Planejar municípios? (RREO Simplificado; cerca de 1,5 h de ingestão por período a 1 req/s) | Só União, estados e DF |
 | D8 | Visão anual por função (DCA) | Incluir ou não. O conceito difere do RREO, e a defasagem é de cerca de 4 meses. | Não incluída |
-| D9 | Tratamento do DF | `esfera` `D` × `E`; possível interação com o FCDF pago pela União | DF exibido com aviso AV-12 |
-| D10 | Frequência de atualização | Com que frequência recoletar, e o que mostrar entre a homologação e a disponibilidade no `/rreo` | A definir na operação; data de coleta sempre exibida |
-| D11 | Precisão de exibição | Por exemplo, R$ bilhões com 1 casa | Valor exato na tabela e na API; formato de destaque a definir |
+| D9 | Tratamento do DF | `esfera` `D` × `E`; possível interação com o FCDF pago pela União | DF exibido como os estados. O aviso AV-12, obrigatório enquanto a lacuna da seção 10.2 estiver aberta, ainda não está implementado (seção 14.1) |
+| D10 | Frequência de atualização | Com que frequência recoletar, e o que mostrar entre a homologação e a disponibilidade no `/rreo` | Provisório: execução agendada diária (cron `0 9 * * *` no serviço `ingestao`, configurado no Railway e registrado em `docs/architecture.md`), reconferência de cada versão ativa a cada 7 dias e recoleta a cada execução durante a janela de confirmação de retificação de 10 dias (seção 9.3). Datas de coleta e de última conferência exibidas no cartão do indicador e na API |
+| D11 | Precisão de exibição | Por exemplo, R$ bilhões com 1 casa | Valor exato no cartão, nas tabelas e na API. Destaque provisório em `formatarEscala` (`src/lib/formatacao.ts`): trilhões com 2 casas, bilhões e milhões com 1, arredondando antes de escolher a escala |
 
 ---
 
 ## 16. Lacunas abertas e próximos passos de validação
 
-Os itens 1 a 8 foram extraídos de R7. Os itens 9 a 11 foram levantados na redação e na revisão deste documento.
+Os itens 1 a 8 foram extraídos de R7; as notas de situação neles foram acrescentadas em 2026-10-02. Os itens 9 a 11 foram levantados na redação e na revisão deste documento.
 
 1. Ler o MDF vigente da STN para confirmar a definição da coluna (j), inclusive a exclusão de restos a pagar, e a quebra estrutural de 2020.
-2. Ingestão-piloto do Anexo 01 para os 28 entes (2026 b1 a b4 e 2025 b1 a b6), aplicando as validações da seção 7 a cada resposta.
+2. Ingestão-piloto do Anexo 01 para os 28 entes (2026 b1 a b4 e 2025 b1 a b6), aplicando as validações da seção 7 a cada resposta. **Feito em 2026-10-02, em banco local de desenvolvimento:** 280 declarações ativas, nenhuma rejeitada (seção 7.2; `docs/validacao-fonte-siconfi-2026-10.md`, seção 17). **Repetido em produção em 2026-10-02** (Railway, primeira ingestão do serviço `ingestao`): 340 requisições, 280 declarações ativadas, 0 rejeitadas, situação `concluida`, sem erros.
 3. Rodar `/extrato_entregas` de 2025 para os 24 entes ainda não verificados.
 4. Reconciliar ao centavo pelo menos 3 estados (2026 b4 ou 2025 b6) com a publicação oficial de cada SEFAZ ou diário oficial, com e sem linha de refinanciamento (por exemplo RJ, MG e um estado do Nordeste).
 5. Investigar a relação entre DF e FCDF.
-6. Monitorar retificações e medir a defasagem real entre `data_status` e a disponibilidade no `/rreo`.
+6. Monitorar retificações e medir a defasagem real entre `data_status` e a disponibilidade no `/rreo`. A medida deve calibrar a janela de confirmação de retificação, hoje fixada em 10 dias sem medição (seção 9.3, item 5).
 7. Consultar a STN (E-Serviços) sobre:
    - qual versão o `/rreo` serve depois de uma retificação;
    - o fuso de `data_status`;
    - como republicações se propagam (caso da União 2025 b6);
    - a origem do campo `populacao`;
-   - a política de bloqueio por excesso de requisições.
+   - a política de bloqueio por excesso de requisições (a CDN devolveu HTTP 429 com intervalo de 1,1 s entre requisições; seção 9.3, item 6).
 8. Mapear a estrutura do Anexo 01 nos anos desejados antes de decidir a profundidade histórica (D3).
-9. As evidências brutas da Etapa 1 estão no diretório temporário da sessão de trabalho, fora do repositório. Arquivá-las num local durável e versionado é uma pendência.
+9. As evidências brutas da Etapa 1 estavam no diretório temporário da sessão de trabalho, fora do repositório. Os relatórios R1 a R7, o contrato da API e os logs de requisições foram arquivados em `docs/evidencias/2026-10-01-etapa1/`. As amostras brutas citadas como `siconfi\...\*.json` continuam fora do repositório; arquivá-las é uma pendência.
 10. **Inconsistência nas evidências.** R7 afirma que a coluna `INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS (k)` não existe no Anexo 01 do 6º bimestre do RJ em 2019, 2020 e 2021, nem da União em 2019. As amostras brutas salvas pela própria revisão (`siconfi\revisao\rreo_33_2019_b6_a01.json`, `rreo_33_2020_b6_a01.json`, `rreo_33_2021_b6_a01.json` e `rreo_1_2019_b6_a01.json`, coleta E16) contêm uma coluna com esse texto exato. Conferido na revisão: de 15 a 26 células nessa coluna em cada uma das quatro amostras. Este documento não usa essa afirmação de R7. A coluna (k) não interfere no indicador.
 11. **Rótulo trocado em R7.** R7 chama de "total pago" da União em 2019 o valor `2198252453508`. Na amostra bruta (`rreo_1_2019_b6_a01.json`), esse é o valor de `DespesasExcetoIntraOrcamentarias` na coluna (j); o `TotalDespesas` é `2710907655987` (seção 10.4). O argumento de R7 sobre valores inteiros continua válido, e a célula afetada é justamente a do indicador.
 
@@ -823,13 +834,16 @@ Os itens 1 a 8 foram extraídos de R7. Os itens 9 a 11 foram levantados na reda�
 - **MINOR:** novo recorte ou indicador, nova regra de validação, ampliação de cobertura (por exemplo, novos exercícios), sem mudar a definição de um indicador existente. Durante a fase 0.x, mudanças de definição, como trocar a linha-manchete, também sobem o MINOR e são **destacadas como quebra**.
 - **MAJOR** (a partir de 1.0.0): mudança na definição de um indicador existente.
 - **1.0.0** quando Gabriel confirmar a linha-manchete (D1) e as decisões que afetam o significado dos números (D2 e D5).
-- Toda nova versão gera uma entrada no histórico com data real, o que mudou, a evidência e o efeito nos números exibidos. Como os indicadores são calculados na leitura (seção 1), o efeito alcança na hora todos os períodos já exibidos.
+- Toda nova versão gera uma entrada no histórico com data real, o que mudou, a evidência e o efeito nos números exibidos. Como os indicadores são calculados na leitura (seção 1), o efeito alcança na hora todos os períodos já exibidos. Mudanças nas regras de verificação são a exceção: só valem para conteúdo novo, ou antes rejeitado, coletado depois delas; versões já ativas não são reavaliadas sozinhas (seção 1, "Verificações na ingestão").
+- Antes de qualquer publicação, regras implementadas no código foram incorporadas à própria 0.1.0, com registro no histórico (17.2). A partir da primeira publicação, toda mudança segue as regras acima.
+- **Já implementado:** a versão vem de `METODOLOGIA_VERSAO` (`src/server/methodology/indicador.ts`), aparece na página `/metodologia`, em toda resposta de dados da API v1 (`metodologia.versao`, montado em `src/server/services/despesas.ts`) e no resultado das verificações gravado com cada snapshot (`verificacoes.metodologia`).
 
 ### 17.2 Histórico de versões
 
 | Versão | Data | Situação | Resumo | Efeito em números exibidos |
 |---|---|---|---|---|
 | 0.1.0 | 2026-10-01 | Rascunho para revisão de Gabriel; não publicada. Revisado contra as evidências da Etapa 1 na mesma data, sem mudança de definição. | Primeira definição: indicador principal provisório (RREO-Anexo 01, coluna (j), `DespesasExcetoIntraOrcamentarias`); composição por 8 grupos comuns; regras de validação (presença, unicidade, identidades I1 e I2); ausência como "sem dado"; tratamento de retificações por snapshots; regras de comparabilidade; avisos obrigatórios; decisões pendentes | Nenhum: nada foi publicado |
+| 0.1.0 | 2026-10-02 | Ainda não publicada. Revisão de alinhamento ao código: as regras abaixo foram implementadas **antes de qualquer publicação**, por isso a versão continua 0.1.0 (ver 17.1). | Verificações divididas em bloqueantes (presença única das linhas obrigatórias, I1 e I2 estrita) e não bloqueantes (identidades dos grupos, que só ocultam a composição; aviso AV-13); qualquer chave repetida invalida a resposta; janela de confirmação de retificação de 10 dias; reavaliação de conteúdo rejeitado pelas regras vigentes; situação de cada ente e período em quatro valores (`disponivel` e os motivos de ausência `sem_dado_validado`, `sem_registro_de_entrega` e `nao_coletado`), com textos próprios, e 404 `sem_dados` para recorte sem dados; rótulo "Amortização da dívida (exceto refinanciamento)"; ritmo de 1,5 s com desaceleração em HTTP 429; propostas da seção 4 (identidades dos grupos) e da seção 5.2 (data de conferência) passam a "Implementado" | Nenhum: nada foi publicado. A definição do indicador, a linha-manchete e os 8 grupos da composição não mudaram |
 
 ---
 
@@ -850,7 +864,7 @@ Modelo de registro:
 
 ### 19.1 Relatórios da Etapa 1
 
-Arquivos gerados na sessão de validação, fora do repositório (seção 16, item 9). A pasta é `<scratchpad>\etapa1\`, e as amostras brutas e logs estão em `...\scratchpad\siconfi\`.
+Arquivos gerados na sessão de validação. A pasta original é `<scratchpad>\etapa1\`, e as amostras brutas e logs estão em `...\scratchpad\siconfi\`. Os sete relatórios, com os mesmos nomes de arquivo, foram arquivados em `docs/evidencias/2026-10-01-etapa1/`; as amostras brutas, não (seção 16, item 9).
 
 | ID | Arquivo | Conteúdo |
 |---|---|---|

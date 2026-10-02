@@ -150,22 +150,28 @@ indisponível → 503 genérico. Valores monetários como string decimal. Contra
 
 ## Banco de dados em produção
 
-Recomendado: dois papéis.
+Dois papéis:
+
+- **Administrador** (usuário `postgres` do Railway): só no serviço `ingestao`,
+  em `INGEST_DATABASE_URL`, para migrations e ingestão.
+- **`portaldash_leitura`**: usado pelo site em `DATABASE_URL`. É criado (ou tem
+  a senha atualizada) pelo próprio `pnpm db:migrate` quando a variável
+  `LEITURA_DB_PASSWORD` existe (`src/server/db/papel-leitura.ts`), com os
+  privilégios abaixo; a senha só trafega como parâmetro e nunca é versionada.
 
 ```sql
--- executar uma vez, manualmente, como administrador (não versionar senhas)
-CREATE ROLE portaldash_leitura LOGIN PASSWORD '<gerar>';
-GRANT CONNECT ON DATABASE <nome_do_banco> TO portaldash_leitura;
+-- equivalente ao que o db:migrate executa (idempotente)
+CREATE ROLE portaldash_leitura LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD '<senha>';
+GRANT CONNECT ON DATABASE <banco> TO portaldash_leitura;
 GRANT USAGE ON SCHEMA public TO portaldash_leitura;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO portaldash_leitura;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO portaldash_leitura;
 ```
 
-O serviço web usa esse papel em `DATABASE_URL`; ingestão e migrations usam o
-usuário administrador em `INGEST_DATABASE_URL`, que só existe no serviço de
-ingestão. Mesmo sem o papel separado, o
-pool do site abre sessões com `default_transaction_read_only=on` e
-`statement_timeout=5000`.
+Mesmo com o papel, o pool do site abre sessões com
+`default_transaction_read_only=on` e `statement_timeout=5000` (defesa
+adicional). Para trocar a senha, gere um valor novo em `LEITURA_DB_PASSWORD`
+no serviço `ingestao` e faça novo deploy dele e depois do site.
 
 ## Deploy no Railway
 
@@ -184,8 +190,15 @@ o formato documentar cron e política de reinício.
 | Serviço | Origem | Configuração | Variáveis |
 | --- | --- | --- | --- |
 | `Postgres` | imagem `ghcr.io/railwayapp-templates/postgres-ssl:18` (major fixo) | volume `postgres-volume` | geradas pelo Railway |
-| `portaldash` (web) | GitHub `gabriel-leao-git/portaldash`, `main` | builder Railpack; build `pnpm build`; start `pnpm start`; healthcheck `/api/v1/health` (120 s); reinício `ON_FAILURE` (5) | `DATABASE_URL` (papel somente leitura) |
-| `ingestao` | GitHub `gabriel-leao-git/portaldash`, `main` | builder Railpack; build `node --version` (não precisa do build do Next); pre-deploy `pnpm db:migrate`; start `pnpm ingest --origem=cron`; cron `0 9 * * *` (06:00 em Brasília); reinício `NEVER` | `INGEST_DATABASE_URL=${{Postgres.DATABASE_URL}}` |
+| `portaldash` (web) | GitHub `gabriel-leao-git/portaldash`, `main`; domínio `portaldash-production.up.railway.app` | builder Railpack; build `pnpm build`; start `pnpm start`; healthcheck `/api/v1/health` (120 s); reinício `ON_FAILURE` (5) | `DATABASE_URL=postgresql://portaldash_leitura:${{ingestao.LEITURA_DB_PASSWORD}}@${{Postgres.PGHOST}}:${{Postgres.PGPORT}}/${{Postgres.PGDATABASE}}` |
+| `ingestao` | GitHub `gabriel-leao-git/portaldash`, `main` | builder Railpack; build `node --version` (não precisa do build do Next); pre-deploy `pnpm db:migrate`; start `pnpm ingest --origem=cron`; cron `0 9 * * *` (06:00 em Brasília); reinício `NEVER` | `INGEST_DATABASE_URL=${{Postgres.DATABASE_URL}}`; `LEITURA_DB_PASSWORD` (aleatória; o pre-deploy cria/atualiza o papel `portaldash_leitura`) |
+
+Deploy automático: os dois serviços têm gatilho no branch `main` do GitHub com
+"esperar a CI" ligado (`checkSuites`), então só commits que passaram em lint,
+tipos, testes, build, auditoria e varredura de segredos são publicados. A cada
+deploy, o Railway executa o comando do serviço `ingestao` uma vez (além do
+cron diário); isso é seguro porque a ingestão é idempotente e o lock impede
+execuções simultâneas.
 
 Regras:
 
@@ -193,14 +206,15 @@ Regras:
   migrations rodam no pre-deploy dele; o web nunca roda migrations
   (`pnpm db:migrate` exige `INGEST_DATABASE_URL`).
 - O web usa o papel `portaldash_leitura` (seção anterior), nunca a credencial
-  de administrador. Além disso, o pool do site abre sessões somente leitura.
+  de administrador.
 - Mudanças de schema devem ser compatíveis com a versão anterior do site
   (expandir antes de contrair): web e ingestão fazem deploy de forma
   independente.
 - Para recriar o ambiente: criar o PostgreSQL com a imagem acima; criar
-  `ingestao` vazio, definir variável e configuração, e só então conectar o
-  repositório (o primeiro deploy aplica as migrations); rodar a ingestão uma
-  vez; criar o papel de leitura; configurar o web e gerar o domínio.
+  `ingestao` vazio, definir variáveis e configuração, e só então conectar o
+  repositório (o primeiro deploy aplica as migrations, cria o papel de leitura
+  e roda a ingestão); configurar o web com a `DATABASE_URL` por referência,
+  criar o gatilho de deploy com espera da CI e gerar o domínio.
 
 A rede privada do Railway só existe em tempo de execução; por isso nenhuma
 página consulta o banco durante o build.
