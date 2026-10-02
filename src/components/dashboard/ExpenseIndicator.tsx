@@ -35,7 +35,7 @@ export function ExpenseIndicator({
         <span className="visually-hidden">{escala.extenso}</span>
       </p>
       <p className={styles.indicatorExact}>
-        Valor exato: {formatarReais(indicador.valor)}
+        Valor exato: <span className={styles.semQuebra}>{formatarReais(indicador.valor)}</span>
         {escala.arredondado ? " (o número em destaque está arredondado)" : ""}
       </p>
       <div className={styles.indicatorMeta}>

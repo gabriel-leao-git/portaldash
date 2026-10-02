@@ -113,7 +113,10 @@
   font-variant-numeric: tabular-nums;
   color: var(--text-muted);
   font-size: 0.95rem;
-  word-break: break-all;
+}
+
+.semQuebra {
+  white-space: nowrap;
 }
 
 .indicatorMeta {
